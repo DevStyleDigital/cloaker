@@ -1,0 +1,42 @@
+[
+  {
+    "name": "América do Norte",
+    "name_int": "North America",
+    "code": "R-NA"
+  },
+  {
+    "name": "América do Sul",
+    "name_int": "South America",
+    "code": "R-SA"
+  },
+  {
+    "name": "América Central",
+    "name_int": "Central America",
+    "code": "R-CA"
+  },
+  {
+    "name": "Caribe",
+    "name_int": "Caribbean",
+    "code": "R-CR"
+  },
+  {
+    "name": "Ásia",
+    "name_int": "Asia",
+    "code": "R-AS"
+  },
+  {
+    "name": "Europa",
+    "name_int": "Europe",
+    "code": "R-ER"
+  },
+  {
+    "name": "Oriente Médio",
+    "name_int": "Middle East",
+    "code": "R-ME"
+  },
+  {
+    "name": "África",
+    "name_int": "Africa",
+    "code": "R-AF"
+  }
+]

@@ -1,0 +1,74 @@
+import { CodeCopy } from 'components/code';
+import { Button } from 'components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from 'components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'components/ui/tooltip';
+import { Link2, Trash2 } from 'lucide-react';
+import { ParamForm } from './param-form';
+import { atomOneLight } from 'react-code-blocks';
+import { genNewUrlObject } from '.';
+import { useCampaignData } from '../campaign-form';
+
+export const FormUrl = ({
+  handleDelete,
+  handleUrl,
+  campaignId,
+  ...url
+}: {
+  handleUrl: (d: ReturnType<typeof genNewUrlObject>) => void;
+  handleDelete: () => void;
+  campaignId: string;
+} & ReturnType<typeof genNewUrlObject>) => {
+  const { redirectType } = useCampaignData();
+
+  return (
+    <div className="w-full flex flex-col space-y-4">
+      <Dialog>
+        <div className="flex w-full gap-4">
+          <CodeCopy
+            text={`https://devstyle.com/r?c=${campaignId}-${url.id}`}
+            language="bash"
+            className="[&_span]:!text-ring/80"
+            customStyle={{ padding: '1rem' }}
+            showLineNumbers={false}
+            theme={atomOneLight}
+          />
+          {redirectType === 'complex' && (
+            <DialogTrigger asChild>
+              <Button type="button" className="whitespace-nowrap">
+                Vincular Parâmetros <Link2 className="w-4 h-4 ml-4" />
+              </Button>
+            </DialogTrigger>
+          )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleDelete}
+                  aria-label="Deletar Link"
+                >
+                  <Trash2 className="text-destructive" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Deletar Link</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <DialogContent>
+          <ParamForm
+            defaultParams={url.params}
+            onSubmit={(d) => handleUrl({ params: d, id: url.id })}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
