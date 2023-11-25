@@ -1,7 +1,8 @@
 import { Header } from 'components/header';
 import { Sidebar } from 'components/sidebar';
+import { UserProvider } from 'context/user';
 
-const DashLayout: BTypes.NLPage = ({ children }) => {
+const DashLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   return (
     <div className="flex">
       <Sidebar />

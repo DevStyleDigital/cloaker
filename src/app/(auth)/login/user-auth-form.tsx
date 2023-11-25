@@ -6,17 +6,17 @@ import { useRouter } from 'next/navigation';
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import { Label } from 'components/ui/label';
-import { Loader2, Lock, LogIn, Mail } from 'lucide-react';
-import { useAuth } from 'contexts/auth';
+import { Lock, LogIn, Mail } from 'lucide-react';
 import { cn } from 'utils/cn';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ThirdPatty } from '../ThirdPatty';
-import { AuthApiError } from '@supabase/supabase-js';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export const UserAuthForm = () => {
   const router = useRouter();
-  const { loading, signIn, setLoading } = useAuth();
+  const supabase = createClientComponentClient();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const clearError = () => setError(null);
@@ -32,10 +32,13 @@ export const UserAuthForm = () => {
     } = ev.currentTarget as EventTarget &
       Element & { [key in 'email' | 'password']: { value: string } };
 
-    signIn(email, password)
-      .then(handleSignIn)
+    supabase.auth
+      .signInWithPassword({ email, password })
+      .then((res) => {
+        if (res.error) throw res.error.message;
+        handleSignIn();
+      })
       .catch((err: any) => {
-        console.log(err);
         if (err === 'Invalid login credentials')
           return setError('E-mail ou senha inválidos, verifique-os e tente novamente.');
         toast.error(

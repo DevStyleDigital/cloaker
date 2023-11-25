@@ -1,29 +1,24 @@
-import { cookies } from 'next/headers';
-import { supabase } from 'services/supabase';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith('/dash')) {
-    const cookieStore = cookies();
-    const token = cookieStore.get('__AUTH')?.value;
-    if (!token || token === 'null')
-      return NextResponse.rewrite(new URL('/login', request.url));
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
+  const session = await supabase.auth.getSession();
 
-    const isInvalid = await supabase.auth
-      .getUser(token)
-      .then((res) =>
-        res.error && res.error?.message.includes('token is expired')
-          ? false
-          : !res.error
-          ? false
-          : true,
-      )
-      .catch(() => true);
+  if (
+    req.nextUrl.pathname.startsWith('/dash') &&
+    (session.error || !session.data.session)
+  )
+    return NextResponse.rewrite(new URL('/login', req.url));
 
-    if (isInvalid) {
-      // cookieStore.delete('__AUTH');
-      return NextResponse.rewrite(new URL('/login', request.url));
-    }
-  }
+  if (
+    (req.nextUrl.pathname.startsWith('/login') ||
+      req.nextUrl.pathname.startsWith('/signup')) &&
+    !session.error &&
+    session.data.session
+  )
+    return NextResponse.rewrite(new URL('/dash', req.url));
+
+  return res;
 }

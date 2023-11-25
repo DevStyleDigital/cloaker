@@ -1,6 +1,6 @@
 import { Input } from 'components/ui/input';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Tel = ({
   error,
@@ -13,6 +13,11 @@ export const Tel = ({
 }) => {
   const [telValue, setTelValue] = useState<string>(defaultValue || '');
   const [telInvalid, setInvalidTel] = useState(false);
+
+  useEffect(() => {
+    setTelValue(defaultValue || '');
+  }, [defaultValue]);
+
   return (
     <Input
       placeholder="Telefone"

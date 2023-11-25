@@ -1,15 +1,43 @@
 import { Card } from 'components/card';
-import { campaignsMonthlyDetails } from 'mocks/data-campaigns';
 import { CardCampaign } from './card-campaign';
-import { Plus } from 'lucide-react';
+import { FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { supabase } from 'services/supabase';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 const Campaigns = async () => {
-  const { data: campaigns, error } = await supabase
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+
+  const { data: campaigns } = await supabase
     .from('campaigns')
     .select('id, name, status, cat, requestsAmount, publishLocale');
-    console.log(error)
+
+  const campaignsDetails = [
+    {
+      id: '1',
+      title: 'Total de Campanhas',
+      label: (campaigns?.length || 0).toString(),
+      icon: FolderOpen,
+    },
+    {
+      id: '2',
+      title: 'Campanhas Ativas',
+      label: (
+        campaigns?.filter(({ status }) => status === 'active').length || 0
+      ).toString(),
+      icon: TrendingUp,
+    },
+    {
+      id: '3',
+      title: 'Média Requisições por Campanha',
+      label: (
+        (campaigns?.reduce((acc, { requestsAmount }) => acc + requestsAmount, 0) || 0) /
+        (campaigns?.length || 1)
+      ).toString(),
+      icon: Rocket,
+    },
+  ];
 
   return (
     <div className="px-8 py-10 flex flex-col space-y-8">
@@ -21,7 +49,7 @@ const Campaigns = async () => {
         Criar campanha
       </Link>
       <section className="w-full grid grid-cols-3 gap-2 xl:gap-6">
-        {campaignsMonthlyDetails.map((item, i) => (
+        {campaignsDetails.map((item, i) => (
           <Card key={item.id} index={i} {...item} />
         ))}
       </section>

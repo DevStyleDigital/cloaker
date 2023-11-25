@@ -1,6 +1,5 @@
 'use client';
 import { TabsContent } from 'components/ui/tabs';
-import { useAuth } from 'contexts/auth';
 import { Dialog, DialogContent, DialogTrigger } from 'components/ui/dialog';
 import { CreditCard, Plus } from 'lucide-react';
 import { Input, InputMask } from 'components/ui/input';
@@ -14,7 +13,6 @@ import { Button } from 'components/ui/button';
 import { Table } from './table';
 
 export const Payments = () => {
-  const { user } = useAuth();
   const [cardType, setCardType] = useState<ReturnType<typeof creditCardType>>(undefined);
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {

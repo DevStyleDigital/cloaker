@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { FormUrl } from './form-url';
 import Link from 'next/link';
 import { useCampaignData } from '../campaign-form';
-import { useAuth } from 'contexts/auth';
 import { CampaignData } from 'types/campaign';
 
 export const genNewUrlObject = () => ({
@@ -14,11 +13,13 @@ export const genNewUrlObject = () => ({
 
 export const Step12 = ({
   handleNextStep,
+  isEdit,
+  userId,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
+  isEdit: boolean;
+  userId: string;
 }) => {
-  const { user } = useAuth();
-
   const { id: idDefault, urls: urlsDefault } = useCampaignData();
   const [campaignId] = useState(
     idDefault?.split('.')[1] || Math.random().toString(16).slice(2).slice(0, 6),
@@ -28,7 +29,7 @@ export const Step12 = ({
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
     handleNextStep({
-      id: `${user!.id}.${campaignId}`,
+      id: `${userId}.${campaignId}`,
       urls,
     });
   }
@@ -85,7 +86,7 @@ export const Step12 = ({
       )}
 
       <Button className="w-fit self-end mt-4 !font-normal" size="lg">
-        Criar Campanha <ArrowRight className="w-6 h-6 ml-4" />
+        {isEdit ? 'Editar' : 'Criar'} Campanha <ArrowRight className="w-6 h-6 ml-4" />
       </Button>
     </form>
   );

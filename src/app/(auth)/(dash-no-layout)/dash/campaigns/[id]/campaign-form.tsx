@@ -24,10 +24,11 @@ import {
   TooltipTrigger,
 } from 'components/ui/tooltip';
 import Link from 'next/link';
-import { supabase } from 'services/supabase';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { CampaignData } from 'types/campaign';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useUser } from 'context/user';
 
 const NUMBER_OF_STEP = 12;
 const STEP_FINISH_NUMBER = 13;
@@ -35,15 +36,23 @@ const STEP_FINISH_NUMBER = 13;
 const CampaignDataContext = createContext<CampaignData>({} as CampaignData);
 export const useCampaignData = () => useContext(CampaignDataContext);
 
-export const CampaignForm = () => {
+export const CampaignForm = ({
+  campaignDefault,
+}: {
+  campaignDefault?: CampaignData | null;
+}) => {
+  const supabase = createClientComponentClient();
   const router = useRouter();
+  const { user } = useUser();
 
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [returnTimes, setReturnTimes] = useState(0);
   const [step, setStep] = useState(1);
-  const [stepsOpened, setStepsOpened] = useState(1);
-  const [campaignData, setCampaignData] = useState<CampaignData>({} as CampaignData);
+  const [stepsOpened, setStepsOpened] = useState(NUMBER_OF_STEP);
+  const [campaignData, setCampaignData] = useState<CampaignData>(
+    campaignDefault || ({} as CampaignData),
+  );
 
   async function handleCreateCampaign(data: CampaignData) {
     setLoading(true);
@@ -57,12 +66,21 @@ export const CampaignForm = () => {
         setLoading(false);
         if (res.error) {
           setHasError(true);
-          return toast.error('Ops... Não foi possivel criar sua campanha.');
+          return toast.error(
+            !!campaignDefault
+              ? 'Ops... Não foi possivel atualizar sua campanha.'
+              : 'Ops... Não foi possivel criar sua campanha.',
+          );
         }
 
-        return toast.success('Sua campanha foi criada! E está ativa e pronta para uso!', {
-          pauseOnHover: false,
-        });
+        return toast.success(
+          !!campaignDefault
+            ? 'Sua campanha foi atualizada! E está ativa e pronta para uso!'
+            : 'Sua campanha foi criada! E está ativa e pronta para uso!',
+          {
+            pauseOnHover: false,
+          },
+        );
       });
 
     return;
@@ -160,7 +178,11 @@ export const CampaignForm = () => {
         ) : campaignData.redirectType === 'simple' && step === 10 ? (
           <Step11 handleNextStep={handleNextStep(11)} />
         ) : campaignData.redirectType === 'simple' && step === 11 ? (
-          <Step12 handleNextStep={handleNextStep(STEP_FINISH_NUMBER)} />
+          <Step12
+            userId={user?.id!}
+            isEdit={!!campaignDefault}
+            handleNextStep={handleNextStep(STEP_FINISH_NUMBER)}
+          />
         ) : null}
 
         {campaignData.redirectType === 'complex' && step === 8 ? (
@@ -175,7 +197,11 @@ export const CampaignForm = () => {
         ) : campaignData.redirectType === 'complex' && step === 11 ? (
           <Step11 handleNextStep={handleNextStep(12)} />
         ) : campaignData.redirectType === 'complex' && step === 12 ? (
-          <Step12 handleNextStep={handleNextStep(STEP_FINISH_NUMBER)} />
+          <Step12
+            userId={user?.id!}
+            isEdit={!!campaignDefault}
+            handleNextStep={handleNextStep(STEP_FINISH_NUMBER)}
+          />
         ) : null}
 
         {!loading && step === STEP_FINISH_NUMBER && !hasError ? (

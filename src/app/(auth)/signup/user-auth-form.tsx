@@ -6,18 +6,19 @@ import { useRouter } from 'next/navigation';
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import { Label } from 'components/ui/label';
-import { Loader2, LogIn, Mail, User } from 'lucide-react';
-import { useAuth } from 'contexts/auth';
+import { LogIn, Mail, User } from 'lucide-react';
 import { cn } from 'utils/cn';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ThirdPatty } from '../ThirdPatty';
 import { Password } from '../../../components/password';
 import { Tel } from '../../../components/tel';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export const UserAuthForm = () => {
   const router = useRouter();
-  const { loading, signUp, setLoading } = useAuth();
+  const supabase = createClientComponentClient();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [passwordInvalid, setPasswordInvalid] = useState(false);
 
@@ -38,12 +39,23 @@ export const UserAuthForm = () => {
     } = ev.currentTarget as EventTarget &
       Element & { [key in 'email' | 'password' | 'tel' | 'name']: { value: string } };
 
-    signUp(email, password, { name, tel })
-      .then(handleSignUp)
+    supabase.auth
+      .signUp({ email, password })
+      .then(async (res) => {
+        console.log(res);
+        if (!res.data.user || res.error) throw 'err';
+        const upsertRes = await supabase.from('profiles').upsert({
+          id: res.data.user.id,
+          phone: tel,
+          name,
+        });
+
+        if (upsertRes.error) throw 'err';
+
+        handleSignUp();
+        return res;
+      })
       .catch((err: string) => {
-        // if (err.includes('auth/invalid-login-credentials'))
-        //   return setError('E-mail ou senha inválidos, verifique-os e tente novamente.');
-        setError('');
         toast.error(
           'Ocorreu um erro ao entrar na sua conta, tente novamente mais tarde.',
         );

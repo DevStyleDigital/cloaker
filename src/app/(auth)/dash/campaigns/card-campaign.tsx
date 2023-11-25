@@ -5,6 +5,7 @@ import { TikTok } from 'assets/svgs/logos/tiktok';
 import { Button } from 'components/ui/button';
 import { format } from 'date-fns';
 import { Eye, Pencil, Trash } from 'lucide-react';
+import Link from 'next/link';
 import { Campaign } from 'types/campaign';
 import { cn } from 'utils/cn';
 
@@ -42,7 +43,7 @@ export const CardCampaign = (
 ) => {
   return (
     <div
-      className={cn('w-full flex flex-col gap-6 p-8 bg-accent rounded-md', {
+      className={cn('w-full max-w-lg flex flex-col gap-6 p-8 bg-accent rounded-md', {
         'opacity-50': campaign.status === 'inactive',
       })}
     >
@@ -51,13 +52,12 @@ export const CardCampaign = (
           <Status status={campaign.status} />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost">
-            <Eye />
+          <Button variant="ghost" asChild className="w-fit p-2">
+            <Link href={`/dash/campaigns/${campaign.id}`}>
+              <Pencil />
+            </Link>
           </Button>
-          <Button variant="ghost">
-            <Pencil />
-          </Button>
-          <Button variant="ghost">
+          <Button variant="destructive" className="w-fit p-2">
             <Trash />
           </Button>
         </div>
@@ -81,7 +81,13 @@ export const CardCampaign = (
       </div>
       <div className="flex justify-between items-center">
         <span className="text-sm text-muted-foreground">Total de Requisições:</span>
-        <span className="text-2xl font-semibold">{campaign.requestsAmount}</span>
+        <span className="text-2xl font-semibold">
+          {campaign.requestsAmount === 0 ? (
+            <span className="text-lg">nenhuma ainda</span>
+          ) : (
+            campaign.requestsAmount
+          )}
+        </span>
       </div>
     </div>
   );

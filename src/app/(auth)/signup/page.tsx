@@ -1,7 +1,5 @@
 import { type Metadata } from 'next';
 import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { UserAuthForm } from './user-auth-form';
 
 export const metadata: Metadata = {
@@ -9,10 +7,6 @@ export const metadata: Metadata = {
 };
 
 const Login: BTypes.NPage = () => {
-  const cookieStore = cookies();
-  const token = cookieStore.get('__AUTH')?.value;
-  if (token && token !== 'null' && token.length) return redirect('/dash');
-
   return (
     <main className="flex-1 p-6 flex items-center justify-center">
       <div className="lg:p-8 w-full">

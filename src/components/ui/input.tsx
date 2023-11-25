@@ -41,8 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               },
             )}
             ref={ref}
-            value={value}
-            {...props}
+            {...{ ...props, value }}
           />
         )}
         <Label
