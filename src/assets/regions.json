@@ -17,7 +17,7 @@
   {
     "name": "Caribe",
     "name_int": "Caribbean",
-    "code": "R-CR"
+    "code": "R-CB"
   },
   {
     "name": "Ásia",
@@ -27,7 +27,7 @@
   {
     "name": "Europa",
     "name_int": "Europe",
-    "code": "R-ER"
+    "code": "R-EU"
   },
   {
     "name": "Oriente Médio",
@@ -38,5 +38,10 @@
     "name": "África",
     "name_int": "Africa",
     "code": "R-AF"
+  },
+  {
+    "name": "Oceania",
+    "name_int": "Oceania",
+    "code": "R-OC"
   }
 ]

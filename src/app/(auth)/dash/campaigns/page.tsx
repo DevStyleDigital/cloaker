@@ -1,17 +1,32 @@
 import { Card } from 'components/card';
 import { CardCampaign } from './card-campaign';
-import { FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
+import { Album, FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { Button } from 'components/ui/button';
+import { BlockProvider } from './block-providers';
+
+export const dynamic = 'force-dynamic';
 
 const Campaigns = async () => {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
 
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('block_providers, id')
+    .eq('id', session?.user.id)
+    .single();
+
   const { data: campaigns } = await supabase
     .from('campaigns')
-    .select('id, name, status, cat, requestsAmount, publishLocale');
+    .select('id, name, status, cat, requestsAmount, publishLocale')
+    .eq('user_id', session?.user.id);
 
   const campaignsDetails = [
     {
@@ -41,13 +56,13 @@ const Campaigns = async () => {
 
   return (
     <div className="px-8 py-10 flex flex-col space-y-8">
-      <Link
-        href="/dash/campaigns/create"
-        className="flex w-full items-center justify-end"
-      >
-        <Plus className="w-4 h-4 mr-4" />
-        Criar campanha
-      </Link>
+      <div className="flex items-center justify-end space-x-8">
+        <BlockProvider blockProvidersDefault={data?.block_providers} uid={data?.id} />
+        <Link href="/dash/campaigns/create" className="flex items-center justify-end">
+          <Plus className="w-4 h-4 mr-4" />
+          Criar campanha
+        </Link>
+      </div>
       <section className="w-full grid grid-cols-3 gap-2 xl:gap-6">
         {campaignsDetails.map((item, i) => (
           <Card key={item.id} index={i} {...item} />

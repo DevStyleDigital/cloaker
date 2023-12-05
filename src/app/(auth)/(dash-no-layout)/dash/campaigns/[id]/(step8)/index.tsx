@@ -55,6 +55,7 @@ export const Step8 = ({
               {...item}
               key={item.id}
               redirectType={redirectType}
+              noDelete={redirects.length === 1}
               handleRedirect={(data) => {
                 setRedirects((prev) => {
                   const newArray = [...prev];
@@ -78,7 +79,7 @@ export const Step8 = ({
           Nenhuma regra criada.
         </p>
       )}
-      <Button className="w-fit self-end mt-4 !font-normal" size="lg">
+      <Button type="submit" className="w-fit self-end mt-4 !font-normal" size="lg">
         Avançar <ArrowRight className="w-6 h-6 ml-4" />
       </Button>
     </form>

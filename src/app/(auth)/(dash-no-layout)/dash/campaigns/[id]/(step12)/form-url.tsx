@@ -17,20 +17,22 @@ export const FormUrl = ({
   handleDelete,
   handleUrl,
   campaignId,
+  urlsLength,
   ...url
 }: {
+  urlsLength: number;
   handleUrl: (d: ReturnType<typeof genNewUrlObject>) => void;
   handleDelete: () => void;
   campaignId: string;
 } & ReturnType<typeof genNewUrlObject>) => {
-  const { redirectType } = useCampaignData();
+  const { redirectType, useCustomDomain } = useCampaignData();
 
   return (
     <div className="w-full flex flex-col space-y-4">
       <Dialog>
         <div className="flex w-full gap-4">
           <CodeCopy
-            text={`https://devstyle.com/r?c=${campaignId}-${url.id}`}
+            text={useCustomDomain ? '' : `https://devstyle.com/${campaignId}-${url.id}`}
             language="bash"
             className="[&_span]:!text-ring/80"
             customStyle={{ padding: '1rem' }}
@@ -44,23 +46,25 @@ export const FormUrl = ({
               </Button>
             </DialogTrigger>
           )}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleDelete}
-                  aria-label="Deletar Link"
-                >
-                  <Trash2 className="text-destructive" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Deletar Link</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {(!useCustomDomain && urlsLength > 1) || useCustomDomain ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleDelete}
+                    aria-label="Deletar Link"
+                  >
+                    <Trash2 className="text-destructive" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Deletar Link</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : null}
         </div>
         <DialogContent>
           <ParamForm

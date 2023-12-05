@@ -40,18 +40,18 @@ export const UserAuthForm = () => {
       Element & { [key in 'email' | 'password' | 'tel' | 'name']: { value: string } };
 
     supabase.auth
-      .signUp({ email, password })
+      .signUp({
+        email,
+        password,
+        options: {
+          data: {
+            phone: tel,
+            name,
+          },
+        },
+      })
       .then(async (res) => {
-        console.log(res);
         if (!res.data.user || res.error) throw 'err';
-        const upsertRes = await supabase.from('profiles').upsert({
-          id: res.data.user.id,
-          phone: tel,
-          name,
-        });
-
-        if (upsertRes.error) throw 'err';
-
         handleSignUp();
         return res;
       })

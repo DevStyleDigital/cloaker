@@ -32,7 +32,7 @@ export const Step1 = ({
       <div className="mt-4 w-full">
         <Input placeholder="Nome da Campanha" name="name" defaultValue={name} required />
       </div>
-      <Button className="w-full mt-4 !font-normal" size="lg">
+      <Button type="submit" className="w-full mt-4 !font-normal" size="lg">
         Avançar <ArrowRight className="w-6 h-6 ml-4" />
       </Button>
     </form>

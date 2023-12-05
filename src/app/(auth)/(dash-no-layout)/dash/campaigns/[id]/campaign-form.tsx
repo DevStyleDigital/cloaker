@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Step1 } from './(step1)';
 import { Step2 } from './(step2)';
 import { Step3 } from './(step3)';
@@ -49,23 +49,38 @@ export const CampaignForm = ({
   const [hasError, setHasError] = useState(false);
   const [returnTimes, setReturnTimes] = useState(0);
   const [step, setStep] = useState(1);
-  const [stepsOpened, setStepsOpened] = useState(NUMBER_OF_STEP);
+  const [stepsOpened, setStepsOpened] = useState(campaignDefault ? NUMBER_OF_STEP : 1);
   const [campaignData, setCampaignData] = useState<CampaignData>(
     campaignDefault || ({} as CampaignData),
   );
 
-  async function handleCreateCampaign(data: CampaignData) {
+  async function handleCreateCampaign({ useReadyProvidersList, ...data }: CampaignData) {
     setLoading(true);
     setHasError(false);
     setReturnTimes(returnTimes + 1);
+    const user_id = data.id.split('.')[0];
+    const blockProviders = useReadyProvidersList
+      ? (
+          ((
+            await supabase
+              .from('profiles')
+              .select('block_providers')
+              .eq('id', user_id)
+              .single()
+          ).data?.block_providers as string[]) || []
+        ).concat(data.blockProviders || [])
+      : data.blockProviders || [];
 
     await supabase
       .from('campaigns')
-      .upsert({ ...data, user_id: data.id.split('.')[0] })
+      .upsert({ ...data, blockProviders, user_id })
       .then((res) => {
         setLoading(false);
+
         if (res.error) {
           setHasError(true);
+          setStep(data.redirectType === 'simple' ? 11 : 12);
+          setStepsOpened(data.redirectType === 'simple' ? 11 : 12);
           return toast.error(
             !!campaignDefault
               ? 'Ops... Não foi possivel atualizar sua campanha.'
@@ -82,19 +97,28 @@ export const CampaignForm = ({
           },
         );
       });
-
-    return;
   }
 
   const handleNextStep =
     (nextStep: number) => async (stepData: Partial<CampaignData>) => {
       setCampaignData((prev) => ({ ...prev, ...stepData }));
 
-      if (nextStep === STEP_FINISH_NUMBER)
-        await handleCreateCampaign({ ...campaignData, ...stepData });
+      if (nextStep === 8) {
+        setStepsOpened((prev) =>
+          campaignData.redirectType === 'complex' && stepData.redirectType === 'simple'
+            ? prev - 1
+            : campaignData.redirectType === 'simple' &&
+                stepData.redirectType === 'complex'
+              ? prev + 1
+              : prev,
+        );
+      }
 
       if (nextStep > stepsOpened) setStepsOpened(nextStep);
       setStep(nextStep);
+
+      if (nextStep === STEP_FINISH_NUMBER)
+        await handleCreateCampaign({ ...campaignData, ...stepData });
     };
 
   return (
@@ -122,8 +146,8 @@ export const CampaignForm = ({
                 stepsOpened <= 6
                   ? 6
                   : campaignData.redirectType === 'simple'
-                  ? NUMBER_OF_STEP - 1
-                  : NUMBER_OF_STEP,
+                    ? NUMBER_OF_STEP - 1
+                    : NUMBER_OF_STEP,
             },
             (_, i) => (
               <TooltipProvider key={i}>
@@ -207,9 +231,13 @@ export const CampaignForm = ({
         {!loading && step === STEP_FINISH_NUMBER && !hasError ? (
           <div className="max-w-4xl mx-auto h-screen justify-center flex flex-col items-center gap-4">
             <div>
-              <h1 className="uppercase font-bold text-center">Campanha Criada</h1>
+              <h1 className="uppercase font-bold text-center">
+                {!!campaignDefault ? 'Campanha Atualizada' : 'Campanha Criada'}
+              </h1>
               <p className="italic text-muted-foreground text-center">
-                Sua campanha foi criada! Agora você pode utilizar os links desejados
+                {!!campaignDefault
+                  ? 'Sua campanha foi atualizada! Agora você pode utilizar os links desejados'
+                  : 'Sua campanha foi criada! Agora você pode utilizar os links desejados'}
               </p>
             </div>
             <SuccessVector />
@@ -218,7 +246,10 @@ export const CampaignForm = ({
               type="button"
               className="w-fit mt-4 !font-normal"
               size="lg"
-              onClick={() => router.push('/dash/campaigns')}
+              onClick={() => {
+                router.refresh();
+                router.push('/dash/campaigns');
+              }}
             >
               Finalizar <ArrowRight className="w-6 h-6 ml-4" />
             </Button>

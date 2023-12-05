@@ -23,4 +23,5 @@ export type Campaign = CampaignData & {
   status: string;
   requestsAmount: number;
   cat: string;
+  user_id: string;
 };

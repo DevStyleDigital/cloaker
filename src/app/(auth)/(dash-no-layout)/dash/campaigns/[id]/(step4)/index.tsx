@@ -84,7 +84,7 @@ export const Step4 = ({
                   setBlockProviders((prev) =>
                     prev.includes(ispRef.current!.value)
                       ? prev
-                      : [ispRef.current!.value, ...prev],
+                      : [ispRef.current!.value.toUpperCase(), ...prev],
                   );
                   ispRef.current.value = '';
                 }}
@@ -119,7 +119,7 @@ export const Step4 = ({
           </DialogContent>
         </Dialog>
       </div>
-      <Button className="w-full mt-4 !font-normal" size="lg">
+      <Button type="submit" className="w-full mt-4 !font-normal" size="lg">
         Avançar <ArrowRight className="w-6 h-6 ml-4" />
       </Button>
     </form>

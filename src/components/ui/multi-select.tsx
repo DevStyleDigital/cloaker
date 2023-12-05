@@ -150,7 +150,7 @@ export const MultiSelect = ({
                               setInputValue('');
                               setSelected((prev) => [...prev, option.value]);
                             }}
-                            className="cursor-pointer aria-selected:bg-transparent hover:!bg-accent pl-6"
+                            className="cursor-pointer aria-selected:bg-transparent hover:!bg-accent pl-6 focus:!bg-accent"
                           >
                             {option.label}
                           </CommandItem>

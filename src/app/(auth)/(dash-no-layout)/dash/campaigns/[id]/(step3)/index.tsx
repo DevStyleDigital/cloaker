@@ -47,7 +47,7 @@ export const Step3 = ({
           defaultChecked={noExt}
         />
       </div>
-      <Button className="w-full mt-4 !font-normal" size="lg">
+      <Button type="submit" className="w-full mt-4 !font-normal" size="lg">
         Avançar <ArrowRight className="w-6 h-6 ml-4" />
       </Button>
     </form>

@@ -22,7 +22,7 @@ export const RuleFormWithTrigger = ({
     <Dialog>
       <DialogTrigger asChild>
         <div className="bg-ring text-background w-fit px-8 py-2 rounded-full flex items-center">
-          Regra {index} <Pen className="pointer-events-none w-4 h-4 ml-4" />
+          Regra {index + 1} <Pen className="pointer-events-none w-4 h-4 ml-4" />
           <button type="button" onClick={deleteRule}>
             <Trash className="w-4 h-4 ml-4" />
           </button>
@@ -58,7 +58,7 @@ export const RuleForm = ({
       <MultiSelect
         onValueChange={setParamsSelected}
         defaultValues={paramsSelected}
-        options={params.map((param) => ({ value: param, label: param }))}
+        options={[params.map((param) => ({ value: param, label: param }))]}
         placeholder="Pesquise pelos Parâmetros"
       />
       <div className="flex flex-col text-center">
@@ -75,6 +75,7 @@ export const RuleForm = ({
               <Input
                 placeholder="Adicione sua regra aqui"
                 className="w-full"
+                defaultValue={paramsValues[param]}
                 onChange={({ target: { value } }) => {
                   setParamsValues((prev) => {
                     prev[param] = value;
@@ -96,7 +97,7 @@ export const RuleForm = ({
           type="button"
           className="w-full"
           onClick={() => {
-            onSubmit(paramsValues);
+            if (Object.keys(paramsValues).length) onSubmit(paramsValues);
           }}
         >
           Salvar

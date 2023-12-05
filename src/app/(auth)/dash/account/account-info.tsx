@@ -98,6 +98,7 @@ export const AccountInfo = () => {
         }
         toast.success('Senha alterada com sucesso!');
         supabase.auth.signOut();
+        router.refresh();
         router.push('/login');
       });
     setLoading(false);

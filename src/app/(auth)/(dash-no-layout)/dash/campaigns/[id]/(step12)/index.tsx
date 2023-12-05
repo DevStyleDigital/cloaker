@@ -20,7 +20,7 @@ export const Step12 = ({
   isEdit: boolean;
   userId: string;
 }) => {
-  const { id: idDefault, urls: urlsDefault } = useCampaignData();
+  const { id: idDefault, urls: urlsDefault, useCustomDomain } = useCampaignData();
   const [campaignId] = useState(
     idDefault?.split('.')[1] || Math.random().toString(16).slice(2).slice(0, 6),
   );
@@ -44,7 +44,11 @@ export const Step12 = ({
         <p className="italic text-muted-foreground text-center">
           Gerencie as urls da campanha baseado nas regras criadas.
           <br />
-          Você também pode utilizar uma url longa. <Link href="/">Saiba mais</Link>
+          {useCustomDomain && (
+            <>
+              Você também pode utilizar uma url longa. <Link href="/">Saiba mais</Link>
+            </>
+          )}
         </p>
       </div>
       <Button
@@ -59,6 +63,7 @@ export const Step12 = ({
           {urls.map((item, index) => (
             <FormUrl
               {...item}
+              urlsLength={urls.length}
               key={item.id}
               campaignId={campaignId}
               handleUrl={(data) => {
@@ -85,7 +90,7 @@ export const Step12 = ({
         </p>
       )}
 
-      <Button className="w-fit self-end mt-4 !font-normal" size="lg">
+      <Button type="submit" className="w-fit self-end mt-4 !font-normal" size="lg">
         {isEdit ? 'Editar' : 'Criar'} Campanha <ArrowRight className="w-6 h-6 ml-4" />
       </Button>
     </form>

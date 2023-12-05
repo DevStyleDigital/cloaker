@@ -20,11 +20,13 @@ export const FormRedirect = ({
   handleDelete,
   redirectType,
   handleRedirect,
+  noDelete,
   ...redirect
 }: {
   handleDelete: () => void;
   handleRedirect: (d: ReturnType<typeof genNewRedirectRule>) => void;
   redirectType: string;
+  noDelete: boolean;
 } & ReturnType<typeof genNewRedirectRule>) => {
   const { noExt, devices } = useCampaignData();
 
@@ -44,7 +46,7 @@ export const FormRedirect = ({
       rules,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locales, devicesSelected, redirectUrl]);
+  }, [locales, devicesSelected, redirectUrl, rules]);
 
   return (
     <div className="w-full flex flex-col border rounded-lg shadow p-2 space-y-8 h-fit">
@@ -58,23 +60,25 @@ export const FormRedirect = ({
           defaultValue={redirectUrl}
           onChange={({ target: { value } }) => setRedirectUrl(value)}
         />
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleDelete}
-                aria-label="Deletar redirecionamento"
-              >
-                <Trash2 className="text-destructive" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Deletar redirecionamento</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {!noDelete && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleDelete}
+                  aria-label="Deletar redirecionamento"
+                >
+                  <Trash2 className="text-destructive" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Deletar redirecionamento</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
       <div className="h-fit flex flex-col">
         <MultiSelect
@@ -87,7 +91,7 @@ export const FormRedirect = ({
           ]}
           required
           className="w-full"
-          defaultValues={locales}
+          defaultValues={!noExt ? locales : undefined}
           placeholder="Todos de localidade"
           disabled={noExt}
         />
@@ -104,13 +108,13 @@ export const FormRedirect = ({
           ]}
           required
           className="w-full"
-          defaultValues={devicesSelected}
+          defaultValues={devicesSelected.filter((value) => devices.includes(value))}
           placeholder="E dispositivos"
         />
       </div>
       {redirectType === 'complex' && (
         <div>
-          <ul className="mb-4 flex flex-wrap">
+          <ul className="mb-4 flex flex-wrap gap-4">
             <Dialog>
               <DialogTrigger asChild>
                 <Button type="button">
