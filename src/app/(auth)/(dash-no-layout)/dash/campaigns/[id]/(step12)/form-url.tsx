@@ -32,7 +32,11 @@ export const FormUrl = ({
       <Dialog>
         <div className="flex w-full gap-4">
           <CodeCopy
-            text={useCustomDomain ? '' : `https://devstyle.com/${campaignId}-${url.id}`}
+            text={
+              useCustomDomain
+                ? ''
+                : `${process.env.NEXT_PUBLIC_ORIGIN}/${campaignId}-${url.id}`
+            }
             language="bash"
             className="[&_span]:!text-ring/80"
             customStyle={{ padding: '1rem' }}

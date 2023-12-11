@@ -92,11 +92,14 @@ export const Step11 = ({
     >
       <h1 className="uppercase font-bold">Domínio customizado?</h1>
       <p className="italic text-muted-foreground text-center">
-        Selecione seu domínio próprio ou utilize nosso domínio {'"devstyle.com"'}
+        Selecione seu domínio próprio ou utilize nosso domínio{' '}
+        {`"${process.env.NEXT_PUBLIC_ORIGIN}"`}
       </p>
 
       <div className="mt-4 w-fit flex self-center space-x-4 mb-8">
-        <span className="italic text-muted-foreground text-center">devstyle.com</span>
+        <span className="italic text-muted-foreground text-center">
+          {process.env.NEXT_PUBLIC_ORIGIN}
+        </span>
         <Switch checked={useCustomDomain} onCheckedChange={setUseCustomDomain} />
         <span className="italic text-muted-foreground text-center">Domínio prórpio</span>
       </div>

@@ -65,7 +65,8 @@ export async function GET(
       ip: geoIp,
       device,
       user_id: campaign.user_id,
-      origin: request.nextUrl.searchParams.get('origin') || 'https://devstyle.com',
+      origin:
+        request.nextUrl.searchParams.get('origin') || process.env.NEXT_PUBLIC_ORIGIN,
     });
   }
 
