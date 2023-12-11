@@ -1,8 +1,6 @@
-const x = Math.random().toFixed(8).slice(2).slice(0, 7);
 async function redirect() {
   const params = new URLSearchParams(window.location.search);
-  const connection = params.get('connect');
-
+  const connection = params.get('connect'); // CHANGE connect TO A GOOD NAME
   if (connection) {
     await fetch(`http://localhost:3000/connect?connect=${connection}`, {
       method: 'POST',
@@ -20,4 +18,4 @@ async function redirect() {
   )}`;
 }
 
-redirect();
+redirect(); // CHANGE redirect TO A GOOD NAME

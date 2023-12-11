@@ -10,6 +10,7 @@ import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
 import { toast } from 'react-toastify';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { v4 as uuid } from 'uuid';
 
 export const Step11 = ({
   handleNextStep,
@@ -25,6 +26,7 @@ export const Step11 = ({
   const [isLoading, setIsLoading] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>();
   const [success, setSuccess] = useState<boolean | undefined>();
+  const [token] = useState(uuid());
 
   useEffect(() => {
     const connections = supabase
@@ -35,7 +37,7 @@ export const Step11 = ({
           event: 'UPDATE',
           schema: 'public',
           table: 'connections',
-          filter: 'id=eq.TOKEN_HERE',
+          filter: `id=eq.${token}`,
         },
         (payload) => {
           clearTimeout(timeoutId);
@@ -68,10 +70,10 @@ export const Step11 = ({
     setIsLoading(true);
 
     await supabase.from('connections').insert({
-      id: 'TOKEN_HERE',
+      id: token,
       ready: false,
     });
-    (() => window.open(`${url}?connect=TOKEN_HERE`, '_blank'))();
+    (() => window.open(`${url}?connect=${token}`, '_blank'))(); // CHANGE CONNECT TO A GOOD NAME
     setTimeoutId(
       setTimeout(() => {
         setIsLoading(false);
@@ -141,7 +143,7 @@ export const Step11 = ({
                 seguinte código:
               </p>
               <CodeCopy
-                text='<script src="https://website.com/cdn.js"></script>'
+                text={`<script src="${process.env.NEXT_PUBLIC_ORIGIN}/cdn/r.min.js"></script>`}
                 language="jsx"
                 customStyle={{ padding: '1rem' }}
               />
@@ -155,7 +157,7 @@ export const Step11 = ({
                   '// r.html',
                   '<head>',
                   '     ...',
-                  '     <script src="https://website.com/cdn.js"></script>',
+                  `     <script src="${process.env.NEXT_PUBLIC_ORIGIN}/cdn/r.min.js"></script>`,
                   '</head>',
                 ].join('\n')}
                 language="jsx"
