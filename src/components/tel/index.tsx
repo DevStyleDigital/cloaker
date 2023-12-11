@@ -1,6 +1,7 @@
 import { Input } from 'components/ui/input';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 import { useEffect, useState } from 'react';
+import { cn } from 'utils/cn';
 
 export const Tel = ({
   error,
@@ -31,7 +32,10 @@ export const Tel = ({
           name="tel"
           required
           defaultCountry="BR"
-          className="peer w-full [&_fieldset]:input-border [&_.Mui-focused_fieldset]:!ring-4 [&_.Mui-focused_fieldset]:!ring-ring/20 [&_.Mui-focused_fieldset]:!border [&_.Mui-focused_fieldset]:!border-ring"
+          className={cn(
+            'peer w-full [&_fieldset]:input-border [&_.Mui-focused_fieldset]:!ring-4 [&_.Mui-focused_fieldset]:!ring-ring/20 [&_.Mui-focused_fieldset]:!border [&_.Mui-focused_fieldset]:!border-ring',
+            { 'opacity-60': loading },
+          )}
           error={!!error || telInvalid}
           disabled={loading}
         />

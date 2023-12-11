@@ -27,89 +27,30 @@ import Image from 'next/image';
 import { flagApi } from 'utils/flag-api';
 import { Eye } from 'lucide-react';
 
-const data = [
-  {
-    id: '1',
-    created_at: '1 dia',
-    status: true,
-    campanha: 'Nome Campanha 1',
-    pagina_destino: 'https://pagina.com.br',
-    ip: '111.111.1.1',
-    dispositivo: 'smartphone',
-    pais: 'BR',
-    dominio: 'pagina.com.br',
-    provedor: 'Provedor',
-    sistema: 'iOS',
-  },
-  {
-    id: '2',
-    created_at: '1 dia',
-    status: true,
-    campanha: 'Nome Campanha 2',
-    pagina_destino: 'https://pagina.com.br',
-    ip: '111.111.1.1',
-    dispositivo: 'smartphone',
-    pais: 'BR',
-    dominio: 'pagina.com.br',
-    provedor: 'Provedor',
-    sistema: 'iOS',
-  },
-  {
-    id: '3',
-    created_at: '1 dia',
-    status: true,
-    campanha: 'Nome Campanha 3',
-    pagina_destino: 'https://pagina.com.br',
-    ip: '111.111.1.1',
-    dispositivo: 'smartphone',
-    pais: 'BR',
-    dominio: 'pagina.com.br',
-    provedor: 'Provedor',
-    sistema: 'iOS',
-  },
-  {
-    id: '4',
-    created_at: '1 dia',
-    status: false,
-    campanha: 'Nome Campanha 4',
-    pagina_destino: 'https://pagina.com.br',
-    ip: '111.111.1.1',
-    dispositivo: 'smartphone',
-    pais: 'BR',
-    dominio: 'pagina.com.br',
-    provedor: 'Provedor',
-    sistema: 'iOS',
-  },
-  {
-    id: '5',
-    created_at: '1 dia',
-    status: false,
-    campanha: 'Nome Campanha 5',
-    pagina_destino: 'https://pagina.com.br',
-    ip: '111.111.1.1',
-    dispositivo: 'smartphone',
-    pais: 'BR',
-    dominio: 'pagina.com.br',
-    provedor: 'Provedor',
-    sistema: 'iOS',
-  },
-];
-
-export type Payment = {
-  id: string;
+type CampaignRequest = {
+  campaign_name: string;
+  campaing: string;
   created_at: string;
+  device: string;
+  id: string;
+  ip: { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
+  origin: string;
+  redirect: string;
   status: boolean;
-  campanha: string;
-  pagina_destino: string;
-  ip: string;
-  dispositivo: string;
-  pais: string;
-  dominio: string;
-  provedor: string;
-  sistema: string;
+  system: string;
+  ua: string;
+  user_id: string;
 };
+// O tipo da CampaignRequest mudou falta atualizar o columns
+// {
+//   country_code: 'BR';
+//   isp: 'ISPX Solucoes em Telecomunicacoes SPE Ltda';
+//   org: 'B. D. MATOS & CIA LTDA - SINET INTERNET';
+//   as: 'AS53115 ISPX Solucoes em Telecomunicacoes SPE Ltda';
+//   IPv4: 'xxx.xxx.xxx.xx';
+// };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<CampaignRequest>[] = [
   {
     accessorKey: 'created_at',
     header: 'Criado à',
@@ -164,7 +105,7 @@ export const columns: ColumnDef<Payment>[] = [
       return (
         <div className="flex flex-col">
           {row.getValue('ip')}
-          <span className="text-xs text-black/40">{row.original.provedor}</span>
+          {/* <span className="text-xs text-black/40">{row.original.provedor}</span> */}
         </div>
       );
     },
@@ -176,7 +117,7 @@ export const columns: ColumnDef<Payment>[] = [
       return (
         <div className="flex flex-col">
           {row.getValue('dispositivo')}
-          <span className="text-xs text-black/40">{row.original.sistema}</span>
+          {/* <span className="text-xs text-black/40">{row.original.sistema}</span> */}
         </div>
       );
     },
@@ -207,7 +148,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export const DataTableDemo = () => {
+export const DataTableDemo = ({ data }: { data: CampaignRequest[] }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

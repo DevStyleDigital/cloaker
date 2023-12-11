@@ -7,8 +7,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from 'components/ui/accordion';
+import { cookies } from 'next/headers';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 
-const Requests = () => {
+const Requests = async () => {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const { data } = await supabase
+    .from('requests')
+    .select('*')
+    .eq('user_id', session?.user.id);
+
+  //implementar filtragem de paginação
+  //implementar filtragem de pelos filtros da página (ele deve ter paginação também)
+  // pode mudar a estrutura
+
   return (
     <section className="w-full flex flex-col gap-2 p-8 max-sm:p-4">
       <div className="w-full flex h-fit items-end flex-col bg-accent rounded-md">
@@ -23,7 +40,7 @@ const Requests = () => {
           </AccordionItem>
         </Accordion>
       </div>
-      <DataTableDemo />
+      <DataTableDemo data={data || []} />
     </section>
   );
 };

@@ -10,6 +10,7 @@ type UserContextType = {
     avatar_url: string | undefined;
     phone: string;
     email: string;
+    block_providers: string[];
   } | null;
   setUser: React.Dispatch<React.SetStateAction<UserContextType['user']>>;
   signOut: () => void;
@@ -47,6 +48,7 @@ export const UserProvider = ({ children }: BTypes.FCChildren) => {
         avatar_url: url,
         phone: data.phone,
         email: session?.user.email!,
+        blockProviders: data.block_providers,
       });
     });
 

@@ -48,6 +48,7 @@ export const ParamForm = ({
               <Input
                 placeholder="Valor"
                 className="w-full"
+                defaultValue={paramsValues[param]}
                 onChange={({ target: { value } }) =>
                   setParamsValues((prev) => ({ ...prev, [param]: value }))
                 }

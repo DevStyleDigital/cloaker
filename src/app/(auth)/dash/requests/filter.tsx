@@ -2,13 +2,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import { Filter } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from 'components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from 'components/ui/select';
 import { DateRangePicker } from 'components/ui/date-range-picker';
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';

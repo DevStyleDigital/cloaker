@@ -39,9 +39,9 @@ export const Step6 = ({
           onChangeValue={setSystems}
           className="w-full flex gap-4"
         >
-          <CardSelectItem value="ios">
+          <CardSelectItem value="apple-os">
             <Apple />
-            <span className="bold">IOS</span>
+            <span className="bold">iOS & macOS</span>
           </CardSelectItem>
           <CardSelectItem value="android">
             <Bot />

@@ -50,9 +50,10 @@ export const AccountInfo = () => {
     if (path === 'error') {
       setLoading(false);
       toast.error('Ocorreu um erro ao atualizar seu perfil. Tente novamente mais tarde');
+      return;
     }
 
-    supabase
+    await supabase
       .from('profiles')
       .upsert({
         id: user?.id,

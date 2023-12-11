@@ -60,15 +60,7 @@ export const CampaignForm = ({
     setReturnTimes(returnTimes + 1);
     const user_id = data.id.split('.')[0];
     const blockProviders = useReadyProvidersList
-      ? (
-          ((
-            await supabase
-              .from('profiles')
-              .select('block_providers')
-              .eq('id', user_id)
-              .single()
-          ).data?.block_providers as string[]) || []
-        ).concat(data.blockProviders || [])
+      ? ((user?.block_providers as string[]) || []).concat(data.blockProviders || [])
       : data.blockProviders || [];
 
     await supabase

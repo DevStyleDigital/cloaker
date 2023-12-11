@@ -1,21 +1,84 @@
 import { Button } from 'components/ui/button';
 import { Switch } from 'components/ui/switch';
 import { ArrowRight, CloudCog, Globe, Link2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CardButton } from '../card-button';
 import { Dialog, DialogContent, DialogTrigger } from 'components/ui/dialog';
 import { Input } from 'components/ui/input';
 import { Code, CodeCopy } from 'components/code';
 import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
+import { toast } from 'react-toastify';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export const Step11 = ({
   handleNextStep,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
 }) => {
+  const supabase = createClientComponentClient();
   const { useCustomDomain: useCustomDomainDefault } = useCampaignData();
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
+  const urlRef = useRef<HTMLInputElement>(null);
+  const [url, setUrl] = useState('');
+  const [urlError, setUrlError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>();
+  const [success, setSuccess] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    const connections = supabase
+      .channel('public:connections')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'connections',
+          filter: 'id=eq.TOKEN_HERE',
+        },
+        (payload) => {
+          clearTimeout(timeoutId);
+          setIsLoading(false);
+          setSuccess((payload.new as any).ready);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(connections);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function testDomain() {
+    if (!url.length) {
+      setUrlError(true);
+      toast.warn('Input obrigatório');
+      return urlRef.current?.focus();
+    }
+
+    if (
+      !/^(((http|https):\/\/)?(www.)?)\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/gm.test(url)
+    ) {
+      setUrlError(true);
+      toast.warn('Insira uma URL válida');
+      return urlRef.current?.focus();
+    }
+    setIsLoading(true);
+
+    await supabase.from('connections').insert({
+      id: 'TOKEN_HERE',
+      ready: false,
+    });
+    (() => window.open(`${url}?connect=TOKEN_HERE`, '_blank'))();
+    setTimeoutId(
+      setTimeout(() => {
+        setIsLoading(false);
+        setSuccess(false);
+      }, 15 * 1000),
+    );
+  }
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -57,9 +120,16 @@ export const Step11 = ({
             <Input
               placeholder="URL"
               type="url"
+              ref={urlRef}
               className="w-full"
               icons={[Link2]}
+              value={url}
+              onChange={({ target }) => {
+                setUrlError(false);
+                setUrl(target.value);
+              }}
               help='Exemplo: "https://meudominio.com/r"'
+              error={urlError}
             />
 
             <div className="mt-10">
@@ -68,7 +138,7 @@ export const Step11 = ({
                 seguinte código:
               </p>
               <CodeCopy
-                text='<script src="https://website.com/cdn.js" data-key="CHAVE-KEY"></script>'
+                text='<script src="https://website.com/cdn.js"></script>'
                 language="jsx"
                 customStyle={{ padding: '1rem' }}
               />
@@ -82,7 +152,7 @@ export const Step11 = ({
                   '// r.html',
                   '<head>',
                   '     ...',
-                  '     <script src="https://website.com/cdn.js" data-key="CHAVE-KEY"></script>',
+                  '     <script src="https://website.com/cdn.js"></script>',
                   '</head>',
                 ].join('\n')}
                 language="jsx"
@@ -90,24 +160,35 @@ export const Step11 = ({
               <p className="text-muted-foreground mt-4 mb-2">
                 Agora vamos testar para ter certeza de que tudo está funcionando.
               </p>
-              <Button type="button">
+              <Button
+                type="button"
+                onClick={testDomain}
+                loading={isLoading}
+                disabled={success}
+              >
                 Testar <CloudCog className="w-4 h-4 ml-4" />
               </Button>
 
               <div className="flex flex-col text-center w-full bg-accent rounded-lg p-4 mt-4">
                 <span role="status" className="text-sm italic text-muted-foreground">
-                  Aguardando...
+                  Aguardando início do teste...
                 </span>
-                <span role="status" className="text-sm italic text-yellow-500">
-                  Conectando ao seu domínio...
-                </span>
-                <span role="status" className="text-sm italic text-green-500">
-                  Domínio funcionando e pronto para ser utilizado.
-                </span>
-                <span role="status" className="text-sm italic text-destructive">
-                  Ocorreu um erro ao vincular com seu domínio, verifique se o código está
-                  no lugar correto.
-                </span>
+                {isLoading && (
+                  <span role="status" className="text-sm italic text-yellow-500">
+                    Conectando ao seu domínio...
+                  </span>
+                )}
+                {success && (
+                  <span role="status" className="text-sm italic text-green-500">
+                    Domínio funcionando e pronto para ser utilizado.
+                  </span>
+                )}
+                {!success && success !== undefined && (
+                  <span role="status" className="text-sm italic text-destructive">
+                    Ocorreu um erro ao vincular com seu domínio, verifique se o código
+                    está no lugar correto.
+                  </span>
+                )}
               </div>
             </div>
 
