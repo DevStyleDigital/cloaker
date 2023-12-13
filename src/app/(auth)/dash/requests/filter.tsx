@@ -1,16 +1,39 @@
 'use client';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 import { Filter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger } from 'components/ui/select';
 import { DateRangePicker } from 'components/ui/date-range-picker';
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';
+import { Filters } from './page';
+import { MultiSelect } from 'components/ui/multi-select';
+import regions from 'assets/regions.json';
+import countries from 'assets/countries.json';
 
-const FiltersReq = () => {
+const FiltersReq = ({
+  onFiltersChange,
+}: {
+  onFiltersChange: (filters: Filters) => void;
+}) => {
+  const [locales, setLocales] = useState<string[]>([]);
+  const [devicesSelected, setDevicesSelected] = useState<string[]>([]);
+
   const onSubmit = (event: any) => {
     event.preventDefault();
-    console.log(event.currentTarget.dispositivo.value);
+    const { campaign, status, device, country, domain, isp } = event.currentTarget as {
+      [k: string]: HTMLInputElement;
+    };
+    const newFilters = {
+      campaign: campaign.value || '',
+      status: status.value || '',
+      devices: devicesSelected,
+      countries: locales,
+      domain: domain.value || '',
+      isp: isp.value || '',
+    };
+
+    onFiltersChange(newFilters);
   };
 
   return (
@@ -39,6 +62,7 @@ const FiltersReq = () => {
             <SelectContent>
               <SelectItem value="success">Sucesso</SelectItem>
               <SelectItem value="bloq">Bloqueado</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
             </SelectContent>
           </Select>
           <DateRangePicker
@@ -52,37 +76,41 @@ const FiltersReq = () => {
         </div>
 
         <div className="flex gap-4">
-          <Select>
-            <SelectTrigger
-              className="w-full"
-              placeholder="Dispositivo"
-              labelClassName="!bg-accent"
-            />
-            <SelectContent>
-              <SelectItem value="smartphone">Smartphone</SelectItem>
-              <SelectItem value="computer">Computador</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger
-              className="w-full"
-              placeholder="País"
-              labelClassName="!bg-accent"
-            />
-            <SelectContent />
-          </Select>
+          <MultiSelect
+            onValueChange={setLocales}
+            options={[
+              'Regiões',
+              regions.map(({ code, name }) => ({ label: name, value: code })),
+              'Países',
+              countries.map(({ code, name }) => ({ label: name, value: code })),
+            ]}
+            className="w-full"
+            placeholder="Todos de localidade"
+          />
+
+          <MultiSelect
+            onValueChange={setDevicesSelected}
+            options={[
+              [
+                { value: 'phone', label: 'Celular' },
+                { value: 'computer', label: 'Computador' },
+                { value: 'tablet', label: 'Tablet' },
+                { value: 'other', label: 'Outro' },
+              ],
+            ]}
+            className="w-full"
+            placeholder="E dispositivos"
+          />
           <Input
             placeholder="Domínio"
             className="w-full"
             name="domain"
-            required
             labelClassName="!bg-accent"
           />
           <Input
             placeholder="ISP"
             name="isp"
             className="w-full"
-            required
             labelClassName="!bg-accent"
           />
         </div>

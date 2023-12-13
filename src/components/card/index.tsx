@@ -5,7 +5,7 @@ export const Card = (card: {
   id: string;
   title: string;
   label: string;
-  progress_percent?: number;
+  progress_percent?: string;
   index: number;
   icon?: React.FC<{ className?: string }>;
 }) => {
@@ -21,15 +21,12 @@ export const Card = (card: {
         {card.icon && <card.icon className="w-6 h-6" />}
       </div>
       <div className="flex items-center justify-between">
-        <p className="text-4xl font-bold">{card.label}</p>{' '}
+        <p className="text-4xl font-bold">{card.label.replace('+', '')}</p>{' '}
         <div className="flex items-center gap-2">
-          {card.progress_percent ? (
+          {card.progress_percent && card.progress_percent !== '+0' ? (
             <>
-              <span className="text-sm">
-                {card.progress_percent > 0 && '+'}
-                {card.progress_percent}
-              </span>
-              {card.progress_percent > 0 ? (
+              <span className="text-sm">{card.progress_percent}%</span>
+              {card.progress_percent.includes('+') ? (
                 <TrendingUp className="w-4 h-4" />
               ) : (
                 <TrendingDown className="w-4 h-4" />

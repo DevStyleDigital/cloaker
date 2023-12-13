@@ -28,7 +28,7 @@ export const Header = () => {
       </div>
 
       <div className="flex gap-4">
-        <InputSearch />
+        {/* <InputSearch /> */}
         <Button variant="ghost" onClick={router.refresh} className="p-0 px-2">
           <RefreshCw className="w-6 h-6" />
         </Button>

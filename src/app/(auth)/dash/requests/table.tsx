@@ -26,34 +26,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { flagApi } from 'utils/flag-api';
 import { Eye } from 'lucide-react';
-
-type CampaignRequest = {
-  campaign_name: string;
-  campaing: string;
-  created_at: string;
-  device: string;
-  id: string;
-  ip: { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
-  origin: string;
-  redirect: string;
-  status: boolean;
-  system: string;
-  ua: string;
-  user_id: string;
-};
-// O tipo da CampaignRequest mudou falta atualizar o columns
-// {
-//   country_code: 'BR';
-//   isp: 'ISPX Solucoes em Telecomunicacoes SPE Ltda';
-//   org: 'B. D. MATOS & CIA LTDA - SINET INTERNET';
-//   as: 'AS53115 ISPX Solucoes em Telecomunicacoes SPE Ltda';
-//   IPv4: 'xxx.xxx.xxx.xx';
-// };
+import { format } from 'date-fns';
+import { CampaignRequest } from 'types/campaign';
 
 export const columns: ColumnDef<CampaignRequest>[] = [
   {
     accessorKey: 'created_at',
     header: 'Criado à',
+    cell: ({ row }) => (
+      <span>{format(new Date(row.original.created_at), 'dd/MM/yyyy - HH:mm:ss')}</span>
+    ),
   },
   {
     accessorKey: 'status',
@@ -81,21 +63,21 @@ export const columns: ColumnDef<CampaignRequest>[] = [
     },
   },
   {
-    accessorKey: 'campanha',
+    accessorKey: 'campaign_name',
     header: 'Campanha',
     cell: ({ row }) => {
       return (
         <Link
-          href={`/home/campanhas/${row.original.id}`}
+          href={`/home/campanhas/${row.original.campaign}`}
           className="text-blue-400 underline decoration-solid"
         >
-          {row.getValue('campanha')}
+          {row.original.campaign_name}
         </Link>
       );
     },
   },
   {
-    accessorKey: 'pagina_destino',
+    accessorKey: 'redirect',
     header: 'Página Destino',
   },
   {
@@ -104,32 +86,34 @@ export const columns: ColumnDef<CampaignRequest>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
-          {row.getValue('ip')}
-          {/* <span className="text-xs text-black/40">{row.original.provedor}</span> */}
+          {row.original.ip.IPv4}
+          <span className="text-xs text-black/40 truncate max-w-[8rem]">
+            {row.original.ip.org}
+          </span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'dispositivo',
+    accessorKey: 'device',
     header: 'Dispositivo',
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
-          {row.getValue('dispositivo')}
-          {/* <span className="text-xs text-black/40">{row.original.sistema}</span> */}
+          {row.original.device}
+          <span className="text-xs text-black/40">{row.original.system}</span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'pais',
+    accessorKey: 'country',
     header: 'País',
     cell: ({ row }) => {
       return (
         <Image
           loader={flagApi}
-          src={row.getValue('pais')}
+          src={row.original.ip.country_code}
           width={32}
           height={32}
           alt="flag"
@@ -138,7 +122,7 @@ export const columns: ColumnDef<CampaignRequest>[] = [
     },
   },
   {
-    accessorKey: 'dominio',
+    accessorKey: 'origin',
     header: 'Domínio',
   },
   {
@@ -148,7 +132,17 @@ export const columns: ColumnDef<CampaignRequest>[] = [
   },
 ];
 
-export const DataTableDemo = ({ data }: { data: CampaignRequest[] }) => {
+export const DataTableDemo = ({
+  data,
+  page,
+  fetchData,
+  disableNext,
+}: {
+  data: CampaignRequest[];
+  page: number;
+  fetchData: (p: number) => Promise<void>;
+  disableNext: boolean;
+}) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -221,15 +215,18 @@ export const DataTableDemo = ({ data }: { data: CampaignRequest[] }) => {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Anterior
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => {
+              fetchData(page + 1);
+              table.nextPage();
+            }}
+            disabled={disableNext}
           >
-            Next
+            Próximo
           </Button>
         </div>
       </div>

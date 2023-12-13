@@ -1,27 +1,41 @@
 'use client';
-import { monthlyTraffic } from 'mocks/data-home';
-import clsx from 'clsx';
 
-export const TrafficGraphic = () => {
+const MAP = {
+  tiktok: 'TikTok',
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  google: 'Google',
+} as Record<string, string>;
+
+export const TrafficGraphic = ({
+  data,
+}: {
+  data: Record<string, { amount: number; percent: number }>;
+}) => {
   return (
     <div className="w-full h-full flex flex-col gap-6 p-7 bg-accent rounded-xl">
       <h1 className="font-bold text-lg">Trafico por site</h1>
-      {monthlyTraffic.map((item, index) => {
+      {!Object.entries(data).length && (
+        <span className="text-muted-foreground italic my-auto text-center">
+          Aguardando dados...
+        </span>
+      )}
+      {Object.entries(data).map((item, index) => {
         return (
           <div
             key={index}
-            className="group flex justify-between items-center cursor-default"
+            className="group flex justify-between items-center space-x-8 cursor-default"
           >
             <div className="w-full flex gap-4 items-center">
               <span
-                style={{ width: `${item.percentage}%` }}
+                style={{ width: `${item[1].percent}%` }}
                 className="h-2 rounded-full bg-muted-foreground/20 transition-all duration-300 group-hover:bg-primary"
               />
               <span className="font-medium transition-all text-muted-foreground group-hover:text-ring">
-                {item.percentage}%
+                {item[1].percent}%
               </span>
             </div>
-            <span>{item.label}</span>
+            <span>{MAP[item[0]]}</span>
           </div>
         );
       })}

@@ -18,7 +18,7 @@ export const Step11 = ({
   handleNextStep: (d: Partial<CampaignData>) => void;
 }) => {
   const supabase = createClientComponentClient();
-  const { useCustomDomain: useCustomDomainDefault } = useCampaignData();
+  const { useCustomDomain: useCustomDomainDefault, customDomain } = useCampaignData();
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
   const urlRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState('');
@@ -84,7 +84,11 @@ export const Step11 = ({
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
-    handleNextStep({ useCustomDomain });
+    if (!success)
+      toast.warn(
+        'O teste do dominio não deu certo. Tente novamente antes de avançar essa step.',
+      );
+    handleNextStep({ useCustomDomain, customDomain: url });
   }
 
   return (
@@ -127,6 +131,7 @@ export const Step11 = ({
               type="url"
               ref={urlRef}
               className="w-full"
+              defaultValue={customDomain}
               icons={[Link2]}
               value={url}
               onChange={({ target }) => {
@@ -175,9 +180,11 @@ export const Step11 = ({
               </Button>
 
               <div className="flex flex-col text-center w-full bg-accent rounded-lg p-4 mt-4">
-                <span role="status" className="text-sm italic text-muted-foreground">
-                  Aguardando início do teste...
-                </span>
+                {!isLoading && success !== undefined && (
+                  <span role="status" className="text-sm italic text-muted-foreground">
+                    Aguardando início do teste...
+                  </span>
+                )}
                 {isLoading && (
                   <span role="status" className="text-sm italic text-yellow-500">
                     Conectando ao seu domínio...

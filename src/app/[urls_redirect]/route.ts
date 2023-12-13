@@ -7,7 +7,6 @@ import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
 
 function formatOsName(os: string) {
   if (/Windows/i.test(os)) return 'windows';
@@ -50,9 +49,15 @@ export async function GET(
     );
   const campaign = campaignRes.data as Campaign;
 
-  const geoIp = (await fetch('http://ip-api.com/json').then((response) =>
-    response.json(),
-  )) as { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
+  const geoIp = (await fetch('http://ip-api.com/json')
+    .then((response) => response.json())
+    .then((res) => ({
+      country_code: res.countryCode,
+      isp: res.isp,
+      org: res.org,
+      as: res.as,
+      IPv4: res.query,
+    }))) as { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
 
   async function insertRequest(status: boolean, redirect: string) {
     await supabase.from('requests').insert({
@@ -62,6 +67,7 @@ export async function GET(
       system: formatOsName(os.name || 'other'),
       campaign: campaign.id,
       campaign_name: campaign.name,
+      campaign_locale: campaign.publishLocale,
       ip: geoIp,
       device,
       user_id: campaign.user_id,
