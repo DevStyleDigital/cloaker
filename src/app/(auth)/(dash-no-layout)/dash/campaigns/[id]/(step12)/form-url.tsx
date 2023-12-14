@@ -25,7 +25,7 @@ export const FormUrl = ({
   handleDelete: () => void;
   campaignId: string;
 } & ReturnType<typeof genNewUrlObject>) => {
-  const { redirectType, useCustomDomain } = useCampaignData();
+  const { redirectType, useCustomDomain, customDomain } = useCampaignData();
 
   return (
     <div className="w-full flex flex-col space-y-4">
@@ -34,8 +34,8 @@ export const FormUrl = ({
           <CodeCopy
             text={
               useCustomDomain
-                ? ''
-                : `${process.env.NEXT_PUBLIC_ORIGIN}/${campaignId}-${url.id}`
+                ? `${customDomain}?c=${campaignId}-${url.id}`
+                : `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/${campaignId}-${url.id}`
             }
             language="bash"
             className="[&_span]:!text-ring/80"

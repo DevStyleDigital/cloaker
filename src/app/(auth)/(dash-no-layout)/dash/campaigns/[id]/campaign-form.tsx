@@ -192,7 +192,7 @@ export const CampaignForm = ({
         ) : campaignData.redirectType === 'simple' && step === 9 ? (
           <Step9 handleNextStep={handleNextStep(10)} />
         ) : campaignData.redirectType === 'simple' && step === 10 ? (
-          <Step11 handleNextStep={handleNextStep(11)} />
+          <Step11 supabase={supabase} step={step} handleNextStep={handleNextStep(11)} />
         ) : campaignData.redirectType === 'simple' && step === 11 ? (
           <Step12
             userId={user?.id!}
@@ -211,7 +211,7 @@ export const CampaignForm = ({
         ) : campaignData.redirectType === 'complex' && step === 10 ? (
           <Step9 handleNextStep={handleNextStep(11)} />
         ) : campaignData.redirectType === 'complex' && step === 11 ? (
-          <Step11 handleNextStep={handleNextStep(12)} />
+          <Step11 supabase={supabase} step={step} handleNextStep={handleNextStep(12)} />
         ) : campaignData.redirectType === 'complex' && step === 12 ? (
           <Step12
             userId={user?.id!}

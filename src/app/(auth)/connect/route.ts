@@ -7,8 +7,11 @@ export async function POST(request: NextRequest) {
   const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
   const connection = request.nextUrl.searchParams.get('connect');
 
-  await supabase.from('connections').update({ ready: true }).eq('id', connection);
+  const { data, error } = await supabase
+    .from('connections')
+    .upsert({ ready: true, id: connection });
 
+  console.log(connection, data, error);
   return Response.json(
     { success: true },
     {

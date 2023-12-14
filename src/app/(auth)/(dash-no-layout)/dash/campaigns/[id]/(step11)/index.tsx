@@ -1,7 +1,8 @@
+'use client';
 import { Button } from 'components/ui/button';
 import { Switch } from 'components/ui/switch';
 import { ArrowRight, CloudCog, Globe, Link2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CardButton } from '../card-button';
 import { Dialog, DialogContent, DialogTrigger } from 'components/ui/dialog';
 import { Input } from 'components/ui/input';
@@ -9,24 +10,30 @@ import { Code, CodeCopy } from 'components/code';
 import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
 import { toast } from 'react-toastify';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { v4 as uuid } from 'uuid';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export const Step11 = ({
   handleNextStep,
+  step,
+  supabase,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
+  step: number;
+  supabase: SupabaseClient<any, 'public', any>;
 }) => {
-  const supabase = createClientComponentClient();
   const { useCustomDomain: useCustomDomainDefault, customDomain } = useCampaignData();
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
   const urlRef = useRef<HTMLInputElement>(null);
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(customDomain || '');
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>();
-  const [success, setSuccess] = useState<boolean | undefined>();
-  const [token] = useState(uuid());
+  const [success, setSuccess] = useState<boolean | undefined>(
+    !!customDomain ? true : undefined,
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const token = useMemo(() => uuid(), [step]);
 
   useEffect(() => {
     const connections = supabase
@@ -43,6 +50,10 @@ export const Step11 = ({
           clearTimeout(timeoutId);
           setIsLoading(false);
           setSuccess((payload.new as any).ready);
+          supabase
+            .from('connections')
+            .delete()
+            .eq('id', (payload.new as any).id);
         },
       )
       .subscribe();
@@ -54,6 +65,7 @@ export const Step11 = ({
   }, []);
 
   async function testDomain() {
+    setSuccess(undefined);
     if (!url.length) {
       setUrlError(true);
       toast.warn('Input obrigatório');
@@ -69,7 +81,7 @@ export const Step11 = ({
     }
     setIsLoading(true);
 
-    await supabase.from('connections').insert({
+    await supabase.from('connections').upsert({
       id: token,
       ready: false,
     });
@@ -77,7 +89,7 @@ export const Step11 = ({
     setTimeoutId(
       setTimeout(() => {
         setIsLoading(false);
-        setSuccess(false);
+        setSuccess((prev) => (!prev ? false : prev));
       }, 15 * 1000),
     );
   }
@@ -85,7 +97,7 @@ export const Step11 = ({
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
     if (!success)
-      toast.warn(
+      return toast.warn(
         'O teste do dominio não deu certo. Tente novamente antes de avançar essa step.',
       );
     handleNextStep({ useCustomDomain, customDomain: url });
@@ -99,12 +111,12 @@ export const Step11 = ({
       <h1 className="uppercase font-bold">Domínio customizado?</h1>
       <p className="italic text-muted-foreground text-center">
         Selecione seu domínio próprio ou utilize nosso domínio{' '}
-        {`"${process.env.NEXT_PUBLIC_ORIGIN}"`}
+        {`"${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}"`}
       </p>
 
       <div className="mt-4 w-fit flex self-center space-x-4 mb-8">
         <span className="italic text-muted-foreground text-center">
-          {process.env.NEXT_PUBLIC_ORIGIN}
+          {process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}
         </span>
         <Switch checked={useCustomDomain} onCheckedChange={setUseCustomDomain} />
         <span className="italic text-muted-foreground text-center">Domínio prórpio</span>
@@ -131,7 +143,6 @@ export const Step11 = ({
               type="url"
               ref={urlRef}
               className="w-full"
-              defaultValue={customDomain}
               icons={[Link2]}
               value={url}
               onChange={({ target }) => {
@@ -148,7 +159,7 @@ export const Step11 = ({
                 seguinte código:
               </p>
               <CodeCopy
-                text={`<script src="${process.env.NEXT_PUBLIC_ORIGIN}/cdn/r.min.js"></script>`}
+                text={`<script src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/cdn/r.min.js"></script>`}
                 language="jsx"
                 customStyle={{ padding: '1rem' }}
               />
@@ -162,7 +173,7 @@ export const Step11 = ({
                   '// r.html',
                   '<head>',
                   '     ...',
-                  `     <script src="${process.env.NEXT_PUBLIC_ORIGIN}/cdn/r.min.js"></script>`,
+                  `     <script src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/cdn/r.min.js"></script>`,
                   '</head>',
                 ].join('\n')}
                 language="jsx"
@@ -180,7 +191,7 @@ export const Step11 = ({
               </Button>
 
               <div className="flex flex-col text-center w-full bg-accent rounded-lg p-4 mt-4">
-                {!isLoading && success !== undefined && (
+                {!isLoading && success === undefined && (
                   <span role="status" className="text-sm italic text-muted-foreground">
                     Aguardando início do teste...
                   </span>
@@ -203,12 +214,6 @@ export const Step11 = ({
                 )}
               </div>
             </div>
-
-            <DialogTrigger asChild>
-              <Button type="button" className="w-full">
-                Feito
-              </Button>
-            </DialogTrigger>
           </DialogContent>
         </Dialog>
       )}

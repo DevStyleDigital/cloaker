@@ -72,7 +72,8 @@ export async function GET(
       device,
       user_id: campaign.user_id,
       origin:
-        request.nextUrl.searchParams.get('origin') || process.env.NEXT_PUBLIC_ORIGIN,
+        request.nextUrl.searchParams.get('origin') ||
+        process.env.NEXT_PUBLIC_DOMAIN_ORIGIN,
     });
   }
 
