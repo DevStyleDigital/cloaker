@@ -31,7 +31,7 @@ export async function GET(
 ) {
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-  const [id, url_id] = context.params.urls_redirect.split('.');
+  const [id, url_id] = context.params.urls_redirect.split('-');
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);
 
@@ -60,7 +60,7 @@ export async function GET(
     }))) as { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
 
   async function insertRequest(status: boolean, redirect: string) {
-    await supabase.from('requests').insert({
+    const { error } = await supabase.from('requests').insert({
       status,
       redirect,
       ua,
