@@ -96,7 +96,7 @@ export const Step11 = ({
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
-    if (!success)
+    if (!success && useCustomDomain)
       return toast.warn(
         'O teste do dominio não deu certo. Tente novamente antes de avançar essa step.',
       );
