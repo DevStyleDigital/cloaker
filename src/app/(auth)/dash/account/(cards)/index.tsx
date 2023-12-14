@@ -42,8 +42,8 @@ export const Cards = () => {
                 cardType === 'visa'
                   ? VISA
                   : cardType === 'mastercard'
-                  ? Mastercard
-                  : null,
+                    ? Mastercard
+                    : null,
               ]}
               required
               showMask={false}

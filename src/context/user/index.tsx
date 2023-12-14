@@ -48,7 +48,7 @@ export const UserProvider = ({ children }: BTypes.FCChildren) => {
         avatar_url: url,
         phone: data.phone,
         email: session?.user.email!,
-        blockProviders: data.block_providers,
+        block_providers: data.block_providers,
       });
     });
 
