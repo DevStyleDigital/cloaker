@@ -72,13 +72,13 @@ export const Step11 = ({
       return urlRef.current?.focus();
     }
 
-    if (
-      !/^(((http|https):\/\/)?(www.)?)\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/gm.test(url)
-    ) {
-      setUrlError(true);
-      toast.warn('Insira uma URL válida');
-      return urlRef.current?.focus();
-    }
+    // if (
+    //   !/^(((http|https):\/\/)?(www.)?)\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/gm.test(url)
+    // ) {
+    //   setUrlError(true);
+    //   toast.warn('Insira uma URL válida');
+    //   return urlRef.current?.focus();
+    // }
     setIsLoading(true);
 
     await fetch('/connection', {

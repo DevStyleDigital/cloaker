@@ -60,7 +60,7 @@ export async function GET(
     }))) as { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
 
   async function insertRequest(status: boolean, redirect: string) {
-    const { error } = await supabase.from('requests').insert({
+    await supabase.from('requests').insert({
       status,
       redirect,
       ua,
@@ -106,6 +106,7 @@ export async function GET(
 
   // BLOCK NO PERMITTED PROVIDERS
   if (
+    campaign.blockProviders.join('|').length &&
     `${geoIp.as}${geoIp.isp}${geoIp.org}`
       .toLowerCase()
       .search(new RegExp(campaign.blockProviders.join('|').toLowerCase(), 'gi')) !== -1
