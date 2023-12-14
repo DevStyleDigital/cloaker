@@ -6,12 +6,15 @@ export async function POST(request: NextRequest) {
   const cookiesStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
   const connection = request.nextUrl.searchParams.get('connect');
+  const data = await request
+    .json()
+    .then((d) => d)
+    .catch(() => null);
 
-  const { data, error } = await supabase
+  await supabase
     .from('connections')
-    .upsert({ ready: true, id: connection });
+    .upsert(data ? data : { ready: true, id: connection });
 
-  console.log(connection, data, error);
   return Response.json(
     { success: true },
     {

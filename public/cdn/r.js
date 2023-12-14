@@ -2,7 +2,7 @@ async function redirect() {
   const params = new URLSearchParams(window.location.search);
   const connection = params.get('connect'); // CHANGE connect TO A GOOD NAME
   if (connection) {
-    await fetch(`http://localhost:3000/connect?connect=${connection}`, {
+    await fetch(`http://localhost:3000/connection?connect=${connection}`, {
       method: 'POST',
     });
     window.close();

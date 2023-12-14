@@ -29,7 +29,7 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
         </span>
       )}
       {!!Object.entries(data).length && (
-        <ResponsiveContainer className="mt-10" width="100%" height={350}>
+        <ResponsiveContainer className="mt-4" width="100%" height={350}>
           <BarChart
             data={Object.entries(data).map(([name, value]) => ({ name, value }))}
             margin={{

@@ -14,7 +14,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-accent rounded-xl">
+    <div className="w-full h-full flex flex-col items-center p-7 bg-accent rounded-xl">
       <h1 className="font-bold w-full text-lg">Trafico por Região</h1>
       <div className="w-full h-full flex flex-col justify-center items-center mt-4">
         {!data.length && (
@@ -44,7 +44,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
           {data.map((entry, index) => (
             <li
               key={index}
-              className="h-12 rounded-lg flex-col justify-center items-center gap-2 inline-flex"
+              className="rounded-lg flex-col justify-center items-center inline-flex"
             >
               <div className="flex items-center space-x-2">
                 <div
@@ -53,7 +53,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
                 />
                 <span className="text-muted-foreground">Brasil</span>
               </div>
-              <div className="rounded-lg flex-col justify-center items-start flex">
+              <div className="rounded-lg flex-col justify-center items-start flex ml-4">
                 <span className="self-stretch text-muted-foreground">
                   {(entry.value / data.reduce((acc, item) => acc + item.value, 0)) * 100}%
                 </span>

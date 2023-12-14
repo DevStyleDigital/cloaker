@@ -175,9 +175,14 @@ const Dash = async () => {
         </div>
         <div className="flex flex-col lg:flex-[1_1_30rem] gap-6">
           <Docs />
-          <div className="max-lg:w-full max-lg:h-full lg:flex-[1_1_30rem] flex flex-col items-center gap-6 p-7 bg-accent rounded-xl">
+          <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-accent rounded-xl">
             <h1 className="text-lg w-full font-bold">Campanhas mais vistas</h1>
-            <ul className="flex flex-col w-full">
+            <ul className="flex flex-col w-full h-full">
+              {!campaignsMoreVisit.length && (
+                <span className="text-muted-foreground flex w-full h-full justify-center items-center italic text-center">
+                  Aguardando dados...
+                </span>
+              )}
               {campaignsMoreVisit.map((item) => (
                 <li key={item.id} className="w-full">
                   <Link

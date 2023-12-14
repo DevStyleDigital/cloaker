@@ -81,16 +81,20 @@ export const Step11 = ({
     }
     setIsLoading(true);
 
-    await supabase.from('connections').upsert({
-      id: token,
-      ready: false,
+    await fetch('/connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        id: token,
+        ready: false,
+      }),
     });
-    (() => window.open(`${url}?connect=${token}`, '_blank'))(); // CHANGE CONNECT TO A GOOD NAME
+
+    window.open(`${url}?connect=${token}`, `window-${token}`, 'popup'); // CHANGE CONNECT TO A GOOD NAME
     setTimeoutId(
       setTimeout(() => {
         setIsLoading(false);
         setSuccess((prev) => (!prev ? false : prev));
-      }, 15 * 1000),
+      }, 10 * 1000),
     );
   }
 
