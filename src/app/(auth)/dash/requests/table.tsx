@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -28,6 +27,9 @@ import { flagApi } from 'utils/flag-api';
 import { Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { CampaignRequest } from 'types/campaign';
+import { useState } from 'react';
+import { DialogTrigger } from 'components/ui/dialog';
+import { ViewRequest } from './view-request';
 
 export const columns: ColumnDef<CampaignRequest>[] = [
   {
@@ -82,12 +84,15 @@ export const columns: ColumnDef<CampaignRequest>[] = [
   },
   {
     accessorKey: 'ip',
-    header: 'Ip',
+    header: 'IP',
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
           {row.original.ip.IPv4}
-          <span className="text-xs text-black/40 truncate max-w-[8rem]">
+          <span
+            className="text-xs text-black/40 truncate max-w-[10rem]"
+            title={row.original.ip.org}
+          >
             {row.original.ip.org}
           </span>
         </div>
@@ -110,14 +115,20 @@ export const columns: ColumnDef<CampaignRequest>[] = [
     accessorKey: 'country',
     header: 'País',
     cell: ({ row }) => {
-      return (
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [hideImage, setHideImage] = useState(false);
+
+      return !hideImage ? (
         <Image
           loader={flagApi}
           src={row.original.ip.country_code}
           width={32}
           height={32}
           alt="flag"
+          onError={() => setHideImage(true)}
         />
+      ) : (
+        <span>{row.original.ip.country_code}</span>
       );
     },
   },
@@ -128,7 +139,11 @@ export const columns: ColumnDef<CampaignRequest>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: ({ row }) => <Eye />,
+    cell: ({ row }) => (
+      <DialogTrigger>
+        <Eye />
+      </DialogTrigger>
+    ),
   },
 ];
 
@@ -143,10 +158,10 @@ export const DataTableDemo = ({
   fetchData: (p: number) => Promise<void>;
   disableNext: boolean;
 }) => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -190,11 +205,13 @@ export const DataTableDemo = ({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  <ViewRequest request={row.original}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </ViewRequest>
                 </TableRow>
               ))
             ) : (

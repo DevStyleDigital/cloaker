@@ -83,6 +83,11 @@ const Requests = () => {
     fetchData(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+  useEffect(() => {
+    setPage(0);
+    fetchData(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters({ ...filters, ...newFilters });
