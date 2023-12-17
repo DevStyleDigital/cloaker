@@ -35,11 +35,7 @@ export async function GET(
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);
 
-  const campaignRes = await supabase
-    .from('campaigns')
-    .select('*')
-    .like('id', `%.${id}%`)
-    .single();
+  const campaignRes = await supabase.from('campaigns').select('*').eq('id', id).single();
 
   if (!campaignRes.data || campaignRes.error)
     return Response.redirect(
@@ -53,14 +49,18 @@ export async function GET(
     .then((response) => response.json())
     .then((res) => ({
       country_code: res.countryCode,
+      region: regionsCountries.find(({ countries }) =>
+        countries.includes(geoIp.country_code),
+      )?.code,
       isp: res.isp,
       org: res.org,
       as: res.as,
       IPv4: res.query,
-    }))) as { [k in 'country_code' | 'isp' | 'org' | 'as' | 'IPv4']: string };
+    }))) as { [k in 'country_code' | 'region' | 'isp' | 'org' | 'as' | 'IPv4']: string };
 
   async function insertRequest(status: boolean, redirect: string) {
-    await supabase.from('requests').insert({
+    const now = new Date();
+    const newReq = {
       status,
       redirect,
       ua,
@@ -74,7 +74,22 @@ export async function GET(
       origin:
         request.nextUrl.searchParams.get('origin') ||
         process.env.NEXT_PUBLIC_DOMAIN_ORIGIN,
+      created_at: now,
+    };
+    await supabase.from('requests').insert({
+      ...newReq,
+      search: `&${newReq.status ? 'success' : 'block'}&${
+        newReq.campaign
+      }&${newReq.created_at.getTime()}&${newReq.ip.country_code}&${newReq.ip.region}&${
+        newReq.device
+      }&${newReq.origin}&${newReq.ip.IPv4}&${newReq.ip.org}&${newReq.ip.isp}`,
     });
+    await supabase
+      .from('campaigns')
+      .update({
+        requestsAmount: campaign.requestsAmount + 1,
+      })
+      .eq('id', campaign.id);
   }
 
   // const { data, error } = await supabase
@@ -182,7 +197,7 @@ export async function GET(
   const urlSuccess = urlsRedirect.find((url) => !!url);
 
   if (urlSuccess) {
-    await insertRequest(false, urlSuccess);
+    await insertRequest(true, urlSuccess);
     return Response.redirect(urlSuccess, 302);
   }
 

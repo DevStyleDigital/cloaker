@@ -34,7 +34,7 @@ export const FormUrl = ({
           <CodeCopy
             text={
               useCustomDomain
-                ? `${customDomain}?c=${campaignId}-${url.id}`
+                ? `${customDomain}${redirectType === 'complex' ? `?p=${url.id}` : ''}`
                 : `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/${campaignId}-${url.id}`
             }
             language="bash"
@@ -50,7 +50,7 @@ export const FormUrl = ({
               </Button>
             </DialogTrigger>
           )}
-          {(!useCustomDomain && urlsLength > 1) || useCustomDomain ? (
+          {urlsLength > 1 ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>

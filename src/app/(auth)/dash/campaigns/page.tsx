@@ -45,7 +45,7 @@ const Campaigns = async () => {
     },
     {
       id: '3',
-      title: 'Média Requisições por Campanha',
+      title: 'Média de Requisições por Campanha',
       label: (
         (campaigns?.reduce((acc, { requestsAmount }) => acc + requestsAmount, 0) || 0) /
         (campaigns?.length || 1)

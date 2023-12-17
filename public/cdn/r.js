@@ -1,21 +1,34 @@
-async function redirect() {
+async function r() {
   const params = new URLSearchParams(window.location.search);
-  const connection = params.get('connect'); // CHANGE connect TO A GOOD NAME
+  const connection = params.get('c');
   if (connection) {
-    await fetch(`http://localhost:3000/connection?connect=${connection}`, {
-      method: 'POST',
-    });
+    const campaigns = document.querySelectorAll(
+      `script[src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}}/cdn/r.min.js"]`,
+    );
+    if (campaigns.length === 1)
+      await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/connection?connect=${connection}`,
+        {
+          method: 'POST',
+        },
+      );
     window.close();
     window.location.search = '';
+    return;
   }
 
-  const campaign = params.get('c');
-  if (!campaign) return;
+  const params_url = params.get('p');
+  const campaign_id = document
+    .querySelector(`script[src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}}/cdn/r.min.js"]`)
+    .getAttribute('data-campaign');
+  if (!campaign_id) return;
 
-  window.location.href = `http://localhost:3000/${campaign}${window.location.search.replace(
-    `c=${params.get('c')}`,
+  window.location.href = `${
+    process.env.NEXT_PUBLIC_DOMAIN_ORIGIN
+  }/${campaign_id}-${params_url}${window.location.search.replace(
+    `p=${params.get('p')}`,
     `origin=${window.location.origin}`,
   )}`;
 }
 
-redirect(); // CHANGE redirect TO A GOOD NAME
+r();

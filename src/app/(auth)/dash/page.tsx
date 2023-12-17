@@ -137,8 +137,7 @@ const Dash = async () => {
                 const newItem = {
                   amount: (acc[item.campaign_locale]?.amount || 0) + 1,
                   percent:
-                    (((acc[item.campaign_locale]?.amount || 0) + 1) / requests.length) *
-                    100,
+                    ((acc[item.campaign_locale]?.amount || 0) + 1) / requests.length,
                 };
 
                 acc[item.campaign_locale] = newItem;

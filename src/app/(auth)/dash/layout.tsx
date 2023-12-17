@@ -1,6 +1,6 @@
 import { Header } from 'components/header';
 import { Sidebar } from 'components/sidebar';
-import { UserProvider } from 'context/user';
+import { AuthProvider } from 'context/auth';
 
 const DashLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   return (

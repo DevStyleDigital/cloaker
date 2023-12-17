@@ -1,9 +1,12 @@
 'use client';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  SupabaseClient,
+  createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type UserContextType = {
+type AuthContextType = {
   user: {
     id: string;
     name: string;
@@ -12,17 +15,18 @@ type UserContextType = {
     email: string;
     block_providers: string[];
   } | null;
-  setUser: React.Dispatch<React.SetStateAction<UserContextType['user']>>;
+  supabase: SupabaseClient<any, 'public', any>;
+  setUser: React.Dispatch<React.SetStateAction<AuthContextType['user']>>;
   signOut: () => void;
 };
 
-const UserContext = createContext<UserContextType>({} as UserContextType);
-export const useUser = () => useContext(UserContext);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const useAuth = () => useContext(AuthContext);
 
-export const UserProvider = ({ children }: BTypes.FCChildren) => {
+export const AuthProvider = ({ children }: BTypes.FCChildren) => {
   const router = useRouter();
   const supabase = createClientComponentClient();
-  const [user, setUser] = useState<UserContextType['user']>(null);
+  const [user, setUser] = useState<AuthContextType['user']>(null);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (_, session) => {
@@ -59,17 +63,18 @@ export const UserProvider = ({ children }: BTypes.FCChildren) => {
   }, []);
 
   return (
-    <UserContext.Provider
+    <AuthContext.Provider
       value={{
         signOut: () => {
           supabase.auth.signOut();
           router.push('/login');
         },
+        supabase,
         setUser,
         user,
       }}
     >
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };

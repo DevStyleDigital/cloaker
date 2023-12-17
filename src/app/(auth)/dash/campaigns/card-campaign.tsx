@@ -1,10 +1,10 @@
 'use client';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Facebook } from 'assets/svgs/logos/facebook';
 import { Google } from 'assets/svgs/logos/google';
 import { Instragram } from 'assets/svgs/logos/instagram';
 import { TikTok } from 'assets/svgs/logos/tiktok';
 import { Button } from 'components/ui/button';
+import { useAuth } from 'context/auth';
 import { format } from 'date-fns';
 import { Pencil, Trash } from 'lucide-react';
 import Link from 'next/link';
@@ -46,7 +46,7 @@ export const CardCampaign = (
   >,
 ) => {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const { supabase } = useAuth();
 
   return (
     <div

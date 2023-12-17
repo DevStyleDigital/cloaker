@@ -14,24 +14,16 @@ export const genNewUrlObject = () => ({
 export const Step12 = ({
   handleNextStep,
   isEdit,
-  userId,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
   isEdit: boolean;
-  userId: string;
 }) => {
-  const { id: idDefault, urls: urlsDefault, useCustomDomain } = useCampaignData();
-  const [campaignId] = useState(
-    idDefault?.split('.')[1] || Math.random().toString(16).slice(2).slice(0, 6),
-  );
+  const { urls: urlsDefault, useCustomDomain, id, redirectType } = useCampaignData();
   const [urls, setUrls] = useState(urlsDefault || [genNewUrlObject()]);
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
-    handleNextStep({
-      id: `${userId}.${campaignId}`,
-      urls,
-    });
+    handleNextStep({ urls });
   }
 
   return (
@@ -51,12 +43,14 @@ export const Step12 = ({
           )}
         </p>
       </div>
-      <Button
-        type="button"
-        onClick={() => setUrls((prev) => [...prev, genNewUrlObject()])}
-      >
-        Adicionar <Plus className="w-4 h-4 ml-4" />
-      </Button>
+      {redirectType === 'complex' && (
+        <Button
+          type="button"
+          onClick={() => setUrls((prev) => [...prev, genNewUrlObject()])}
+        >
+          Adicionar <Plus className="w-4 h-4 ml-4" />
+        </Button>
+      )}
 
       {!!urls.length && (
         <div className="mt-4 w-full flex gap-4 flex-col md:max-h-[50vh] md:overflow-auto md:py-8 md:pt-4 md:pr-4">
@@ -65,7 +59,7 @@ export const Step12 = ({
               {...item}
               urlsLength={urls.length}
               key={item.id}
-              campaignId={campaignId}
+              campaignId={id}
               handleUrl={(data) => {
                 setUrls((prev) => {
                   const newArray = [...prev];

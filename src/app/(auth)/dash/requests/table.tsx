@@ -27,7 +27,7 @@ import { flagApi } from 'utils/flag-api';
 import { Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { CampaignRequest } from 'types/campaign';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DialogTrigger } from 'components/ui/dialog';
 import { ViewRequest } from './view-request';
 
@@ -148,39 +148,23 @@ export const columns: ColumnDef<CampaignRequest>[] = [
 ];
 
 export const DataTableDemo = ({
-  data,
-  page,
+  data: defaultData,
   fetchData,
-  disableNext,
 }: {
   data: CampaignRequest[];
-  page: number;
-  fetchData: (p: number) => Promise<void>;
-  disableNext: boolean;
+  fetchData: (p: number) => Promise<any[]>;
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [data, setData] = useState(defaultData);
+  const [page, setPage] = useState(0);
+  const [isFetching, setIsFetching] = useState(false);
 
   const table = useReactTable({
     data,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
+  useEffect(() => setData(defaultData), [defaultData]);
 
   return (
     <div className="w-full">
@@ -202,7 +186,13 @@ export const DataTableDemo = ({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isFetching ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Pesquisando novas requisições...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   <ViewRequest request={row.original}>
@@ -217,7 +207,7 @@ export const DataTableDemo = ({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  Aguardando dados...
                 </TableCell>
               </TableRow>
             )}
@@ -238,10 +228,21 @@ export const DataTableDemo = ({
             variant="outline"
             size="sm"
             onClick={() => {
-              fetchData(page + 1);
-              table.nextPage();
+              const newPage = page + 1;
+              console.log(data.length, page);
+              if (data.length - page * 10 > 10) {
+                setIsFetching(true);
+                fetchData(newPage).then((d) => {
+                  setData((prev) => [...prev, ...d]);
+                  setPage(newPage);
+                  setTimeout(() => {
+                    setIsFetching(false);
+                    table.setPageIndex(newPage);
+                  }, 500);
+                });
+              } else table.nextPage();
             }}
-            disabled={disableNext}
+            disabled={!table.getCanNextPage()}
           >
             Próximo
           </Button>

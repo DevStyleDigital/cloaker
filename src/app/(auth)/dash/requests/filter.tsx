@@ -21,16 +21,16 @@ const FiltersReq = ({
 
   const onSubmit = (event: any) => {
     event.preventDefault();
-    const { campaign, status, device, country, domain, isp } = event.currentTarget as {
+    const { campaign, status, domain, isp } = event.currentTarget as {
       [k: string]: HTMLInputElement;
     };
     const newFilters = {
-      campaign: campaign.value || '',
-      status: status.value || '',
+      campaign: campaign?.value || '',
+      status: status?.value || '',
       devices: devicesSelected,
       countries: locales,
-      domain: domain.value || '',
-      isp: isp.value || '',
+      domain: domain?.value || '',
+      isp: isp?.value || '',
     };
 
     onFiltersChange(newFilters);

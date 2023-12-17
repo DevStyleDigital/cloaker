@@ -60,8 +60,12 @@ module.exports = {
       },
       keyframes: {
         'accordion-down': {
-          from: { height: 0 },
-          to: { height: 'var(--radix-accordion-content-height)' },
+          '0%': { height: 0, overflow: 'hidden' },
+          '99.9%': { overflow: 'visible' },
+          '100%': {
+            height: 'var(--radix-accordion-content-height)',
+            overflow: 'visible',
+          },
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },

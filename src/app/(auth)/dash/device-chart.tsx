@@ -8,7 +8,16 @@ import {
   CartesianGrid,
   ResponsiveContainer,
   Cell,
+  Tooltip,
 } from 'recharts';
+
+const MAP = {
+  'apple-os': 'iOS & macOS',
+  android: 'Android',
+  windows: 'Windows',
+  linux: 'Linux',
+  other: 'Outro',
+};
 
 export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
   const [client, setClient] = useState(false);
@@ -29,36 +38,47 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
         </span>
       )}
       {!!Object.entries(data).length && (
-        <ResponsiveContainer className="mt-4" width="100%" height={350}>
+        <ResponsiveContainer className="mt-4 -translate-x-5" width="100%" height={350}>
           <BarChart
-            data={Object.entries(data).map(([name, value]) => ({ name, value }))}
+            data={Object.entries(data).map(([name, value]) => ({
+              name: MAP[name as keyof typeof MAP],
+              value,
+            }))}
             margin={{
               top: 5,
               right: 5,
               left: 5,
               bottom: 5,
             }}
+            barGap={20}
             barSize={20}
           >
             <XAxis
               dataKey="name"
               scale="point"
-              stroke="#88888892"
+              stroke="#2b2b2b"
               fontSize={12}
-              tickLine={false}
               axisLine={false}
+              allowDataOverflow
+              allowReorder="yes"
               padding={{ left: 40, right: 40 }}
             />
-            <YAxis stroke="#88888892" fontSize={12} tickLine={false} axisLine={false} />
-            <CartesianGrid strokeDasharray="1 1" />
+            <YAxis stroke="#2b2b2b" fontSize={12} tickLine={false} axisLine={false} />
+            <CartesianGrid strokeDasharray="11" />
             <Bar dataKey="value" radius={[4, 4, 0, 0]} label={{ position: 'top' }}>
               {Object.entries(data).map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
+                  className="[&_tspan]:!fill-muted-foreground"
                   fill={`hsla(${~~(360 * Math.random())}, 70%,  72%, 0.8)`}
                 />
               ))}
             </Bar>
+            <Tooltip
+              separator=""
+              wrapperClassName="[&_.recharts-tooltip-item-name]:hidden"
+              formatter={(label) => <>{label} requisições</>}
+            />
           </BarChart>
         </ResponsiveContainer>
       )}

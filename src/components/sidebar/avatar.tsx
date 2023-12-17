@@ -1,11 +1,11 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from 'components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from 'components/ui/popover';
-import { useUser } from 'context/user';
+import { useAuth } from 'context/auth';
 import { LogOut } from 'lucide-react';
 
 export const AvatarPopover = () => {
-  const { user, signOut } = useUser();
+  const { user, signOut } = useAuth();
 
   return (
     <Popover>

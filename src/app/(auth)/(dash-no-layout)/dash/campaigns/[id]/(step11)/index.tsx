@@ -17,12 +17,15 @@ export const Step11 = ({
   handleNextStep,
   step,
   supabase,
+  userId,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
   step: number;
+  userId: string;
   supabase: SupabaseClient<any, 'public', any>;
 }) => {
-  const { useCustomDomain: useCustomDomainDefault, customDomain } = useCampaignData();
+  const { useCustomDomain: useCustomDomainDefault, customDomain, id } = useCampaignData();
+  const [campaignId] = useState(id || uuid());
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
   const urlRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState(customDomain || '');
@@ -72,13 +75,13 @@ export const Step11 = ({
       return urlRef.current?.focus();
     }
 
-    // if (
-    //   !/^(((http|https):\/\/)?(www.)?)\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/gm.test(url)
-    // ) {
-    //   setUrlError(true);
-    //   toast.warn('Insira uma URL válida');
-    //   return urlRef.current?.focus();
-    // }
+    if (
+      !/^(((http|https):\/\/)?(www.)?)\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/gm.test(url)
+    ) {
+      setUrlError(true);
+      toast.warn('Insira uma URL válida');
+      return urlRef.current?.focus();
+    }
     setIsLoading(true);
 
     await fetch('/connection', {
@@ -89,7 +92,7 @@ export const Step11 = ({
       }),
     });
 
-    window.open(`${url}?connect=${token}`, `window-${token}`, 'popup'); // CHANGE CONNECT TO A GOOD NAME
+    window.open(`${url}?c=${token}`, `window-${token}`, 'popup');
     setTimeoutId(
       setTimeout(() => {
         setIsLoading(false);
@@ -102,9 +105,9 @@ export const Step11 = ({
     ev.preventDefault();
     if (!success && useCustomDomain)
       return toast.warn(
-        'O teste do dominio não deu certo. Tente novamente antes de avançar essa step.',
+        'O dominio não foi configurado corretamente. Tente novamente antes de avançar essa step.',
       );
-    handleNextStep({ useCustomDomain, customDomain: url });
+    handleNextStep({ useCustomDomain, customDomain: url, id: campaignId });
   }
 
   return (
@@ -135,7 +138,7 @@ export const Step11 = ({
               desc="Configurar domínio próprio"
             />
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="flex flex-col">
             <div className="flex flex-col text-center">
               <h2 className="uppercase font-bold">Configurar Domínio</h2>
               <p className="italic text-muted-foreground">
@@ -152,20 +155,22 @@ export const Step11 = ({
               onChange={({ target }) => {
                 setUrlError(false);
                 setUrl(target.value);
+                setSuccess(target.value !== customDomain ? undefined : true);
               }}
               help='Exemplo: "https://meudominio.com/r"'
               error={urlError}
             />
 
-            <div className="mt-10">
+            <div className="mt-10 w-full">
               <p className="text-muted-foreground mb-2">
                 Agora vá até o arquivo .html do seu domínio ou correspondente, e cole o
                 seguinte código:
               </p>
               <CodeCopy
-                text={`<script src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/cdn/r.min.js"></script>`}
+                text={`<script src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/cdn/r.min.js" data-campaign="${campaignId}"></script>`}
                 language="jsx"
-                customStyle={{ padding: '1rem' }}
+                customStyle={{ padding: '1rem', overflow: 'auto' }}
+                className="w-full relative [&>div]:static"
               />
               <p className="text-muted-foreground mt-4 mb-2">
                 Caso deseje que a página “meudominio.com/r.html” fique responsável pelo
@@ -177,10 +182,11 @@ export const Step11 = ({
                   '// r.html',
                   '<head>',
                   '     ...',
-                  `     <script src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/cdn/r.min.js"></script>`,
+                  `     <script src="${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/cdn/r.min.js" data-campaign="..."></script>`,
                   '</head>',
                 ].join('\n')}
                 language="jsx"
+                className="overflow-x-auto w-full bg-[#282a36]"
               />
               <p className="text-muted-foreground mt-4 mb-2">
                 Agora vamos testar para ter certeza de que tudo está funcionando.
@@ -212,8 +218,9 @@ export const Step11 = ({
                 )}
                 {!success && success !== undefined && (
                   <span role="status" className="text-sm italic text-destructive">
-                    Ocorreu um erro ao vincular com seu domínio, verifique se o código
-                    está no lugar correto.
+                    Ocorreu um erro ao vincular com seu domínio, verifique se o script
+                    está no lugar correto e certifique-se de que haja apenas um script
+                    apontando para nosso dominio.
                   </span>
                 )}
               </div>

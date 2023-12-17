@@ -1,8 +1,8 @@
 'use client';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Button } from 'components/ui/button';
 import { Dialog, DialogTrigger, DialogContent } from 'components/ui/dialog';
 import { Input } from 'components/ui/input';
+import { useAuth } from 'context/auth';
 import { Album, ShieldBan, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -16,7 +16,7 @@ export const BlockProvider = ({
   blockProvidersDefault: string[];
 }) => {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const { user, supabase } = useAuth();
   const ispRef = useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ export const BlockProvider = ({
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button className="w-fit !font-normal">
           Bloquer Provedores <Album className="w-6 h-6 ml-4" />
         </Button>

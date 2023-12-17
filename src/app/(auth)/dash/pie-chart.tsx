@@ -37,7 +37,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip formatter={(label) => <>{label} requisições</>} />
           </RePieChart>
         )}
         <ul>

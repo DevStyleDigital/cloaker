@@ -8,10 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from 'components/ui/accordion';
-import { cookies } from 'next/headers';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useEffect, useState } from 'react';
-import { useUser } from 'context/user';
+import { useAuth } from 'context/auth';
 
 export type Filters = {
   campaign: string;
@@ -25,69 +23,60 @@ export type Filters = {
 const ITEM_PER_PAGE = 10;
 
 const Requests = () => {
-  const { user } = useUser();
-  const supabase = createClientComponentClient();
+  const { user, supabase } = useAuth();
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     campaign: '',
     status: '',
-    device: '',
-    country: '',
+    devices: [''],
+    countries: [''],
     domain: '',
     isp: '',
-    dateFrom: '2023-01-01',
-    dateTo: new Date(Date.now()).toISOString().split('T')[0],
+    // dateFrom: '2023-01-01',
+    // dateTo: new Date(Date.now()).toISOString().split('T')[0],
   });
   const [data, setData] = useState<any[]>([]);
-  const [page, setPage] = useState(0);
-  const [disableNext, setDisableNext] = useState(false);
 
   function getFromAndTo(pageP: number) {
     let from = pageP * ITEM_PER_PAGE;
-    const to = from * ITEM_PER_PAGE;
+    let to = from + ITEM_PER_PAGE;
 
-    if (pageP > 0) from += 1;
+    if (pageP > 0) {
+      from += 1;
+      to += 1;
+    }
 
     return { from, to };
   }
 
   const getDataFiltered = async (pageP: number) => {
     const { from, to } = getFromAndTo(pageP);
-    const { data, count } = await supabase
+    if (!user?.id) return [];
+    const { data } = await supabase
       .from('requests')
       .select('*')
-      .eq('user_id', user?.id)
-      // .eq('campaign', filters.campaign)
-      // .eq('status', filters.status)
-      // .eq('device', filters.device)
-      // .eq('ip.country_code', filters.country)
-      // .ilike('ip.isp', `%${filters.isp}%`)
-      // .gte('created_at', filters.dateFrom)
-      // .lte('created_at', filters.dateTo)
+      .eq('user_id', user.id)
+      .ilike('search', `%${filters.campaign}%`)
+      .ilike('search', `%${filters.status === 'all' ? '' : filters.status}%`)
+      .ilikeAnyOf(
+        'search',
+        filters.devices.map((v) => `%${v}%`),
+      )
+      .ilikeAnyOf(
+        'search',
+        filters.countries.map((v) => `%${v}%`),
+      )
+      .ilike('search', `%${filters.domain}%`)
+      .ilike('search', `%${filters.isp}%`)
       .range(from, to);
-
-    setPage(page + 1);
-    setDisableNext((count || 0) <= ITEM_PER_PAGE);
 
     return data || [];
   };
 
-  async function fetchData(pageP: number, push?: boolean) {
-    await getDataFiltered(pageP).then((d) =>
-      push ? setData((p) => [...p, ...d]) : setData(d),
-    );
-  }
-
   useEffect(() => {
-    setPage(0);
-    fetchData(0);
+    getDataFiltered(0).then((d) => setData(d));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
-  useEffect(() => {
-    setPage(0);
-    fetchData(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filters, user]);
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters({ ...filters, ...newFilters });
@@ -107,12 +96,7 @@ const Requests = () => {
           </AccordionItem>
         </Accordion>
       </div>
-      <DataTableDemo
-        data={data}
-        page={page}
-        fetchData={fetchData}
-        disableNext={disableNext}
-      />
+      <DataTableDemo data={data} fetchData={getDataFiltered} />
     </section>
   );
 };

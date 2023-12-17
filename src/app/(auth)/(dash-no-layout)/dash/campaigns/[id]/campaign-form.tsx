@@ -27,8 +27,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { CampaignData } from 'types/campaign';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useUser } from 'context/user';
+import { useAuth } from 'context/auth';
 
 const NUMBER_OF_STEP = 12;
 const STEP_FINISH_NUMBER = 13;
@@ -41,9 +40,8 @@ export const CampaignForm = ({
 }: {
   campaignDefault?: CampaignData | null;
 }) => {
-  const supabase = createClientComponentClient();
   const router = useRouter();
-  const { user } = useUser();
+  const { user, supabase } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -192,10 +190,14 @@ export const CampaignForm = ({
         ) : campaignData.redirectType === 'simple' && step === 9 ? (
           <Step9 handleNextStep={handleNextStep(10)} />
         ) : campaignData.redirectType === 'simple' && step === 10 ? (
-          <Step11 supabase={supabase} step={step} handleNextStep={handleNextStep(11)} />
+          <Step11
+            supabase={supabase}
+            step={step}
+            handleNextStep={handleNextStep(11)}
+            userId={user?.id!}
+          />
         ) : campaignData.redirectType === 'simple' && step === 11 ? (
           <Step12
-            userId={user?.id!}
             isEdit={!!campaignDefault}
             handleNextStep={handleNextStep(STEP_FINISH_NUMBER)}
           />
@@ -211,10 +213,14 @@ export const CampaignForm = ({
         ) : campaignData.redirectType === 'complex' && step === 10 ? (
           <Step9 handleNextStep={handleNextStep(11)} />
         ) : campaignData.redirectType === 'complex' && step === 11 ? (
-          <Step11 supabase={supabase} step={step} handleNextStep={handleNextStep(12)} />
+          <Step11
+            supabase={supabase}
+            step={step}
+            handleNextStep={handleNextStep(12)}
+            userId={user?.id!}
+          />
         ) : campaignData.redirectType === 'complex' && step === 12 ? (
           <Step12
-            userId={user?.id!}
             isEdit={!!campaignDefault}
             handleNextStep={handleNextStep(STEP_FINISH_NUMBER)}
           />

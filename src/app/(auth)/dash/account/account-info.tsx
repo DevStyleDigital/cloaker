@@ -7,20 +7,18 @@ import { Input } from 'components/ui/input';
 import { TabsContent } from 'components/ui/tabs';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-import { useUser } from 'context/user';
+import { useAuth } from 'context/auth';
 
 const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
 
 export const AccountInfo = () => {
   const router = useRouter();
-  const { user, setUser } = useUser();
+  const { user, setUser, supabase } = useAuth();
   const [loading, setLoading] = useState(false);
   const [avatar_url, setAvatarUrl] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [passwordInvalid, setPasswordInvalid] = useState(false);
-  const supabase = createClientComponentClient();
 
   async function uploadAvatar() {
     const file = avatar_url! as File;

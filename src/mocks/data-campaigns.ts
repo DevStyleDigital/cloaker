@@ -18,7 +18,7 @@ export const campaignsMonthlyDetails = [
   },
   {
     id: '3',
-    title: 'Média Requisições por Campanha',
+    title: 'Média de Requisições por Campanha',
     label: '156mil',
     icon: Rocket,
   },

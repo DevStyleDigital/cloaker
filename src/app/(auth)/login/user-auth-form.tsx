@@ -11,11 +11,11 @@ import { cn } from 'utils/cn';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ThirdPatty } from '../ThirdPatty';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useAuth } from 'context/auth';
 
 export const UserAuthForm = () => {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const { user, supabase } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

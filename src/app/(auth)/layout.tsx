@@ -1,9 +1,9 @@
 import { Header } from 'components/header';
 import { Sidebar } from 'components/sidebar';
-import { UserProvider } from 'context/user';
+import { AuthProvider } from 'context/auth';
 
 const AuthLayout: BTypes.NLPage = ({ children }) => {
-  return <UserProvider>{children}</UserProvider>;
+  return <AuthProvider>{children}</AuthProvider>;
 };
 
 export default AuthLayout;

@@ -28,11 +28,11 @@ export const TrafficGraphic = ({
           >
             <div className="w-full flex gap-4 items-center">
               <span
-                style={{ width: `${item[1].percent}%` }}
+                style={{ width: `${item[1].percent * 100}%` }}
                 className="h-2 rounded-full bg-muted-foreground/20 transition-all duration-300 group-hover:bg-primary"
               />
               <span className="font-medium transition-all text-muted-foreground group-hover:text-ring">
-                {item[1].percent}%
+                {Number((item[1].percent * 100).toFixed(2))}%
               </span>
             </div>
             <span>{MAP[item[0]]}</span>
