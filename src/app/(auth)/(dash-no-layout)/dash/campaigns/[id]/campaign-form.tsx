@@ -68,7 +68,7 @@ export const CampaignForm = ({
         'Content-Type': 'application/json',
       },
     })
-      .then(() => {
+      .then((res) => {
         return toast.success(
           !!campaignDefault
             ? 'Sua campanha foi atualizada! E está ativa e pronta para uso!'
@@ -97,19 +97,21 @@ export const CampaignForm = ({
     (nextStep: number) => async (stepData: Partial<CampaignData>) => {
       setCampaignData((prev) => ({ ...prev, ...stepData }));
 
-      if (nextStep === 8) {
-        setStepsOpened((prev) =>
-          campaignData.redirectType === 'complex' && stepData.redirectType === 'simple'
-            ? prev - 1
-            : campaignData.redirectType === 'simple' &&
-                stepData.redirectType === 'complex'
-              ? prev + 1
-              : prev,
-        );
-      }
+      if (nextStep < STEP_FINISH_NUMBER) {
+        if (nextStep === 8) {
+          setStepsOpened((prev) =>
+            campaignData.redirectType === 'complex' && stepData.redirectType === 'simple'
+              ? prev - 1
+              : campaignData.redirectType === 'simple' &&
+                  stepData.redirectType === 'complex'
+                ? prev + 1
+                : prev,
+          );
+        }
 
-      if (nextStep > stepsOpened) setStepsOpened(nextStep);
-      setStep(nextStep);
+        if (nextStep > stepsOpened) setStepsOpened(nextStep);
+        setStep(nextStep);
+      }
 
       if (nextStep === STEP_FINISH_NUMBER)
         await handleCreateCampaign({ ...campaignData, ...stepData });
