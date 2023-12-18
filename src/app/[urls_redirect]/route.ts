@@ -50,7 +50,7 @@ export async function GET(
     .then((res) => ({
       country_code: res.countryCode,
       region: regionsCountries.find(({ countries }) =>
-        countries.includes(geoIp.country_code),
+        countries.includes(res.countryCode),
       )?.code,
       isp: res.isp,
       org: res.org,
