@@ -60,23 +60,15 @@ export const CampaignForm = ({
       ? ((user?.block_providers as string[]) || []).concat(data.blockProviders || [])
       : data.blockProviders || [];
 
-    await supabase
-      .from('campaigns')
-      .upsert({ ...data, blockProviders, user_id: user?.id })
-      .then((res) => {
-        setLoading(false);
-
-        if (res.error) {
-          setHasError(true);
-          setStep(data.redirectType === 'simple' ? 11 : 12);
-          setStepsOpened(data.redirectType === 'simple' ? 11 : 12);
-          return toast.error(
-            !!campaignDefault
-              ? 'Ops... Não foi possivel atualizar sua campanha.'
-              : 'Ops... Não foi possivel criar sua campanha.',
-          );
-        }
-
+    await fetch('/dash/campaigns', {
+      body: JSON.stringify({ ...data, blockProviders, user_id: user?.id }),
+      method: 'POST',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(() => {
         return toast.success(
           !!campaignDefault
             ? 'Sua campanha foi atualizada! E está ativa e pronta para uso!'
@@ -85,6 +77,19 @@ export const CampaignForm = ({
             pauseOnHover: false,
           },
         );
+      })
+      .catch(() => {
+        setHasError(true);
+        setStep(data.redirectType === 'simple' ? 11 : 12);
+        setStepsOpened(data.redirectType === 'simple' ? 11 : 12);
+        return toast.error(
+          !!campaignDefault
+            ? 'Ops... Não foi possivel atualizar sua campanha.'
+            : 'Ops... Não foi possivel criar sua campanha.',
+        );
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
