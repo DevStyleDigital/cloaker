@@ -60,7 +60,7 @@ export const CampaignForm = ({
       ? ((user?.block_providers as string[]) || []).concat(data.blockProviders || [])
       : data.blockProviders || [];
 
-    await fetch('/dash/campaigns', {
+    await fetch('/api/campaigns', {
       body: JSON.stringify({ ...data, blockProviders, user_id: user?.id }),
       method: 'POST',
       cache: 'no-cache',
