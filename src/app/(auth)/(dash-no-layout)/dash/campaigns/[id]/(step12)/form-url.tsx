@@ -35,7 +35,7 @@ export const FormUrl = ({
             text={
               useCustomDomain
                 ? `${customDomain}${redirectType === 'complex' ? `?p=${url.id}` : ''}`
-                : `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/${campaignId}%${url.id}`
+                : `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/${campaignId}.${url.id}`
             }
             language="bash"
             className="[&_span]:!text-ring/80"
