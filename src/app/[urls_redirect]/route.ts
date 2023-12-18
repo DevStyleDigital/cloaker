@@ -31,7 +31,7 @@ export async function GET(
 ) {
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-  const [id, url_id] = context.params.urls_redirect.split('-');
+  const [id, url_id] = context.params.urls_redirect.split('%');
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);
 

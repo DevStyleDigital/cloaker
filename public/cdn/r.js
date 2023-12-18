@@ -25,7 +25,7 @@ async function r() {
 
   window.location.href = `${
     process.env.NEXT_PUBLIC_DOMAIN_ORIGIN
-  }/${campaign_id}-${params_url}${window.location.search.replace(
+  }/${campaign_id}%${params_url}${window.location.search.replace(
     `p=${params.get('p')}`,
     `origin=${window.location.origin}`,
   )}`;
