@@ -56,14 +56,13 @@ export const CampaignForm = ({
     setLoading(true);
     setHasError(false);
     setReturnTimes(returnTimes + 1);
-    const user_id = data.id.split('.')[0];
     const blockProviders = useReadyProvidersList
       ? ((user?.block_providers as string[]) || []).concat(data.blockProviders || [])
       : data.blockProviders || [];
 
     await supabase
       .from('campaigns')
-      .upsert({ ...data, blockProviders, user_id })
+      .upsert({ ...data, blockProviders, user_id: user?.id })
       .then((res) => {
         setLoading(false);
 
