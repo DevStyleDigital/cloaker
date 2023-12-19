@@ -35,7 +35,7 @@ export const Step3 = ({
           icon={Bot}
           title="Bots"
           desc="Bloquear bots e crawlers"
-          defaultChecked={noBots || true}
+          defaultChecked={typeof noBots === 'boolean' ? noBots : true}
           name="no_bots"
         />
         <CardSwitch

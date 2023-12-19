@@ -108,7 +108,7 @@ export async function GET(
     return Response.json({ error: 'Campaign is inactive' });
 
   // NOT BOT AND CRAWL
-  if (isBot) {
+  if (campaign.noBots && isBot) {
     await insertRequest(false, campaign.blockRedirectUrl);
     return Response.redirect(campaign.blockRedirectUrl, 302);
   }
