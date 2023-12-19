@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith('/dash') &&
     (session.error || !session.data.session)
   )
-    return NextResponse.rewrite(new URL('/login', req.url));
+    return NextResponse.redirect(new URL('/login', req.url));
 
   if (
     (req.nextUrl.pathname.startsWith('/login') ||
@@ -18,7 +18,7 @@ export async function middleware(req: NextRequest) {
     !session.error &&
     session.data.session
   )
-    return NextResponse.rewrite(new URL('/dash', req.url));
+    return NextResponse.redirect(new URL('/dash', req.url));
 
   return res;
 }
