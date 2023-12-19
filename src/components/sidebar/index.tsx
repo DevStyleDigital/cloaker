@@ -29,7 +29,7 @@ export const Sidebar = () => {
             <Rocket className="inline mr-4" />
             Requisições
           </SidebarLink>
-          <SidebarLink href="/">
+          <SidebarLink href="/docs">
             <BookOpen className="inline mr-4" />
             Documentação
           </SidebarLink>

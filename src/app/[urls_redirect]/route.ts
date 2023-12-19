@@ -78,11 +78,11 @@ export async function GET(
     };
     await supabase.from('requests').insert({
       ...newReq,
-      search: `&${newReq.status ? 'success' : 'block'}&${
-        newReq.campaign
-      }&${newReq.created_at.getTime()}&${newReq.ip.country_code}&${newReq.ip.region}&${
-        newReq.device
-      }&${newReq.origin}&${newReq.ip.IPv4}&${newReq.ip.org}&${newReq.ip.isp}`,
+      search: `&${newReq.status ? 'success' : 'block'}&${newReq.campaign}&${
+        newReq.ip.country_code
+      }&${newReq.ip.region}&${newReq.device}&${newReq.origin}&${newReq.ip.IPv4}&${
+        newReq.ip.org
+      }&${newReq.ip.isp}`,
     });
     await supabase
       .from('campaigns')

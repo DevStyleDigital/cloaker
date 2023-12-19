@@ -8,17 +8,20 @@ const MAP = [
 
 export function formatNumber(num: number, precision = 1) {
   if (num === Infinity) return num < 0 ? '-999tri' : '+999tri';
+  const toReplace = precision
+    ? `.${Array.from({ length: precision }, () => '0').join('')}`
+    : '';
 
   const found = MAP.find((x) => Math.abs(num) >= x.threshold);
   if (found) {
     const formatted = (Math.abs(num) / found.threshold).toFixed(precision) + found.suffix;
     return num < 0
-      ? `-${formatted}`.replace('.0', '')
-      : `+${formatted}`.replace('.0', '');
+      ? `-${formatted}`.replace(toReplace, '')
+      : `+${formatted}`.replace(toReplace, '');
   }
 
   if (num < 1)
     return num < 0 ? `-${num.toFixed(precision)}` : `+${num.toFixed(precision)}`;
 
-  return num < 0 ? `-${num}`.replace('.0', '') : `+${num}`.replace('.0', '');
+  return num < 0 ? `-${num}`.replace(toReplace, '') : `+${num}`.replace(toReplace, '');
 }

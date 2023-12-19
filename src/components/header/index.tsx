@@ -24,7 +24,7 @@ export const Header = () => {
       <div className="flex space-x-4 text-sm select-none cursor-default">
         <span className="text-muted-foreground">Dashboard</span>
         <span className="text-muted-foreground">/</span>
-        <span>{ROUTES[pathname]}</span>
+        <span>{ROUTES[pathname as keyof typeof ROUTES]}</span>
       </div>
 
       <div className="flex gap-4">

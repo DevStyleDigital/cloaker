@@ -59,7 +59,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
                   {formatNumber(
                     (entry.value / data.reduce((acc, item) => acc + item.value, 0)) * 100,
                     3,
-                  )}
+                  ).replace('+', '')}
                   %
                 </span>
               </div>

@@ -1,0 +1,11 @@
+{
+  "docs": {
+    "title": "Documentação",
+    "type": "page"
+  },
+  "dash": {
+    "title": "Dashboard",
+    "type": "page",
+    "href": "/dash"
+  }
+}

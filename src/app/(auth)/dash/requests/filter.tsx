@@ -1,6 +1,6 @@
 'use client';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Filter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger } from 'components/ui/select';
 import { DateRangePicker } from 'components/ui/date-range-picker';
@@ -10,31 +10,52 @@ import { Filters } from './page';
 import { MultiSelect } from 'components/ui/multi-select';
 import regions from 'assets/regions.json';
 import countries from 'assets/countries.json';
+import { useAuth } from 'context/auth';
 
 const FiltersReq = ({
   onFiltersChange,
 }: {
   onFiltersChange: (filters: Filters) => void;
 }) => {
+  const { user, supabase } = useAuth();
   const [locales, setLocales] = useState<string[]>([]);
+  const [campaigns, setCampaigns] = useState<{ value: string; label: string }[]>([]);
+  const [campaignsSelected, setCampaignsSelected] = useState<string[]>([]);
   const [devicesSelected, setDevicesSelected] = useState<string[]>([]);
+  const [rangeDate, setRangeDate] = useState<Date[]>([
+    new Date('2023-01-01'),
+    new Date(),
+  ]);
 
   const onSubmit = (event: any) => {
     event.preventDefault();
-    const { campaign, status, domain, isp } = event.currentTarget as {
+    const { status, domain, isp } = event.currentTarget as {
       [k: string]: HTMLInputElement;
     };
     const newFilters = {
-      campaign: campaign?.value || '',
+      campaign: campaignsSelected,
       status: status?.value || '',
       devices: devicesSelected,
       countries: locales,
       domain: domain?.value || '',
       isp: isp?.value || '',
+      dateFrom: rangeDate[0],
+      dateTo: rangeDate[1],
     };
 
     onFiltersChange(newFilters);
   };
+
+  useEffect(() => {
+    if (user?.id)
+      supabase
+        .from('campaigns')
+        .select('name, id')
+        .eq('user_id', user.id)
+        .then(({ data }) =>
+          setCampaigns(data?.map(({ id, name }) => ({ label: name, value: id })) || []),
+        );
+  }, [user, supabase]);
 
   return (
     <form
@@ -45,15 +66,7 @@ const FiltersReq = ({
     >
       <div className="w-full flex flex-col gap-4">
         <div className="flex gap-4">
-          <Select>
-            <SelectTrigger
-              className="w-full"
-              placeholder="Campanha"
-              labelClassName="!bg-accent"
-            />
-            <SelectContent />
-          </Select>
-          <Select>
+          <Select name="status">
             <SelectTrigger
               className="w-full"
               placeholder="Status"
@@ -61,21 +74,46 @@ const FiltersReq = ({
             />
             <SelectContent>
               <SelectItem value="success">Sucesso</SelectItem>
-              <SelectItem value="bloq">Bloqueado</SelectItem>
+              <SelectItem value="block">Bloqueado</SelectItem>
               <SelectItem value="all">Todos</SelectItem>
             </SelectContent>
           </Select>
           <DateRangePicker
             initialDateFrom="2023-01-01"
-            initialDateTo={new Date(Date.now())}
+            initialDateTo={new Date()}
+            onUpdate={({ range }) => setRangeDate([range.from, range.to || new Date()])}
             align="start"
             className="w-full"
             locale="pt-BR"
             showCompare={false}
           />
+          <Input
+            placeholder="Domínio"
+            className="w-full"
+            name="domain"
+            labelClassName="!bg-accent"
+          />
+          <Input
+            placeholder="Página Destino"
+            className="w-full"
+            name="domain"
+            labelClassName="!bg-accent"
+          />
+          <Input
+            placeholder="ISP"
+            name="isp"
+            className="w-full"
+            labelClassName="!bg-accent"
+          />
         </div>
 
         <div className="flex gap-4">
+          <MultiSelect
+            onValueChange={setCampaignsSelected}
+            options={[campaigns]}
+            className="w-full"
+            placeholder="Campanhas"
+          />
           <MultiSelect
             onValueChange={setLocales}
             options={[
@@ -100,18 +138,6 @@ const FiltersReq = ({
             ]}
             className="w-full"
             placeholder="E dispositivos"
-          />
-          <Input
-            placeholder="Domínio"
-            className="w-full"
-            name="domain"
-            labelClassName="!bg-accent"
-          />
-          <Input
-            placeholder="ISP"
-            name="isp"
-            className="w-full"
-            labelClassName="!bg-accent"
           />
         </div>
       </div>
