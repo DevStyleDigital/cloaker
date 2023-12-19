@@ -12,18 +12,18 @@ import { useCampaignData } from '../campaign-form';
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export const Step11 = ({
   handleNextStep,
   step,
-  supabase,
-  userId,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
   step: number;
   userId: string;
   supabase: SupabaseClient<any, 'public', any>;
 }) => {
+  const supabase = createClientComponentClient();
   const { useCustomDomain: useCustomDomainDefault, customDomain, id } = useCampaignData();
   const [campaignId] = useState(id || uuid());
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
@@ -53,10 +53,9 @@ export const Step11 = ({
           clearTimeout(timeoutId);
           setIsLoading(false);
           setSuccess((payload.new as any).ready);
-          supabase
-            .from('connections')
-            .delete()
-            .eq('id', (payload.new as any).id);
+          setTimeout(() => {
+            supabase.from('connections').delete().eq('id', token);
+          }, 5 * 1000);
         },
       )
       .subscribe();
@@ -65,7 +64,7 @@ export const Step11 = ({
       supabase.removeChannel(connections);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   async function testDomain() {
     setSuccess(undefined);
@@ -84,7 +83,7 @@ export const Step11 = ({
     }
     setIsLoading(true);
 
-    await fetch('/connection', {
+    await fetch('/api/connection', {
       method: 'POST',
       body: JSON.stringify({
         id: token,
