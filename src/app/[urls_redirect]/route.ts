@@ -176,8 +176,8 @@ export async function GET(
       [geoIp.country_code, region].includes(l),
     );
 
-    if (!permitLocale) return undefined;
     if (campaign.redirectType === 'simple') return redirectRule.redirectUrl;
+    if (!permitLocale) return undefined;
 
     const paramsRules = redirectRule.rules || [];
     if (!paramsRules.length) return redirectRule.redirectUrl;

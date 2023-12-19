@@ -66,6 +66,7 @@ export const CampaignForm = ({
       cache: 'no-cache',
       headers: {
         'Content-Type': 'application/json',
+        Origin: process.env.NEXT_PUBLIC_DOMAIN_ORIGIN!,
       },
     })
       .then((res) => {
