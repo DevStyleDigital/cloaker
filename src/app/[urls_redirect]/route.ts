@@ -137,7 +137,7 @@ export async function GET(
   }
 
   // BLOCK NO PERMITTED OS
-  if (campaign.devices.includes(formatOsName(os.name || 'other'))) {
+  if (!campaign.devices.includes(formatOsName(os.name || 'other'))) {
     await insertRequest(false, campaign.blockRedirectUrl);
     return Response.redirect(campaign.blockRedirectUrl, 302);
   }
