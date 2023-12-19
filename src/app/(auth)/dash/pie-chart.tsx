@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { PieChart as RePieChart, Pie, Tooltip, Cell } from 'recharts';
+import { formatNumber } from 'utils/format-number';
 
 export const PieChart = ({ data }: { data: any[] }) => {
   const [client, setClient] = useState(false);
@@ -40,7 +41,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
             <Tooltip formatter={(label) => <>{label} requisições</>} />
           </RePieChart>
         )}
-        <ul>
+        <ul className="flex flex-wrap gap-6">
           {data.map((entry, index) => (
             <li
               key={index}
@@ -51,11 +52,15 @@ export const PieChart = ({ data }: { data: any[] }) => {
                   className="w-2 h-2 relative rounded-full"
                   style={{ background: entry.color }}
                 />
-                <span className="text-muted-foreground">Brasil</span>
+                <span className="text-muted-foreground">{entry.name}</span>
               </div>
               <div className="rounded-lg flex-col justify-center items-start flex ml-4">
                 <span className="self-stretch text-muted-foreground">
-                  {(entry.value / data.reduce((acc, item) => acc + item.value, 0)) * 100}%
+                  {formatNumber(
+                    (entry.value / data.reduce((acc, item) => acc + item.value, 0)) * 100,
+                    3,
+                  )}
+                  %
                 </span>
               </div>
             </li>

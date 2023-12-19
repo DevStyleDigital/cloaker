@@ -17,5 +17,8 @@ export function formatNumber(num: number, precision = 1) {
       : `+${formatted}`.replace('.0', '');
   }
 
+  if (num < 1)
+    return num < 0 ? `-${num.toFixed(precision)}` : `+${num.toFixed(precision)}`;
+
   return num < 0 ? `-${num}`.replace('.0', '') : `+${num}`.replace('.0', '');
 }
