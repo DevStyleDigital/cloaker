@@ -113,8 +113,6 @@ export async function GET(
     return Response.redirect(campaign.blockRedirectUrl, 302);
   }
 
-  console.log(campaign.noExt, geoIp);
-
   // NO EXT
   if (campaign.noExt && geoIp.country_code !== 'BR') {
     await insertRequest(false, campaign.blockRedirectUrl);
