@@ -203,5 +203,5 @@ export async function GET(
   }
 
   await insertRequest(false, campaign.blockRedirectUrl);
-  return Response.redirect(campaign.blockRedirectUrl, 302)
+  return Response.redirect(campaign.blockRedirectUrl, 302);
 }
