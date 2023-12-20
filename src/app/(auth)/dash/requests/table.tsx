@@ -70,7 +70,7 @@ export const columns: ColumnDef<CampaignRequest>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          href={`/home/campanhas/${row.original.campaign}`}
+          href={`/dash/campaigns/${row.original.campaign}`}
           className="text-blue-400 underline decoration-solid"
         >
           {row.original.campaign_name}

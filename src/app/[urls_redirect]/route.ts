@@ -111,13 +111,15 @@ export async function GET(
   // NOT BOT AND CRAWL
   if (campaign.noBots && isBot) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    // return Response.redirect(campaign.blockRedirectUrl, 302);
+    return Response.json({ cai: '1' });
   }
 
   // NO EXT
   if (campaign.noExt && geoIp.country_code !== 'BR') {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    // return Response.redirect(campaign.blockRedirectUrl, 302);
+    return Response.json({ cai: '2' });
   }
 
   // BLOCK NO PERMITTED PROVIDERS
@@ -128,19 +130,22 @@ export async function GET(
       .search(new RegExp(campaign.blockProviders.join('|').toLowerCase(), 'gi')) !== -1
   ) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    // return Response.redirect(campaign.blockRedirectUrl, 302);
+    return Response.json({ cai: '3' });
   }
 
   // BLOCK NO PERMITTED DEVICES
   if (!campaign.devices.includes(device)) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    // return Response.redirect(campaign.blockRedirectUrl, 302);
+    return Response.json({ cai: '4' });
   }
 
   // BLOCK NO PERMITTED OS
   if (!campaign.devices.includes(formatOsName(os.name || 'other'))) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    // return Response.redirect(campaign.blockRedirectUrl, 302);
+    return Response.json({ cai: '5' });
   }
 
   const paramsArr = Object.entries(
@@ -203,5 +208,6 @@ export async function GET(
   }
 
   await insertRequest(false, campaign.blockRedirectUrl);
-  return Response.redirect(campaign.blockRedirectUrl, 302);
+  // return Response.redirect(campaign.blockRedirectUrl, 302);
+  return Response.json({ cai: '6' });
 }
