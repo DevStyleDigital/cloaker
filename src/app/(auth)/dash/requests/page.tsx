@@ -22,16 +22,21 @@ export type Filters = {
   dateTo: Date;
 };
 
+function sanitizeSearchText(text: string) {
+  const sanitizedText = text.replace(/[^a-zA-Z0-9%&-]/g, '');
+  return sanitizedText;
+}
+
 const ITEM_PER_PAGE = 10;
 
 const Requests = () => {
   const { user, supabase } = useAuth();
 
   const [filters, setFilters] = useState<Filters>({
-    campaign: [''],
+    campaign: [],
     status: '',
-    devices: [''],
-    countries: [''],
+    devices: [],
+    countries: [],
     domain: '',
     isp: '',
     dateFrom: new Date('2023-01-01'),
@@ -55,33 +60,32 @@ const Requests = () => {
     const { from, to } = getFromAndTo(pageP);
     if (!user?.id) return [];
 
-    const deviceAndCountriesILike = [
-      ...filters.devices,
-      ...filters.countries,
-      ...filters.campaign,
-    ].map((p) => `%${p}%`);
-    const search = `&${filters.status === 'all' ? '' : filters.status}%${
-      filters.domain
-    }%${filters.isp}%`;
+    const search_text = `&${sanitizeSearchText(
+      filters.status === 'all' ? '' : filters.status,
+    )}%${sanitizeSearchText(filters.domain)}%${sanitizeSearchText(filters.isp)}%`;
+    const devices = (filters.devices.length ? filters.devices : ['']).map((p) =>
+      sanitizeSearchText(`%${p}%`),
+    );
+    const countries = (filters.countries.length ? filters.countries : ['']).map((p) =>
+      sanitizeSearchText(`%${p}%`),
+    );
+    const campaign = (filters.campaign.length ? filters.campaign : ['']).map((p) =>
+      sanitizeSearchText(`%${p}%`),
+    );
 
-    const { data } = deviceAndCountriesILike.length
-      ? await supabase
-          .from('requests')
-          .select('*')
-          .eq('user_id', user.id)
-          .ilike('search', search)
-          .ilikeAnyOf('search', deviceAndCountriesILike)
-          .gte('created_at', filters.dateFrom.toISOString())
-          .lte('created_at', filters.dateTo.toISOString())
-          .range(from, to)
-      : await supabase
-          .from('requests')
-          .select('*')
-          .eq('user_id', user.id)
-          .ilike('search', search)
-          .gte('created_at', filters.dateFrom.toISOString())
-          .lte('created_at', filters.dateTo.toISOString())
-          .range(from, to);
+    const { data } = await supabase
+      .from('requests')
+      .select('*')
+      .eq('user_id', user.id)
+      .ilike('search', search_text)
+      .ilikeAnyOf('search', devices)
+      .ilikeAnyOf('search', countries)
+      .ilikeAnyOf('search', campaign)
+      .gte('created_at', filters.dateFrom.toISOString())
+      .lte('created_at', filters.dateTo.toISOString())
+      .range(from, to);
+
+    console.log(search_text, devices, countries, data);
 
     return data || [];
   };

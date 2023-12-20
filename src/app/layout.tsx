@@ -26,7 +26,7 @@ const RootLayout: BTypes.NLPage = ({ children }) => {
   return (
     <html lang="pt-br" className={roboto.className}>
       <head>
-        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </head>
       <body className="min-h-screen flex flex-col">
         <Toast />
