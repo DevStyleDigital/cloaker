@@ -36,8 +36,6 @@ export async function GET(
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);
 
-  return Response.json({ ip: request.ip, a: request.geo });
-
   const campaignRes = await supabase.from('campaigns').select('*').eq('id', id).single();
 
   if (!campaignRes.data || campaignRes.error)
@@ -48,17 +46,17 @@ export async function GET(
     );
   const campaign = campaignRes.data as Campaign;
 
-  const geoIp = (await fetch('http://ip-api.com/json')
+  const geoIp = (await fetch(`http://ip-api.com/json/${request.ip}?fields=isp,org,as`)
     .then((response) => response.json())
     .then((res) => ({
-      country_code: res.countryCode,
+      country_code: request.geo?.country || '',
       region: regionsCountries.find(({ countries }) =>
-        countries.includes(res.countryCode),
+        countries.includes(request.geo?.country || ''),
       )?.code,
       isp: res.isp,
       org: res.org,
       as: res.as,
-      IPv4: res.query,
+      IPv4: request.ip,
     }))) as { [k in 'country_code' | 'region' | 'isp' | 'org' | 'as' | 'IPv4']: string };
 
   async function insertRequest(status: boolean, redirect: string) {
@@ -199,10 +197,10 @@ export async function GET(
 
   const urlSuccess = urlsRedirect.find((url) => !!url);
 
-  // if (urlSuccess) {
-  //   await insertRequest(true, urlSuccess);
-  //   return Response.redirect(urlSuccess, 302);
-  // }
+  if (urlSuccess) {
+    await insertRequest(true, urlSuccess);
+    return Response.redirect(urlSuccess, 302);
+  }
 
   await insertRequest(false, campaign.blockRedirectUrl);
   return Response.redirect(campaign.blockRedirectUrl, 302);
