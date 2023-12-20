@@ -29,7 +29,7 @@ export const Step5 = ({
     >
       <h1 className="uppercase font-bold">Filtrar pelo dispositivo</h1>
       <p className="italic text-muted-foreground">
-        Os dispositivos NÃO selecionados serão BLOQUEADOS
+        Selecione os dispositivos que serão permitidos
       </p>
 
       <div className="mt-4 w-full">

@@ -145,7 +145,7 @@ export async function GET(
   if (!campaign.devices.includes(formatOsName(os.name || 'other'))) {
     await insertRequest(false, campaign.blockRedirectUrl);
     // return Response.redirect(campaign.blockRedirectUrl, 302);
-    return Response.json({ cai: '5' });
+    return Response.json({ cai: formatOsName(os.name || 'other') });
   }
 
   const paramsArr = Object.entries(

@@ -29,7 +29,7 @@ export const Step6 = ({
     >
       <h1 className="uppercase font-bold">Filtrar pelo Sistema Operacional</h1>
       <p className="italic text-muted-foreground">
-        Os sistemas NÃO selecionados serão BLOQUEADOS
+        Selecione os sistemas que serão permitidosNÃO selecionados serão BLOQUEADOS
       </p>
 
       <div className="mt-4 w-full">
