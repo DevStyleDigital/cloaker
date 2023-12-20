@@ -52,6 +52,7 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
             }}
             barGap={20}
             barSize={20}
+            startAngle={10}
           >
             <XAxis
               dataKey="name"
@@ -65,7 +66,12 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
             />
             <YAxis stroke="#2b2b2b" fontSize={12} tickLine={false} axisLine={false} />
             <CartesianGrid strokeDasharray="11" />
-            <Bar dataKey="value" radius={[4, 4, 0, 0]} label={{ position: 'top' }}>
+            <Bar
+              dataKey="value"
+              radius={[4, 4, 0, 0]}
+              label={{ position: 'top' }}
+              minPointSize={10}
+            >
               {Object.entries(data).map((_, index) => (
                 <Cell
                   key={`cell-${index}`}

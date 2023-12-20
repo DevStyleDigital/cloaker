@@ -14,6 +14,8 @@ export const PieChart = ({ data }: { data: any[] }) => {
     return <div className="grow min-h-[400px] bg-accent rounded-xl animate-pulse" />;
   }
 
+  const amount = data.reduce((acc, item) => acc + item.value, 0);
+
   return (
     <div className="w-full h-full flex flex-col items-center p-7 bg-accent rounded-xl">
       <h1 className="font-bold w-full text-lg">Trafico por Região</h1>
@@ -33,9 +35,10 @@ export const PieChart = ({ data }: { data: any[] }) => {
               innerRadius={60}
               outerRadius={100}
               fill="#8884d8"
+              minAngle={5}
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell key={`cell-${index}`} fill={entry.color} stroke={''} />
               ))}
             </Pie>
             <Tooltip formatter={(label) => <>{label} requisições</>} />
@@ -56,11 +59,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
               </div>
               <div className="rounded-lg flex-col justify-center items-start flex ml-4">
                 <span className="self-stretch text-muted-foreground">
-                  {formatNumber(
-                    (entry.value / data.reduce((acc, item) => acc + item.value, 0)) * 100,
-                    3,
-                  ).replace('+', '')}
-                  %
+                  {formatNumber((entry.value / amount) * 100, 3).replace('+', '')}%
                 </span>
               </div>
             </li>

@@ -14,6 +14,9 @@ import { v4 as uuid } from 'uuid';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
+const URL_REGEX =
+  /^(https?|ftp):\/\/(?:localhost|\S?[a-zA-Z0-9-]\S?.[a-zA-Z]{2,})(?::\d{1,5})?(?:[^\s/$?#].[^\s]*)?$/gm;
+
 export const Step11 = ({
   handleNextStep,
   step,
@@ -74,9 +77,7 @@ export const Step11 = ({
       return urlRef.current?.focus();
     }
 
-    if (
-      !/^(((http|https):\/\/)?(www.)?)\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/gm.test(url)
-    ) {
+    if (!URL_REGEX.test(url)) {
       setUrlError(true);
       toast.warn('Insira uma URL válida');
       return urlRef.current?.focus();
