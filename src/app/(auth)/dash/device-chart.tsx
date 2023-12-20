@@ -30,7 +30,7 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
     return <div className="w-full min-h-[500px] bg-accent rounded-xl animate-pulse" />;
   }
   return (
-    <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-accent rounded-xl 2xl:col-span-2">
+    <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-background rounded-xl 2xl:col-span-2">
       <h1 className="font-bold w-full text-lg max-sm:ml-8">Trafico por dispositivo</h1>
       {!Object.entries(data).length && (
         <span className="text-muted-foreground flex items-center h-full italic text-center">

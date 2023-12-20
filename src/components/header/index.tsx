@@ -20,7 +20,7 @@ export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <header className="flex items-center px-7 bg-background py-5 justify-between border-b border-input sticky top-0 w-full z-10">
+    <header className="flex items-center px-7 bg-background py-5 justify-between border-b border-input fixed left-[15.3rem] top-0 w-[calc(100%-16.3rem)] z-10">
       <div className="flex space-x-4 text-sm select-none cursor-default">
         <span className="text-muted-foreground">Dashboard</span>
         <span className="text-muted-foreground">/</span>

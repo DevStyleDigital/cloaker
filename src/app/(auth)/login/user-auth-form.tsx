@@ -87,7 +87,7 @@ export const UserAuthForm = () => {
             />
           </div>
           <Link
-            href="/recover"
+            href="/forgot"
             className={cn('text-sm self-end', {
               'pointer-events-none': loading,
             })}

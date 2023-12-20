@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   const { error } = await supabase.auth.getSession();
 
   if (error)
-    return new Response('Not Authorized', {
+    throw new Response('Not Authorized', {
       status: 401,
       headers: {
         'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_DOMAIN_ORIGIN!,

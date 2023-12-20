@@ -67,11 +67,7 @@ const FiltersReq = ({
       <div className="w-full flex flex-col gap-4">
         <div className="flex gap-4">
           <Select name="status">
-            <SelectTrigger
-              className="w-full"
-              placeholder="Status"
-              labelClassName="!bg-accent"
-            />
+            <SelectTrigger className="w-full" placeholder="Status" />
             <SelectContent>
               <SelectItem value="success">Sucesso</SelectItem>
               <SelectItem value="block">Bloqueado</SelectItem>
@@ -87,24 +83,9 @@ const FiltersReq = ({
             locale="pt-BR"
             showCompare={false}
           />
-          <Input
-            placeholder="Domínio"
-            className="w-full"
-            name="domain"
-            labelClassName="!bg-accent"
-          />
-          <Input
-            placeholder="Página Destino"
-            className="w-full"
-            name="domain"
-            labelClassName="!bg-accent"
-          />
-          <Input
-            placeholder="ISP"
-            name="isp"
-            className="w-full"
-            labelClassName="!bg-accent"
-          />
+          <Input placeholder="Domínio" className="w-full" name="domain" />
+          <Input placeholder="Página Destino" className="w-full" name="domain" />
+          <Input placeholder="ISP" name="isp" className="w-full" />
         </div>
 
         <div className="flex gap-4">

@@ -50,7 +50,7 @@ export const CardCampaign = (
 
   return (
     <div
-      className={cn('w-full max-w-lg flex flex-col gap-6 p-8 bg-accent rounded-md', {
+      className={cn('w-full max-w-lg flex flex-col gap-6 p-8 bg-background rounded-md', {
         'opacity-50': campaign.status === 'inactive',
       })}
     >

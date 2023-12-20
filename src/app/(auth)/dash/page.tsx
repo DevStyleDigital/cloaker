@@ -123,13 +123,13 @@ const Dash = async () => {
   ];
 
   return (
-    <div className="px-8 py-10 min-h-[80vh]">
+    <div className="px-8 py-10 h-full">
       <section className="w-full grid 2xl:grid-cols-4 max-[880px]:grid-cols-2 gap-2 xl:gap-6">
         {(monthlyDetails as any).map((item: any, i: number) => (
           <Card key={item.id} index={i} {...item} />
         ))}
       </section>
-      <div className="flex w-full h-full mt-8 gap-6 max-lg:flex-col">
+      <div className="w-full h-full mt-8 gap-6 grid grid-cols-[1fr_24rem] max-lg:grid-cols-1">
         <div className="grid w-full 2xl:grid-cols-2 grid-cols-1 gap-6">
           <TrafficGraphic
             data={requests.reduce(
@@ -172,9 +172,9 @@ const Dash = async () => {
             )}
           />
         </div>
-        <div className="flex flex-col lg:flex-[1_1_30rem] gap-6">
+        <div className="flex flex-col h-full w-full gap-6">
           <Docs />
-          <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-accent rounded-xl">
+          <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-background rounded-xl">
             <h1 className="text-lg w-full font-bold">Campanhas mais vistas</h1>
             <ul className="flex flex-col w-full h-full">
               {!campaignsMoreVisit.length && (

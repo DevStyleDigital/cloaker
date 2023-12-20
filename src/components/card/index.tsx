@@ -12,8 +12,8 @@ export const Card = (card: {
   return (
     <div
       className={cn('flex flex-col p-8 gap-4 rounded-lg w-full', {
-        'bg-card-blue': card.index % 2 === 0,
-        'bg-card-purple': card.index % 2 !== 0,
+        'bg-blue-100': card.index % 2 === 0,
+        'bg-purple-200': card.index % 2 !== 0,
       })}
     >
       <div className="flex items-center justify-between">

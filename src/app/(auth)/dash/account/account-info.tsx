@@ -13,12 +13,9 @@ import { useAuth } from 'context/auth';
 const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
 
 export const AccountInfo = () => {
-  const router = useRouter();
   const { user, setUser, supabase } = useAuth();
   const [loading, setLoading] = useState(false);
   const [avatar_url, setAvatarUrl] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [passwordInvalid, setPasswordInvalid] = useState(false);
 
   async function uploadAvatar() {
     const file = avatar_url! as File;
@@ -75,43 +72,16 @@ export const AccountInfo = () => {
     setLoading(false);
   }
 
-  async function onSubmitNewPassword(ev: React.FormEvent<HTMLFormElement>) {
-    ev.preventDefault();
-    if (passwordInvalid) return;
-
-    setLoading(true);
-    const { password_old, password } = ev.target as unknown as {
-      [k: string]: HTMLInputElement;
-    };
-
-    await supabase
-      .rpc('change_user_password', {
-        current_plain_password: password_old.value,
-        new_plain_password: password.value,
-      })
-      .then((res) => {
-        if (res.error?.message.includes('incorrect password')) {
-          setError('true');
-          return toast.error('Sua Senha está incorreta tente novamente!');
-        }
-        toast.success('Senha alterada com sucesso!');
-        supabase.auth.signOut();
-        router.refresh();
-        router.push('/login');
-      });
-    setLoading(false);
-  }
-
   return (
     <TabsContent value="account" className="space-y-4">
-      <section className="w-full flex flex-col gap-8 p-8 max-sm:p-4 border-b">
+      <section className="w-full flex flex-col gap-8 p-8 max-sm:p-4 border-b max-w-7xl ml-8 bg-background rounded-lg">
         <div className="flex flex-col">
           <h2 className="uppercase font-bold">Informações Pessoais</h2>
           <p className="italic text-muted-foreground">
             Atualize suas informações de perfil
           </p>
         </div>
-        <form className="flex flex-col space-y-6" onSubmit={onSubmitInfo}>
+        <form className="flex  items-end space-x-16" onSubmit={onSubmitInfo}>
           <div>
             <p className="italic text-muted-foreground">Foto de perfil:</p>
             <UploadImageInput
@@ -135,40 +105,10 @@ export const AccountInfo = () => {
               <Tel error={false} defaultValue={user?.phone} loading={loading} />
             </div>
             <Input placeholder="Email" defaultValue={user?.email} disabled />
+            <Button disabled={loading} className="w-fit">
+              Atualizar
+            </Button>
           </div>
-
-          <Button disabled={loading}>Atualizar</Button>
-        </form>
-      </section>
-      <section className="w-full flex flex-col gap-2 p-8 max-sm:p-4 border-b">
-        <div className="flex flex-col">
-          <h2 className="uppercase font-bold">Segurança</h2>
-          <p className="italic text-muted-foreground">
-            Altere sua senha caso tenha esquecido ou suspeite de algo.
-          </p>
-        </div>
-        <form className="flex flex-col space-y-6" onSubmit={onSubmitNewPassword}>
-          <div className="flex space-x-4">
-            <Input
-              placeholder="Senha"
-              type="password"
-              name="password_old"
-              id="password_old"
-              required
-              error={!!error}
-              onChange={() => setError(null)}
-            />
-            <div className="flex flex-col w-full">
-              <Password
-                placeholder="Nova Senha"
-                handleInvalidState={(invalid) => setPasswordInvalid(invalid)}
-                error={false}
-                loading={loading}
-              />
-            </div>
-          </div>
-
-          <Button type="submit">Atualizar</Button>
         </form>
       </section>
     </TabsContent>

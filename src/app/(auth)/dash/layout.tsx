@@ -1,14 +1,13 @@
 import { Header } from 'components/header';
 import { Sidebar } from 'components/sidebar';
-import { AuthProvider } from 'context/auth';
 
 const DashLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   return (
-    <div className="flex">
+    <div className="flex overflow-hidden max-h-screen">
       <Sidebar />
-      <div className="w-full overflow-y-auto">
+      <div className="w-full overflow-y-scroll bg-muted">
         <Header />
-        <main>{children}</main>
+        <main className="min-h-screen pt-16">{children}</main>
       </div>
     </div>
   );

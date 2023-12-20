@@ -17,7 +17,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
   const amount = data.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <div className="w-full h-full flex flex-col items-center p-7 bg-accent rounded-xl">
+    <div className="w-full h-full flex flex-col items-center p-7 bg-background rounded-xl">
       <h1 className="font-bold w-full text-lg">Trafico por Região</h1>
       <div className="w-full h-full flex flex-col justify-center items-center mt-4">
         {!data.length && (

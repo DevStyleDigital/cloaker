@@ -13,7 +13,7 @@ export const TrafficGraphic = ({
   data: Record<string, { amount: number; percent: number }>;
 }) => {
   return (
-    <div className="w-full h-full flex flex-col gap-6 p-7 bg-accent rounded-xl">
+    <div className="w-full h-full flex flex-col gap-6 p-7 bg-background rounded-xl">
       <h1 className="font-bold text-lg">Trafico por site</h1>
       {!Object.entries(data).length && (
         <span className="text-muted-foreground italic my-auto text-center">

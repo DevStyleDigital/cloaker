@@ -66,8 +66,7 @@ export const AuthProvider = ({ children }: BTypes.FCChildren) => {
     <AuthContext.Provider
       value={{
         signOut: () => {
-          supabase.auth.signOut();
-          router.push('/login');
+          supabase.auth.signOut().finally(() => router.push('/login'));
         },
         supabase,
         setUser,

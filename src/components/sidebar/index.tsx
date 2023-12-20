@@ -11,7 +11,7 @@ import { SidebarLink } from './sidebar-link';
 
 export const Sidebar = () => {
   return (
-    <aside className="w-64 border-r border-input px-4 py-8 space-y-6 h-screen sticky top-0">
+    <aside className="min-w-64 border-r border-input px-4 py-8 space-y-6 h-screen sticky top-0">
       <AvatarPopover />
 
       <section>
