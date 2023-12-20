@@ -7,6 +7,7 @@ import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 function formatOsName(os: string) {
   if (/Windows/i.test(os)) return 'windows';
