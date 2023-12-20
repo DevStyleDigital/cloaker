@@ -77,6 +77,7 @@ const Requests = () => {
       .from('requests')
       .select('*')
       .eq('user_id', user.id)
+      .order('created_at')
       .ilike('search', search_text)
       .ilikeAnyOf('search', devices)
       .ilikeAnyOf('search', countries)
