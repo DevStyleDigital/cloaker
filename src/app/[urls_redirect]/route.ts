@@ -36,6 +36,8 @@ export async function GET(
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);
 
+  return Response.json({ ip: request.ip, a: request.geo });
+
   const campaignRes = await supabase.from('campaigns').select('*').eq('id', id).single();
 
   if (!campaignRes.data || campaignRes.error)
@@ -197,10 +199,10 @@ export async function GET(
 
   const urlSuccess = urlsRedirect.find((url) => !!url);
 
-  if (urlSuccess) {
-    await insertRequest(true, urlSuccess);
-    return Response.redirect(urlSuccess, 302);
-  }
+  // if (urlSuccess) {
+  //   await insertRequest(true, urlSuccess);
+  //   return Response.redirect(urlSuccess, 302);
+  // }
 
   await insertRequest(false, campaign.blockRedirectUrl);
   return Response.redirect(campaign.blockRedirectUrl, 302);
