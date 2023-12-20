@@ -54,7 +54,7 @@ const Requests = () => {
   const getDataFiltered = async (pageP: number) => {
     const { from, to } = getFromAndTo(pageP);
     if (!user?.id) return [];
-    console.log(filters);
+
     const deviceAndCountriesILike = [
       ...filters.devices,
       ...filters.countries,

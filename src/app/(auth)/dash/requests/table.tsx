@@ -164,7 +164,12 @@ export const DataTableDemo = ({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-  useEffect(() => setData(defaultData), [defaultData]);
+  useEffect(() => {
+    setPage(0);
+    table.setPageIndex(0);
+    setData(defaultData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultData]);
 
   return (
     <div className="w-full">
@@ -229,7 +234,6 @@ export const DataTableDemo = ({
             size="sm"
             onClick={() => {
               const newPage = page + 1;
-              console.log(data.length, page);
               if (data.length - page * 10 > 10) {
                 setIsFetching(true);
                 fetchData(newPage).then((d) => {

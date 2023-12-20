@@ -60,7 +60,6 @@ export const AccountInfo = () => {
         avatar_url: path,
       })
       .then((res) => {
-        console.log(res);
         if (res.error)
           return toast.error(
             'Ocorreu um erro ao atualizar na sua conta, tente novamente mais tarde.',
