@@ -7,7 +7,6 @@ import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
 
 function formatOsName(os: string) {
   if (/Windows/i.test(os)) return 'windows';
@@ -140,26 +139,25 @@ export async function GET(
   const paramsArr = Object.entries(
     campaign.urls?.find((item) => item.id === url_id)?.params || {},
   ).map(([a, b]) => [a, b.toLowerCase().split(',')]) as [string, string[]][];
-  let paramsUrl = {} as Record<string, string[]>;
   request.nextUrl.searchParams.forEach((v, k) => {
-    paramsUrl = paramsArr
-      .reduce(
-        (acc, item) => {
-          if (item[0] === k) item[1].push(v.toLowerCase());
-          const accEqualsIndex = acc.findIndex((accItem) => accItem[0] === item[0]);
-          if (accEqualsIndex !== -1) return [...acc, item];
-          acc[accEqualsIndex][1].push(...item[1]);
-          return acc;
-        },
-        [] as [string, string[]][],
-      )
-      .reduce(
-        (acc, item) => {
-          return { ...acc, [item[0]]: item[1] };
-        },
-        {} as Record<string, string[]>,
-      );
+    paramsArr.push([k, [v.toLowerCase()]]);
   });
+  const paramsUrl = paramsArr
+    .reduce(
+      (acc, item) => {
+        const accEqualsIndex = acc.findIndex((accItem) => accItem[0] === item[0]);
+        if (accEqualsIndex === -1) return [...acc, item];
+        acc[accEqualsIndex][1].push(...item[1]);
+        return acc;
+      },
+      [] as [string, string[]][],
+    )
+    .reduce(
+      (acc, item) => {
+        return { ...acc, [item[0]]: item[1] };
+      },
+      {} as Record<string, string[]>,
+    );
 
   const urlsRedirect = campaign.redirects.map((redirectRule) => {
     if (!redirectRule.devices.includes(device)) return undefined;
@@ -172,17 +170,19 @@ export async function GET(
     );
 
     if (campaign.redirectType === 'simple') return redirectRule.redirectUrl;
-    if (!permitLocale) return undefined;
+    // if (!permitLocale) return undefined;
 
     const paramsRules = redirectRule.rules || [];
     if (!paramsRules.length) return redirectRule.redirectUrl;
 
     const permit = paramsRules.some((param) => {
-      if (!paramsUrl[param[0]]) return false;
-      const permitByRule = formatRule(param[1]).some((rule) =>
-        arraysEqual(paramsUrl[param[0]], rule),
-      );
-      return permitByRule;
+      return Object.entries(param).every(([key, v]) => {
+        if (!paramsUrl[key]) return false;
+        const permitByRule = formatRule(v).some((rule) =>
+          arraysEqual(paramsUrl[key], rule),
+        );
+        return permitByRule;
+      });
     });
 
     if (permit) return redirectRule.redirectUrl;

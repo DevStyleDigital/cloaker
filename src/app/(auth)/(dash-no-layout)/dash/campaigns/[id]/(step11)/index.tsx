@@ -14,8 +14,7 @@ import { v4 as uuid } from 'uuid';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-const URL_REGEX =
-  /^(https?|ftp):\/\/(?:localhost|\S?[a-zA-Z0-9-]\S?.[a-zA-Z]{2,})(?::\d{1,5})?(?:[^\s/$?#].[^\s]*)?$/gm;
+const URL_REGEX = /^(https?|http):\/\/.*/gm;
 
 export const Step11 = ({
   handleNextStep,
@@ -35,11 +34,11 @@ export const Step11 = ({
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>();
+  const [token, setToken] = useState(uuid());
   const [success, setSuccess] = useState<boolean | undefined>(
     !!customDomain ? true : undefined,
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const token = useMemo(() => uuid(), [step]);
 
   useEffect(() => {
     const connections = supabase
@@ -97,6 +96,16 @@ export const Step11 = ({
       setTimeout(() => {
         setIsLoading(false);
         setSuccess((prev) => (!prev ? false : prev));
+        if (!success) {
+          supabase
+            .from('connections')
+            .delete()
+            .eq('id', token)
+            .then(() => {
+              setToken(uuid());
+              setUrl('');
+            });
+        }
       }, 10 * 1000),
     );
   }
