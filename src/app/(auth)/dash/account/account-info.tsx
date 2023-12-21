@@ -7,7 +7,6 @@ import { Input } from 'components/ui/input';
 import { TabsContent } from 'components/ui/tabs';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 import { useAuth } from 'context/auth';
 
 const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
@@ -48,25 +47,20 @@ export const AccountInfo = () => {
       return;
     }
 
-    await supabase
-      .from('profiles')
-      .upsert({
-        id: user?.id,
-        name: name.value,
-        phone: tel.value,
-        avatar_url: path,
+    await supabase.auth
+      .updateUser({
+        data: {
+          name: name.value,
+          phone: tel.value,
+          avatar_url: path,
+        },
       })
       .then((res) => {
         if (res.error)
           return toast.error(
             'Ocorreu um erro ao atualizar na sua conta, tente novamente mais tarde.',
           );
-        setUser((prev) => ({
-          ...prev!,
-          name: name.value,
-          phone: tel.value,
-          avatar_url: path ? URL.createObjectURL(avatar_url!) : prev?.avatar_url,
-        }));
+        supabase.auth.refreshSession();
         toast.success('Atualização feita com sucesso!', { pauseOnHover: false });
       });
     setLoading(false);

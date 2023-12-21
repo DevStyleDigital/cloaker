@@ -47,6 +47,8 @@ export const UserAuthForm = () => {
           data: {
             phone: tel,
             name,
+            subscription: null,
+            avatar_url: null,
           },
         },
       })

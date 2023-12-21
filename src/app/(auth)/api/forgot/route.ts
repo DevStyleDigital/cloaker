@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { type NextRequest } from 'next/server';
+import { cors } from 'utils/cors';
 
 export async function POST(request: NextRequest) {
   const cookiesStore = cookies();
@@ -14,11 +15,7 @@ export async function POST(request: NextRequest) {
   if (error || !session.session)
     throw new Response('Not Authorized', {
       status: 401,
-      headers: {
-        'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_DOMAIN_ORIGIN!,
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      ...cors(),
     });
 
   const { error: updateError } = await supabase.auth.updateUser({
@@ -30,11 +27,7 @@ export async function POST(request: NextRequest) {
       { success: false },
       {
         status: 400,
-        headers: {
-          'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_DOMAIN_ORIGIN!,
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
+        ...cors(),
       },
     );
 
@@ -44,11 +37,7 @@ export async function POST(request: NextRequest) {
     { success: true },
     {
       status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_DOMAIN_ORIGIN!,
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      ...cors(),
     },
   );
 }

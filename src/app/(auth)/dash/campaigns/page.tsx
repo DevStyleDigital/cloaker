@@ -17,11 +17,7 @@ const Campaigns = async () => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const { data } = await supabase
-    .from('profiles')
-    .select('block_providers, id')
-    .eq('id', session?.user.id)
-    .single();
+  const user = session?.user.user_metadata;
 
   const { data: campaigns } = await supabase
     .from('campaigns')
@@ -57,7 +53,7 @@ const Campaigns = async () => {
   return (
     <div className="px-8 py-10 flex flex-col space-y-8">
       <div className="flex items-center justify-end space-x-8">
-        <BlockProvider blockProvidersDefault={data?.block_providers} uid={data?.id} />
+        <BlockProvider blockProvidersDefault={user?.block_providers} uid={user?.id} />
         <Link href="/dash/campaigns/create" className="flex items-center justify-end">
           <Plus className="w-4 h-4 mr-4" />
           Criar campanha

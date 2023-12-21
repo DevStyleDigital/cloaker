@@ -1,20 +1,18 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from 'components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from 'components/ui/popover';
+import { User } from 'components/user';
 import { useAuth } from 'context/auth';
 import { LogOut } from 'lucide-react';
+import { getRandomColor } from 'utils/get-random-color';
 
 export const AvatarPopover = () => {
   const { user, signOut } = useAuth();
 
   return (
     <Popover>
-      <PopoverTrigger className="flex items-center space-x-2 cursor-pointer">
-        <Avatar>
-          <AvatarImage src={user?.avatar_url} />
-          <AvatarFallback>{user?.email[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <span className="block font-semibold truncate">{user?.name || user?.email}</span>
+      <PopoverTrigger asChild className="cursor-pointer">
+        <User user={user} />
       </PopoverTrigger>
       <PopoverContent className="w-full rounded-sm" align="start">
         <button

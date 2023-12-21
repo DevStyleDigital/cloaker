@@ -1,17 +1,21 @@
+'use client';
 import {
   BookOpen,
-  CreditCard,
   FolderOpen,
   PieChart,
   Rocket,
+  ShieldHalf,
   UserSquare,
 } from 'lucide-react';
 import { AvatarPopover } from './avatar';
 import { SidebarLink } from './sidebar-link';
+import { useAuth } from 'context/auth';
 
 export const Sidebar = () => {
+  const { user } = useAuth();
+
   return (
-    <aside className="min-w-64 border-r border-input px-4 py-8 space-y-6 h-screen sticky top-0">
+    <aside className="w-64 bg-background border-r border-input px-4 py-8 space-y-6 h-screen fixed top-0 left-0">
       <AvatarPopover />
 
       <section>
@@ -33,6 +37,12 @@ export const Sidebar = () => {
             <BookOpen className="inline mr-4" />
             Documentação
           </SidebarLink>
+          {user?.subscription === process.env.NEXT_PUBLIC_ADMIN_ROLE ? (
+            <SidebarLink href="/dash/admin">
+              <ShieldHalf className="inline mr-4" />
+              Admin
+            </SidebarLink>
+          ) : null}
         </nav>
       </section>
       <section>

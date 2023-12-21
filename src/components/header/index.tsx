@@ -7,29 +7,46 @@ import { AlertTriangle, Bell, Receipt, RefreshCw, XCircle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from 'components/ui/popover';
 import { cn } from 'utils/cn';
 import { notifications } from 'mocks/notifications';
+import { useAuth } from 'context/auth';
 
 const ROUTES = {
   '/dash': 'Início',
   '/dash/campaigns': 'Campanhas',
   '/dash/requests': 'Requisições',
   '/dash/account': 'Perfil',
+  '/dash/admin': 'Admin',
 } as Record<string, string>;
 
 export const Header = () => {
+  const { user, supabase } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   return (
-    <header className="flex items-center px-7 bg-background py-5 justify-between border-b border-input fixed left-[15.3rem] top-0 w-[calc(100%-16.3rem)] z-10">
+    <header className="flex items-center px-7 bg-background py-5 justify-between border-b border-input fixed left-64 top-0 w-[calc(100%-16rem)] z-10">
       <div className="flex space-x-4 text-sm select-none cursor-default">
         <span className="text-muted-foreground">Dashboard</span>
         <span className="text-muted-foreground">/</span>
         <span>{ROUTES[pathname as keyof typeof ROUTES]}</span>
       </div>
+      {user?.subscription ? (
+        <span className="bg-blue-50 border-blue-200 text-blue-400 border px-4 rounded-full">
+          {user?.subscription}
+        </span>
+      ) : (
+        <button
+          onClick={async () => {
+            await supabase.auth.updateUser({ data: { subscription: 'premium' } });
+            supabase.auth.refreshSession();
+          }}
+        >
+          GET FAKE SUBSCRIPTION
+        </button>
+      )}
 
       <div className="flex gap-4">
         {/* <InputSearch /> */}
-        <Button variant="ghost" onClick={router.refresh} className="p-0 px-2">
+        <Button variant="ghost" onClick={() => router.refresh()} className="p-0 px-2">
           <RefreshCw className="w-6 h-6" />
         </Button>
         <Popover>

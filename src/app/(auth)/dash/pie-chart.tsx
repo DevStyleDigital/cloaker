@@ -10,10 +10,6 @@ export const PieChart = ({ data }: { data: any[] }) => {
     setClient(true);
   }, []);
 
-  if (!client) {
-    return <div className="grow min-h-[400px] bg-accent rounded-xl animate-pulse" />;
-  }
-
   const amount = data.reduce((acc, item) => acc + item.value, 0);
 
   return (
@@ -25,24 +21,43 @@ export const PieChart = ({ data }: { data: any[] }) => {
             Aguardando dados...
           </span>
         )}
-        {!!data.length && (
-          <RePieChart width={300} height={250}>
-            <Pie
-              dataKey="value"
-              data={data}
-              cx={150}
-              cy={100}
-              innerRadius={60}
-              outerRadius={100}
-              fill="#8884d8"
-              minAngle={5}
+        {client ? (
+          !!data.length && (
+            <RePieChart width={300} height={250}>
+              <Pie
+                dataKey="value"
+                data={data}
+                cx={150}
+                cy={100}
+                innerRadius={60}
+                outerRadius={100}
+                fill="#8884d8"
+                minAngle={5}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} stroke={''} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(label) => <>{label} requisições</>} />
+            </RePieChart>
+          )
+        ) : (
+          <div className="grow w-[300px] h-[250px] rounded-full animate-pulse flex justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              id="sv"
+              width="200"
+              height="200"
+              viewBox="0 0 200 200"
             >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} stroke={''} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(label) => <>{label} requisições</>} />
-          </RePieChart>
+              <path
+                id="0"
+                fill="currentColor"
+                className="fill-accent"
+                d="M100, 0 A100,100 0 1 1 99.98254670756873,0.0000015230870928917284 L99.98952802454124,40.000000913852254 A60,60 0 1 0 100,40 Z"
+              />
+            </svg>
+          </div>
         )}
         <ul className="flex flex-wrap gap-6">
           {data.map((entry, index) => (

@@ -10,6 +10,7 @@ import {
 } from 'components/ui/accordion';
 import { useEffect, useState } from 'react';
 import { useAuth } from 'context/auth';
+import { sanitizeSearchText } from 'utils/sanitize-search-text';
 
 export type Filters = {
   campaign: string[];
@@ -21,11 +22,6 @@ export type Filters = {
   dateFrom: Date;
   dateTo: Date;
 };
-
-function sanitizeSearchText(text: string) {
-  const sanitizedText = text.replace(/[^a-zA-Z0-9%&-]/g, '');
-  return sanitizedText;
-}
 
 const ITEM_PER_PAGE = 10;
 

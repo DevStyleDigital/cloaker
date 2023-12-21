@@ -13,6 +13,7 @@ import { TikTok } from 'assets/svgs/logos/tiktok';
 import { Instragram } from 'assets/svgs/logos/instagram';
 import { Facebook } from 'assets/svgs/logos/facebook';
 import { Google } from 'assets/svgs/logos/google';
+import { getRandomColor } from 'utils/get-random-color';
 
 function getAverageOfRequests(req: CampaignRequest[]) {
   const campaignCounts = req.reduce(
@@ -159,7 +160,7 @@ const Dash = async () => {
             ).map(([country, value]) => ({
               name: countries.find((c) => c.code === country)?.name,
               value,
-              color: `hsla(${~~(360 * Math.random())}, 70%,  72%, 0.8)`,
+              color: getRandomColor(),
             }))}
           />
           <DeviceChart

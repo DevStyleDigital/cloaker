@@ -26,10 +26,8 @@ export const BlockProvider = ({
 
   async function onSubmit() {
     setLoading(true);
-    await supabase
-      .from('profiles')
-      .upsert({ block_providers: blockProviders })
-      .eq('id', uid)
+    await supabase.auth
+      .updateUser({ data: { block_providers: blockProviders } })
       .then((res) => {
         if (res.error)
           return toast.error('Houve um erro ao enviar a lista de provedores.');

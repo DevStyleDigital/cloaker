@@ -93,12 +93,6 @@ export async function GET(
       .eq('id', campaign.id);
   }
 
-  // const { data, error } = await supabase
-  //   .from('profiles')
-  //   .select('plan')
-  //   .eq('id', campaign.user_id)
-  //   .single();
-
   // if (error || data.plan === 'disabled')
   //   return Response.redirect(
   //     request.nextUrl.searchParams.get('origin') || 'https://www.google.com/', // CHANGE TO URL

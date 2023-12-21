@@ -3,9 +3,9 @@ import { Sidebar } from 'components/sidebar';
 
 const DashLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   return (
-    <div className="flex overflow-hidden max-h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="w-full overflow-y-scroll bg-muted">
+      <div className="w-full bg-muted ml-64">
         <Header />
         <main className="min-h-screen pt-16">{children}</main>
       </div>
