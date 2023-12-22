@@ -22,7 +22,7 @@ export const SidebarLink: BTypes.FC<{ href: string; disabled?: boolean }> = ({
           'bg-muted opacity-100 hover:bg-zinc-200 focus:bg-zinc-200':
             pathname === props.href,
 
-            'opacity-50 pointer-events-none cursor-not-allowed': disabled
+          'opacity-50 pointer-events-none cursor-not-allowed': disabled,
         },
       )}
     >
