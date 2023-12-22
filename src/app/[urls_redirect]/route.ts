@@ -45,17 +45,19 @@ export async function GET(
     );
   const campaign = campaignRes.data as Campaign;
 
-  const geoIp = (await fetch(`http://ip-api.com/json/${request.ip}?fields=isp,org,as`)
+  const geoIp = (await fetch(
+    `http://ip-api.com/json/${request.ip || '127.0.0.1'}?fields=isp,org,as`,
+  )
     .then((response) => response.json())
     .then((res) => ({
-      country_code: request.geo?.country || '',
+      country_code: request.geo?.country || 'US',
       region: regionsCountries.find(({ countries }) =>
-        countries.includes(request.geo?.country || ''),
+        countries.includes(request.geo?.country || 'US'),
       )?.code,
-      isp: res.isp,
-      org: res.org,
-      as: res.as,
-      IPv4: request.ip,
+      isp: res.isp || 'server',
+      org: res.org || 'server',
+      as: res.as || 'server',
+      IPv4: request.ip || '127.0.0.1',
     }))) as { [k in 'country_code' | 'region' | 'isp' | 'org' | 'as' | 'IPv4']: string };
 
   async function insertRequest(status: boolean, redirect: string) {

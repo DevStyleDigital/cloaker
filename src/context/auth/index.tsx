@@ -7,6 +7,7 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getUser } from 'utils/get-user';
+import { EmailConfirmDialog } from './email-confirm-dialog';
 
 export type AuthUser = {
   id: string;
@@ -16,12 +17,23 @@ export type AuthUser = {
   email: string;
   block_providers: string[];
   subscription: string | null;
+  addr: {
+    street: string;
+    number: string;
+    complement?: string;
+    district: string;
+    city: string;
+    state: string;
+    country: string;
+    postal_code: string;
+  };
 };
 
 type AuthContextType = {
   user: AuthUser | null;
   supabase: SupabaseClient<any, 'public', any>;
   setUser: React.Dispatch<React.SetStateAction<AuthContextType['user']>>;
+  setEmailDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   signOut: () => void;
 };
 
@@ -32,9 +44,15 @@ export const AuthProvider = ({
   children,
   user: userDefault,
   sessionId,
-}: BTypes.FCChildren & { user: AuthContextType['user']; sessionId: string }) => {
+  email: emailDefault,
+}: BTypes.FCChildren & {
+  user?: AuthContextType['user'];
+  sessionId?: string;
+  email?: string;
+}) => {
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const [emailDialogOpen, setEmailDialogOpen] = useState(!!emailDefault || false);
   const [user, setUser] = useState<AuthContextType['user']>(userDefault || null);
 
   useEffect(() => {
@@ -61,8 +79,17 @@ export const AuthProvider = ({
         supabase,
         setUser,
         user,
+        setEmailDialogOpen,
       }}
     >
+      {!!emailDefault && (
+        <EmailConfirmDialog
+          supabase={supabase}
+          open={emailDialogOpen}
+          onClose={() => setEmailDialogOpen(false)}
+          email={emailDefault}
+        />
+      )}
       {children}
     </AuthContext.Provider>
   );

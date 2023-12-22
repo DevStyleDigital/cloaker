@@ -23,12 +23,12 @@ export const User = forwardRef<HTMLDivElement, UserProps>(
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col -space-y-1 items-start">
-          <p className="block font-semibold truncate" title={user?.name}>
+          <p className="block font-semibold max-w-[10rem] truncate" title={user?.name}>
             {user?.name}
           </p>
           {user?.name && (
             <p
-              className="block text-muted-foreground truncate"
+              className="block text-muted-foreground max-w-[10rem] truncate"
               role={enableCopyEmail ? 'button' : 'textbox'}
               title={enableCopyEmail ? 'clique para copiar' : user?.email}
               onClick={() =>

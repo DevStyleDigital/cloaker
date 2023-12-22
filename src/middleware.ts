@@ -1,5 +1,4 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
@@ -9,6 +8,13 @@ export async function middleware(req: NextRequest) {
     data: { session },
     error,
   } = await supabase.auth.getSession();
+
+  if (
+    req.nextUrl.pathname.startsWith('/dash') &&
+    !req.nextUrl.pathname.startsWith('/dash/account') &&
+    !session?.user.user_metadata.subscription
+  )
+    return NextResponse.redirect(new URL('/dash/account', req.url));
 
   if (req.nextUrl.pathname.startsWith('/dash') && (error || !session))
     return NextResponse.redirect(new URL('/login', req.url));

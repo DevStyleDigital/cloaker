@@ -11,7 +11,7 @@ export const AvatarPopover = () => {
 
   return (
     <Popover>
-      <PopoverTrigger asChild className="cursor-pointer">
+      <PopoverTrigger className="cursor-pointer">
         <User user={user} />
       </PopoverTrigger>
       <PopoverContent className="w-full rounded-sm" align="start">

@@ -20,7 +20,10 @@ export const Cards = () => {
   }
 
   return (
-    <TabsContent value="cards" className="space-y-4 p-8">
+    <TabsContent
+      value="cards"
+      className="space-y-4 p-8 bg-background max-w-7xl rounded-xl ml-8"
+    >
       <Dialog>
         <DialogTrigger className="flex items-center justify-end w-full">
           <Plus className="w-4 h-4 mr-4" />

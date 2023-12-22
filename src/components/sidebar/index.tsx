@@ -21,19 +21,19 @@ export const Sidebar = () => {
       <section>
         <h2 className="text-base text-muted-foreground px-4 py-2">Dashboards</h2>
         <nav>
-          <SidebarLink href="/dash">
+          <SidebarLink disabled={!user?.subscription} href="/dash">
             <PieChart className="inline mr-4" />
             Início
           </SidebarLink>
-          <SidebarLink href="/dash/campaigns">
+          <SidebarLink disabled={!user?.subscription} href="/dash/campaigns">
             <FolderOpen className="inline mr-4" />
             Campanhas
           </SidebarLink>
-          <SidebarLink href="/dash/requests">
+          <SidebarLink disabled={!user?.subscription} href="/dash/requests">
             <Rocket className="inline mr-4" />
             Requisições
           </SidebarLink>
-          <SidebarLink href="/docs">
+          <SidebarLink disabled={!user?.subscription} href="/docs">
             <BookOpen className="inline mr-4" />
             Documentação
           </SidebarLink>

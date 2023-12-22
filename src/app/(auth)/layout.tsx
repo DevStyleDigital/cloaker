@@ -9,11 +9,23 @@ const AuthLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
 
   const {
     data: { session },
+    error,
   } = await supabase.auth.getSession();
-  const userDefault = await getUser(session?.user || null, supabase);
+
+  let userDefault;
+  if (session?.user) userDefault = await getUser(session.user, supabase);
+
+  let email;
+  if (!session && !error) {
+    email = cookiesStore.get('confirm-email')?.value;
+  }
 
   return (
-    <AuthProvider sessionId={(session?.user as any).session_id} user={userDefault as any}>
+    <AuthProvider
+      sessionId={(session?.user as any)?.session_id}
+      user={userDefault as any}
+      email={email}
+    >
       {children}
     </AuthProvider>
   );

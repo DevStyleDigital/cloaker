@@ -130,12 +130,7 @@ export const Table = () => {
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className={
-                      cell.column.id === 'status' ? 'justify-end flex' : undefined
-                    }
-                  >
+                  <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, {
                       ...cell.getContext(),
                       length: table.getRowModel().rows.length,

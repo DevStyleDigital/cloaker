@@ -1,13 +1,11 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { InputSearch } from './input-search';
 import { Button } from 'components/ui/button';
 import { AlertTriangle, Bell, Receipt, RefreshCw, XCircle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from 'components/ui/popover';
 import { cn } from 'utils/cn';
 import { notifications } from 'mocks/notifications';
-import { useAuth } from 'context/auth';
 
 const ROUTES = {
   '/dash': 'Início',
@@ -18,7 +16,6 @@ const ROUTES = {
 } as Record<string, string>;
 
 export const Header = () => {
-  const { user, supabase } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -29,23 +26,8 @@ export const Header = () => {
         <span className="text-muted-foreground">/</span>
         <span>{ROUTES[pathname as keyof typeof ROUTES]}</span>
       </div>
-      {user?.subscription ? (
-        <span className="bg-blue-50 border-blue-200 text-blue-400 border px-4 rounded-full">
-          {user?.subscription}
-        </span>
-      ) : (
-        <button
-          onClick={async () => {
-            await supabase.auth.updateUser({ data: { subscription: 'premium' } });
-            supabase.auth.refreshSession();
-          }}
-        >
-          GET FAKE SUBSCRIPTION
-        </button>
-      )}
 
       <div className="flex gap-4">
-        {/* <InputSearch /> */}
         <Button variant="ghost" onClick={() => router.refresh()} className="p-0 px-2">
           <RefreshCw className="w-6 h-6" />
         </Button>

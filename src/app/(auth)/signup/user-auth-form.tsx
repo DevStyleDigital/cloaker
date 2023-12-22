@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import cookies from 'js-cookie';
 
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
@@ -11,19 +11,19 @@ import { cn } from 'utils/cn';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ThirdPatty } from '../ThirdPatty';
-import { Password } from '../../../components/password';
-import { Tel } from '../../../components/tel';
+import { Password } from 'components/password';
+import { Tel } from 'components/tel';
 import { useAuth } from 'context/auth';
 
 export const UserAuthForm = () => {
-  const router = useRouter();
-  const { user, supabase } = useAuth();
+  const { supabase, setEmailDialogOpen } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
   const [passwordInvalid, setPasswordInvalid] = useState(false);
 
   const clearError = () => setError(null);
-  const handleSignUp = () => router.push('/dash');
+  const handleSignUp = () => setEmailDialogOpen(true);
 
   async function onSubmit(ev: React.SyntheticEvent) {
     ev.preventDefault();
@@ -32,7 +32,6 @@ export const UserAuthForm = () => {
     setLoading(true);
 
     const {
-      email: { value: email },
       password: { value: password },
       tel: { value: tel },
       name: { value: name },
@@ -44,17 +43,20 @@ export const UserAuthForm = () => {
         email,
         password,
         options: {
+          emailRedirectTo: `${location.origin}/auth/callback`,
           data: {
             phone: tel,
             name,
             subscription: null,
             avatar_url: null,
+            addr: null,
           },
         },
       })
       .then(async (res) => {
         if (!res.data.user || res.error) throw 'err';
         handleSignUp();
+        cookies.set('confirm-email', email, { expires: 365 * 2 });
         return res;
       })
       .catch((err: string) => {
@@ -101,6 +103,7 @@ export const UserAuthForm = () => {
               icons={[Mail]}
               className={cn({ 'border-destructive': !!error })}
               disabled={loading}
+              onChange={({ target: { value } }) => setEmail(value)}
             />
           </div>
           <Tel error={!!error} loading={loading} />

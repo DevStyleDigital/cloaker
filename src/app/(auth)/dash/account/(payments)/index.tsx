@@ -20,7 +20,10 @@ export const Payments = () => {
   }
 
   return (
-    <TabsContent value="payments" className="space-y-4 p-8">
+    <TabsContent
+      value="payments"
+      className="space-y-4 p-8 bg-background max-w-7xl rounded-xl ml-8"
+    >
       <Dialog>
         <DialogContent>
           <form onSubmit={onSubmit} className="w-full flex flex-col space-y-4">

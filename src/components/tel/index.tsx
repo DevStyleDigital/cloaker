@@ -21,13 +21,13 @@ export const Tel = ({
 
   return (
     <Input
-      placeholder="Telefone"
+      placeholder="Telefone*"
       render={
         <MuiTelInput
           value={telValue}
           onChange={(v) => {
             setTelValue(v);
-            setInvalidTel(!matchIsValidTel(telValue));
+            setInvalidTel(v.length < 17 || !matchIsValidTel(v, 'BR'));
           }}
           name="tel"
           required
