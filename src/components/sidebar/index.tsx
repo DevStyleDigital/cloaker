@@ -20,7 +20,7 @@ export const Sidebar = () => {
 
       <section>
         <h2 className="text-base text-muted-foreground px-4 py-2">Dashboards</h2>
-        <nav>
+        <nav className={!user?.subscription ? 'cursor-not-allowed' : undefined}>
           <SidebarLink disabled={!user?.subscription} href="/dash">
             <PieChart className="inline mr-4" />
             Início

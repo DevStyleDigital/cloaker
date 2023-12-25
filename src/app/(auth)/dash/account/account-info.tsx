@@ -16,25 +16,9 @@ const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
 export const AccountInfo = () => {
   const router = useRouter();
   const { user, supabase } = useAuth();
-  const [client, setClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [avatar_url, setAvatarUrl] = useState<File | null>(null);
-  const [states, setStates] = useState<string[][]>([]);
-  const [postalCodeMask, setPostalCodeMask] = useState<string>('');
-  const [error, setError] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    setClient(true);
-  }, []);
-
-  useEffect(() => {
-    if ((!user?.subscription || !user?.addr) && buttonRef.current && client) {
-      toast.warning('Para usar a aplicação primeiro você precisa finalizar seu cadastro');
-      setError(true);
-      setTimeout(() => buttonRef.current!.click(), 500);
-    }
-  }, [client]);
 
   async function uploadAvatar() {
     const file = avatar_url! as File;
@@ -56,18 +40,7 @@ export const AccountInfo = () => {
     ev.preventDefault();
     setLoading(true);
 
-    const {
-      name,
-      tel,
-      city,
-      complement,
-      country,
-      district,
-      number,
-      postal_code,
-      state,
-      street,
-    } = ev.target as unknown as {
+    const { name, tel } = ev.target as unknown as {
       [k: string]: HTMLInputElement;
     };
 
@@ -86,16 +59,6 @@ export const AccountInfo = () => {
           name: name.value,
           phone: tel.value,
           avatar_url: path,
-          addr: {
-            city: city.value,
-            complement: complement.value,
-            country: country.value,
-            district: district.value,
-            number: number.value,
-            postal_code: postal_code.value,
-            state: state.value,
-            street: street.value,
-          },
         },
       })
       .then((res) => {
@@ -120,9 +83,9 @@ export const AccountInfo = () => {
           </p>
         </div>
         <form className="flex flex-col space-y-4" onSubmit={onSubmitInfo}>
-          <div className="flex space-x-16">
+          <div className="flex space-x-16 items-end">
             <div>
-              <p className="italic text-muted-foreground">Foto de perfil:</p>
+              <p className="italic text-muted-foreground mb-3">Foto de perfil:</p>
               <UploadImageInput
                 file={avatar_url || user?.avatar_url!}
                 className="relative border-border border-dashed text-sm text-muted-foreground aspect-square gap-4 w-52 flex rounded-lg items-center justify-center bg-accent hover:border-primary border cursor-pointer transition-all"
@@ -145,99 +108,11 @@ export const AccountInfo = () => {
                 <Tel error={false} defaultValue={user?.phone} loading={loading} />
               </div>
               <Input placeholder="Email" defaultValue={user?.email} disabled />
+              <Button disabled={loading} className="w-fit" ref={buttonRef}>
+                Atualizar
+              </Button>
             </div>
           </div>
-          <p className="italic text-muted-foreground">Endereço:</p>
-          <div className="grid grid-cols-[1fr_1fr_1fr_16rem] w-full gap-4">
-            <Select
-              name="country"
-              defaultValue={user?.addr?.country}
-              required
-              disabled={loading}
-              onValueChange={(v) => {
-                setError(false);
-                setStates(countries.find(({ code }) => code === v)?.states!);
-                setPostalCodeMask(countries.find(({ code }) => code === v)?.zip_code!);
-              }}
-            >
-              <SelectTrigger className="w-full" placeholder="País*" />
-              <SelectContent>
-                <SelectItem value="BR">Brasil</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              name="state"
-              required
-              disabled={!states.length || loading}
-              defaultValue={user?.addr?.state}
-            >
-              <SelectTrigger className="w-full" placeholder="Estado*" />
-              <SelectContent>
-                {states.map(([code, name]) => (
-                  <SelectItem key={code} value={code}>
-                    {name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Input
-              name="city"
-              placeholder="Cidade*"
-              defaultValue={user?.addr?.city}
-              required
-              error={error}
-              onChange={() => setError(false)}
-              disabled={loading}
-            />
-            <InputMask
-              name="postal_code"
-              placeholder="CEP*"
-              defaultValue={user?.addr?.postal_code}
-              mask={postalCodeMask.split('').map((d) => (d === 'N' ? /\d/ : d))}
-              required
-              disabled={!postalCodeMask || loading}
-            />
-          </div>
-          <div className="grid grid-cols-[20rem_1fr_8rem] w-full gap-4">
-            <Input
-              name="district"
-              placeholder="Bairro*"
-              defaultValue={user?.addr?.district}
-              required
-              error={error}
-              onChange={() => setError(false)}
-              disabled={loading}
-            />
-            <Input
-              name="street"
-              placeholder="Rua*"
-              className="w-full !max-w-full"
-              defaultValue={user?.addr?.street}
-              required
-              error={error}
-              onChange={() => setError(false)}
-              disabled={loading}
-            />
-            <Input
-              name="number"
-              placeholder="Número*"
-              defaultValue={user?.addr?.number}
-              className="w-full"
-              required
-              error={error}
-              onChange={() => setError(false)}
-              disabled={loading}
-            />
-          </div>
-          <Input
-            name="complement"
-            placeholder="Complemento"
-            defaultValue={user?.addr?.complement}
-            disabled={loading}
-          />
-          <Button disabled={loading} className="w-fit" ref={buttonRef}>
-            Atualizar
-          </Button>
         </form>
       </section>
     </TabsContent>

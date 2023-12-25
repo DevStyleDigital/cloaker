@@ -1,53 +1,19 @@
-'use client';
-import { Tabs, TabsList, TabsTrigger } from 'components/ui/tabs';
-import { AccountInfo } from './account-info';
-import { Cards } from './(cards)';
-import { Payments } from './(payments)';
-import { Security } from './(security)';
-import { Subscription } from './(subscription)';
-import { useAuth } from 'context/auth';
-import { toast } from 'react-toastify';
-import { useEffect } from 'react';
+import Account from './account';
 
-const Account = () => {
-  const { user } = useAuth();
+async function getPrices() {
+  const prices = await fetch(
+    `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/api/billing-prices`,
+  )
+    .then((res) => res.json())
+    .then((res) => res)
+    .catch(() => []);
+  return prices;
+}
 
-  return (
-    <Tabs
-      defaultValue="account"
-      value={
-        user?.addr && !user?.subscription
-          ? 'subscription'
-          : !user?.addr
-            ? 'account'
-            : undefined
-      }
-      className="space-y-4 h-full"
-    >
-      <TabsList className="m-8 mb-0">
-        <TabsTrigger disabled={user?.addr && !user?.subscription} value="account">
-          Informações da Conta
-        </TabsTrigger>
-        <TabsTrigger disabled={!user?.subscription} value="security">
-          Segurança
-        </TabsTrigger>
-        <TabsTrigger disabled={!user?.addr} value="subscription">
-          Assinaturas
-        </TabsTrigger>
-        <TabsTrigger disabled={!user?.subscription} value="payments">
-          Pagamentos
-        </TabsTrigger>
-        <TabsTrigger disabled={!user?.subscription} value="cards">
-          Cartões
-        </TabsTrigger>
-      </TabsList>
-      <AccountInfo />
-      <Payments />
-      <Subscription />
-      <Cards />
-      <Security />
-    </Tabs>
-  );
+const AccountPage = async () => {
+  const prices = await getPrices();
+
+  return <Account prices={prices} />;
 };
 
-export default Account;
+export default AccountPage;

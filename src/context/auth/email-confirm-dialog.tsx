@@ -8,13 +8,12 @@ import { useEffect, useState } from 'react';
 export const EmailConfirmDialog = ({
   open,
   email,
-  supabase,
-  onClose,
+  supabase, // onClose,
 }: {
   open: boolean;
   email: string;
   supabase: SupabaseClient<any, 'public', any>;
-  onClose: () => void;
+  // onClose: () => void;
 }) => {
   const [time, setTime] = useState<number>(1);
   const [counter, setCounter] = useState<number | null>(null);
@@ -100,7 +99,13 @@ export const EmailConfirmDialog = ({
             {tryTomorrow
               ? 'Tente novamente amanhã'
               : counter !== null && counter > 0
-                ? `Tente novamente em ${counter} segundos`
+                ? `Tente novamente em ${
+                    counter >= 60 && counter < 60 * 60
+                      ? `${Math.floor(counter / 60)} minuto(s)`
+                      : counter >= 60 * 60
+                        ? `${counter / (60 * 60)} hora(s)`
+                        : `${counter} segundo(s)`
+                  } `
                 : 'Reenviar email'}
           </Button>
         </div>

@@ -82,8 +82,6 @@ const Requests = () => {
       .lte('created_at', filters.dateTo.toISOString())
       .range(from, to);
 
-    console.log(search_text, devices, countries, data);
-
     return data || [];
   };
 

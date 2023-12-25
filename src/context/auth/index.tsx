@@ -1,13 +1,13 @@
 'use client';
 import {
   SupabaseClient,
-  User,
   createClientComponentClient,
 } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getUser } from 'utils/get-user';
 import { EmailConfirmDialog } from './email-confirm-dialog';
+import cookies from 'js-cookie';
 
 export type AuthUser = {
   id: string;
@@ -17,16 +17,6 @@ export type AuthUser = {
   email: string;
   block_providers: string[];
   subscription: string | null;
-  addr: {
-    street: string;
-    number: string;
-    complement?: string;
-    district: string;
-    city: string;
-    state: string;
-    country: string;
-    postal_code: string;
-  };
 };
 
 type AuthContextType = {
@@ -59,7 +49,6 @@ export const AuthProvider = ({
     supabase.auth.onAuthStateChange(async (_, session) => {
       if (!session) return;
       if ((session.user as any).session_id === sessionId) return;
-      console.log('asdhbsjkafdjk');
       const user = await getUser(session.user, supabase);
       setUser(user as any);
     });
@@ -82,12 +71,12 @@ export const AuthProvider = ({
         setEmailDialogOpen,
       }}
     >
-      {!!emailDefault && (
+      {(!!emailDefault || emailDialogOpen) && (
         <EmailConfirmDialog
           supabase={supabase}
           open={emailDialogOpen}
-          onClose={() => setEmailDialogOpen(false)}
-          email={emailDefault}
+          // onClose={() => setEmailDialogOpen(false)}
+          email={emailDefault || cookies.get('confirm-email')!}
         />
       )}
       {children}

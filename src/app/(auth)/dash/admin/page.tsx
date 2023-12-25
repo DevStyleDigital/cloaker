@@ -39,8 +39,6 @@ const Requests = () => {
       .then((r) => r)
       .catch((e) => e);
 
-    console.log(data);
-
     return data || [];
   };
 

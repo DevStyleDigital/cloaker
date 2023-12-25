@@ -16,9 +16,10 @@ export async function GET(request: NextRequest) {
     if (session) {
       cookieStore.getAll().map(({ name }) => cookieStore.delete(name));
       await supabase.auth.setSession(session);
+      return NextResponse.redirect(`${requestUrl.origin}/dash/account`);
     }
   }
 
   // URL to redirect to after sign in process completes
-  return NextResponse.redirect(`${requestUrl.origin}/dash/account`);
+  return NextResponse.redirect(`${requestUrl.origin}/login`);
 }

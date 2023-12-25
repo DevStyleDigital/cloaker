@@ -14,6 +14,7 @@ import { ThirdPatty } from '../ThirdPatty';
 import { Password } from 'components/password';
 import { Tel } from 'components/tel';
 import { useAuth } from 'context/auth';
+import { AuthError } from '@supabase/supabase-js';
 
 export const UserAuthForm = () => {
   const { supabase, setEmailDialogOpen } = useAuth();
@@ -23,7 +24,6 @@ export const UserAuthForm = () => {
   const [passwordInvalid, setPasswordInvalid] = useState(false);
 
   const clearError = () => setError(null);
-  const handleSignUp = () => setEmailDialogOpen(true);
 
   async function onSubmit(ev: React.SyntheticEvent) {
     ev.preventDefault();
@@ -49,20 +49,21 @@ export const UserAuthForm = () => {
             name,
             subscription: null,
             avatar_url: null,
-            addr: null,
           },
         },
       })
       .then(async (res) => {
-        if (!res.data.user || res.error) throw 'err';
-        handleSignUp();
+        if (!res.data.user || res.error) throw res.error;
+        setEmailDialogOpen(true);
         cookies.set('confirm-email', email, { expires: 365 * 2 });
         return res;
       })
-      .catch((err: string) => {
-        toast.error(
-          'Ocorreu um erro ao entrar na sua conta, tente novamente mais tarde.',
-        );
+      .catch((err: AuthError | null) => {
+        if (err?.status === 429)
+          return toast.warn(
+            'Foram feitas muitas requisições, tente novamente mais tarde.',
+          );
+        toast.error('Ocorreu um erro ao criar na sua conta, tente novamente mais tarde.');
         return err;
       })
       .finally(() => setLoading(false));

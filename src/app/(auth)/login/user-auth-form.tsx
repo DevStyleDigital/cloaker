@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ThirdPatty } from '../ThirdPatty';
 import { useAuth } from 'context/auth';
+import { AuthError } from '@supabase/supabase-js';
 
 export const UserAuthForm = () => {
   const router = useRouter();
@@ -35,11 +36,15 @@ export const UserAuthForm = () => {
     supabase.auth
       .signInWithPassword({ email, password })
       .then((res) => {
-        if (res.error) throw res.error.message;
+        if (res.error) throw res.error;
         handleSignIn();
       })
-      .catch((err: any) => {
-        if (err === 'Invalid login credentials')
+      .catch((err: AuthError | null) => {
+        if (err?.status === 429)
+          return toast.warn(
+            'Foram feitas muitas requisições, tente novamente mais tarde.',
+          );
+        if (err?.message === 'Invalid login credentials')
           return setError('E-mail ou senha inválidos, verifique-os e tente novamente.');
         toast.error(
           'Ocorreu um erro ao entrar na sua conta, tente novamente mais tarde.',
