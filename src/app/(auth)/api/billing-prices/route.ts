@@ -11,22 +11,15 @@ export async function GET() {
 
   const { error } = await supabase.auth.getSession();
 
-  if (error)
-    throw new Response('Not Authorized', {
-      status: 401,
-      ...cors(),
-    });
+  if (error) throw new Response('Not Authorized', { status: 401, ...cors() });
 
   try {
     const prices = await stripe.prices.list({
       limit: 3,
     });
 
-    return Response.json(prices.data, {
-      status: 200,
-      ...cors(),
-    });
+    return Response.json(prices.data, { status: 200, ...cors() });
   } catch {
-    return new Response('Error fetching prices', { status: 500, ...cors() });
+    throw new Response('Error fetching prices', { status: 500, ...cors() });
   }
 }

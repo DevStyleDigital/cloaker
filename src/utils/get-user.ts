@@ -1,4 +1,5 @@
 import { SupabaseClient, User } from '@supabase/supabase-js';
+import { jwt } from 'services/jwt';
 
 export async function getUser(
   user: User | null,
@@ -16,12 +17,19 @@ export async function getUser(
     url = blob ? URL.createObjectURL(blob) : undefined;
   }
 
-  // const subscription = (await fetch('/api/subscription', { method: 'GET' })
-  //   .then((res) => res.json())
-  //   .catch(() => null)) as string | null;
+  let subscription;
+  if (
+    typeof data?.subscription?.token === 'string' &&
+    typeof data?.subscription?.secret === 'string'
+  )
+    subscription = await jwt
+      .verify(data.subscription.token, data.subscription.secret)
+      .then((r) => r.subscription)
+      .catch(() => null);
 
   return {
     ...data,
+    subscription,
     id: user.id,
     avatar_url: url,
     email: user.email!,

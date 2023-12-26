@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { jwt } from 'services/jwt';
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -12,7 +13,8 @@ export async function GET(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   if (session && subscription) {
-    await supabase.auth.updateUser({ data: { subscription } });
+    const tokens = await jwt.sign({ subscription });
+    await supabase.auth.updateUser({ data: { subscription: tokens } });
     await supabase.auth.refreshSession();
   }
 

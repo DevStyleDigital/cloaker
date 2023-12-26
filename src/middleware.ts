@@ -1,5 +1,6 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
+import { jwt } from 'services/jwt';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
@@ -11,10 +12,18 @@ export async function middleware(req: NextRequest) {
 
   if (
     req.nextUrl.pathname.startsWith('/dash') &&
-    !req.nextUrl.pathname.startsWith('/dash/account') &&
-    !session?.user.user_metadata.subscription
-  )
-    return NextResponse.redirect(new URL('/dash/account', req.url));
+    !req.nextUrl.pathname.startsWith('/dash/account')
+  ) {
+    const tokens = session?.user.user_metadata.subscription;
+
+    const subscription = await jwt
+      .verify(tokens.token, tokens.secret)
+      .then((r) => r)
+      .catch(() => null);
+
+    if (!subscription?.subscription)
+      return NextResponse.redirect(new URL('/dash/account', req.url));
+  }
 
   if (req.nextUrl.pathname.startsWith('/dash') && (error || !session))
     return NextResponse.redirect(new URL('/login', req.url));

@@ -7,9 +7,12 @@ export async function POST(req: NextRequest) {
   const cookiesStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
 
-  const { error } = await supabase.auth.getSession();
+  const {
+    error,
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (error)
+  if (error || !session)
     throw new Response('Not Authorized', {
       status: 401,
       ...cors(),

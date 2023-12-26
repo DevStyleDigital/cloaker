@@ -1,17 +1,25 @@
-import jsonwebtoken from 'jsonwebtoken';
-import crypto from 'node:crypto';
+import { SignJWT, jwtVerify } from 'jose';
+import { v4 as uuid } from 'uuid';
 
 export const jwt = {
-  sign(payload: any) {
-    const secret = crypto.randomBytes(256).toString('base64');
+  async sign(payload: any, exp: string | number | Date = '30 day') {
+    const secret = uuid();
 
     return {
       secret,
-      jwt: jsonwebtoken.sign(payload, `${secret}.${process.env.SECRET}`),
+      token: await new SignJWT({ ...payload })
+        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+        .setExpirationTime(exp)
+        .sign(new TextEncoder().encode(`${secret}.${process.env.SECRET}`)),
     };
   },
 
-  verify(token: string, secret: string) {
-    return jsonwebtoken.verify(token, `${secret}.${process.env.SECRET}`);
+  async verify(token: string, secret: string) {
+    return await jwtVerify(
+      token,
+      new TextEncoder().encode(`${secret}.${process.env.SECRET}`),
+    )
+      .then((r) => r.payload)
+      .catch((e) => e);
   },
 };

@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from 'components/ui/table';
+import { toast } from 'react-toastify';
+import { useAuth } from 'context/auth';
 
 type Card = {
   id: string;
@@ -24,20 +26,6 @@ type Card = {
   priority: 'primary' | 'secondary';
   company: string;
 };
-const cards_mock: Card[] = [
-  {
-    company: 'visa',
-    id: '1',
-    last_four_digits: '1111',
-    priority: 'primary',
-  },
-  {
-    company: 'mastercard',
-    id: '2',
-    last_four_digits: '2222',
-    priority: 'secondary',
-  },
-];
 
 export const columns: ColumnDef<Card>[] = [
   {
@@ -75,17 +63,35 @@ export const columns: ColumnDef<Card>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: (props: CellContext<Card, unknown> & { length?: number }) => (
-      <Button variant="destructive" disabled={(props.length || 0) < 2}>
-        Excluir <Trash className="w-4 h-4 ml-4" />
-      </Button>
-    ),
+    cell: (props: CellContext<Card, unknown> & { length?: number }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const { user } = useAuth();
+
+      return (
+        <Button
+          variant="destructive"
+          disabled={(props.length || 0) < 2}
+          onClick={() => {
+            fetch('/api/cards', {
+              method: 'DELETE',
+              body: JSON.stringify({ id: props.row.original.id, cid: user?.id }),
+            })
+              .then(() => toast.success('Cartão deletado!'))
+              .catch(() =>
+                toast.error('Ocorreu um erro ao deletar seu cartão. Tente novamente!'),
+              );
+          }}
+        >
+          Excluir <Trash className="w-4 h-4 ml-4" />
+        </Button>
+      );
+    },
   },
 ];
 
-export const Table = () => {
+export const Table = ({ data }: { data: any }) => {
   const table = useReactTable({
-    data: cards_mock,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

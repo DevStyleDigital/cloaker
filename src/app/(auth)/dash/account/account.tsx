@@ -6,10 +6,8 @@ import { Payments } from './(payments)';
 import { Security } from './(security)';
 import { Subscription } from './(subscription)';
 import { useAuth } from 'context/auth';
-import { toast } from 'react-toastify';
-import { useEffect } from 'react';
 
-const Account = ({ prices }: { prices: any }) => {
+const Account = ({ prices, cards }: { prices: any; cards: any }) => {
   const { user } = useAuth();
 
   return (
@@ -36,7 +34,7 @@ const Account = ({ prices }: { prices: any }) => {
       <AccountInfo />
       <Payments />
       <Subscription prices={prices} />
-      <Cards />
+      <Cards cards={cards} />
       <Security />
     </Tabs>
   );

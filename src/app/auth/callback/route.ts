@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -15,7 +16,17 @@ export async function GET(request: NextRequest) {
 
     if (session) {
       cookieStore.getAll().map(({ name }) => cookieStore.delete(name));
-      await supabase.auth.setSession(session);
+
+      const stripe = new Stripe(process.env.PAYMENT_KEY!);
+      const sCostumer = await stripe.customers.create({
+        email: session.user.email,
+        name: session.user.user_metadata.name,
+        phone: session.user.user_metadata.phone,
+      });
+
+      await supabase.auth.updateUser({ data: { paymentId: sCostumer.id } });
+      supabase.auth.refreshSession();
+
       return NextResponse.redirect(`${requestUrl.origin}/dash/account`);
     }
   }

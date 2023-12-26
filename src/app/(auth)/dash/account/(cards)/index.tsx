@@ -11,12 +11,42 @@ import { Mastercard } from 'assets/svgs/logos/mastercard';
 import { Select, SelectContent, SelectItem, SelectTrigger } from 'components/ui/select';
 import { Switch } from 'components/ui/switch';
 import { Button } from 'components/ui/button';
+import { toast } from 'react-toastify';
 
-export const Cards = () => {
+export const Cards = ({ cards: cardsProp }: { cards: any }) => {
+  const [open, setOpen] = useState(false);
+  const [cards, setCards] = useState(cardsProp);
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
   const [cardType, setCardType] = useState<ReturnType<typeof creditCardType>>(undefined);
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
+    const {
+      name: { value: name },
+      cvc: { value: cvc },
+      number: { value: number },
+    } = ev.currentTarget as unknown as {
+      [k: string]: HTMLInputElement;
+    };
+
+    fetch('/api/cards', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        year: Number(year),
+        month: Number(month),
+        cvc,
+        number,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setOpen(false);
+        toast.success('Cartão adicionado!');
+        setCards([...cards, { ...data, company: cardType }]);
+      })
+      .catch(() => toast.error('Ocorreu um erro ao criar seu cartão. Tente novamente!'));
   }
 
   return (
@@ -24,7 +54,7 @@ export const Cards = () => {
       value="cards"
       className="space-y-4 p-8 bg-background max-w-7xl rounded-xl ml-8"
     >
-      <Dialog>
+      <Dialog onOpenChange={setOpen} open={open}>
         <DialogTrigger className="flex items-center justify-end w-full">
           <Plus className="w-4 h-4 mr-4" />
           Adicionar novo cartão
@@ -37,7 +67,7 @@ export const Cards = () => {
                 Adicione um novo cartão de crédito para realizar pagamentos.
               </p>
             </div>
-            <Input required placeholder="Nome do cartão" />
+            <Input required placeholder="Nome do cartão" name="name" />
             <InputMask
               placeholder="Número do cartão"
               icons={[
@@ -49,6 +79,7 @@ export const Cards = () => {
                     : null,
               ]}
               required
+              name="number"
               showMask={false}
               error={!!cardType && !['visa', 'mastercard'].includes(cardType)}
               onChange={({ target: { value } }) =>
@@ -78,8 +109,8 @@ export const Cards = () => {
             />
 
             <div className="flex space-x-4">
-              <Select required>
-                <SelectTrigger id="month" placeholder="Mês" />
+              <Select name="month" required onValueChange={setMonth}>
+                <SelectTrigger id="month" name="month" placeholder="Mês" />
                 <SelectContent>
                   <SelectItem value="1">Janeiro</SelectItem>
                   <SelectItem value="2">Fevereiro</SelectItem>
@@ -95,8 +126,8 @@ export const Cards = () => {
                   <SelectItem value="12">Dezembro</SelectItem>
                 </SelectContent>
               </Select>
-              <Select required>
-                <SelectTrigger id="year" placeholder="Ano" />
+              <Select name="year" required onValueChange={setYear}>
+                <SelectTrigger id="year" name="year" placeholder="Ano" />
                 <SelectContent>
                   {Array.from({ length: 10 }, (_, i) => (
                     <SelectItem key={i} value={`${new Date().getFullYear() + i}`}>
@@ -131,7 +162,7 @@ export const Cards = () => {
           </form>
         </DialogContent>
       </Dialog>
-      <Table />
+      <Table data={cards} />
     </TabsContent>
   );
 };
