@@ -1,23 +1,16 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { createSupabaseServer } from 'services/supabase';
+import { authMiddleware } from 'utils/auth-middleware';
 import { cors } from 'utils/cors';
 
 export async function POST(req: NextRequest) {
-  const cookiesStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
-
+  const { supabase } = createSupabaseServer();
   const {
-    error,
     data: { session },
   } = await supabase.auth.getSession();
+  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
 
-  if (error || !session)
-    throw new Response('Not Authorized', {
-      status: 401,
-      ...cors(),
-    });
-
+  const { supabase } = createSupabaseServer();
   const data = await req.json();
 
   const errorCampaign = await supabase

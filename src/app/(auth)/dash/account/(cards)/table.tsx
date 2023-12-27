@@ -1,5 +1,3 @@
-import { Mastercard } from 'assets/svgs/logos/mastercard';
-import { VISA } from 'assets/svgs/logos/visa';
 import {
   type CellContext,
   type ColumnDef,
@@ -18,13 +16,14 @@ import {
   TableRow,
 } from 'components/ui/table';
 import { toast } from 'react-toastify';
-import { useAuth } from 'context/auth';
+import { CardLogo } from 'components/card-logo';
 
 type Card = {
   id: string;
   last_four_digits: string;
   priority: 'primary' | 'secondary';
   company: string;
+  paymentId: string;
 };
 
 export const columns: ColumnDef<Card>[] = [
@@ -33,13 +32,10 @@ export const columns: ColumnDef<Card>[] = [
     header: 'Marca',
     cell: (props) => {
       const v = props.getValue() as string;
+      const Brand = CardLogo({ brand: v });
       return (
         <span>
-          {v === 'visa' ? (
-            <VISA className="w-10 h-10" />
-          ) : (
-            <Mastercard className="w-10 h-10" />
-          )}
+          <Brand className="w-10 h-10" />
         </span>
       );
     },
@@ -63,33 +59,58 @@ export const columns: ColumnDef<Card>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: (props: CellContext<Card, unknown> & { length?: number }) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { user } = useAuth();
-
-      return (
-        <Button
-          variant="destructive"
-          disabled={(props.length || 0) < 2}
-          onClick={() => {
-            fetch('/api/cards', {
-              method: 'DELETE',
-              body: JSON.stringify({ id: props.row.original.id, cid: user?.id }),
+    cell: (
+      props: CellContext<Card, unknown> & {
+        length?: number;
+        next_card_primary?: string;
+        next_card_primary_index?: number;
+        handleDeleteCard?: (i: number, i2?: number) => void;
+      },
+    ) => (
+      <Button
+        variant="destructive"
+        disabled={(props.length || 0) < 2}
+        onClick={() => {
+          fetch('/api/cards', {
+            method: 'DELETE',
+            body: JSON.stringify({
+              id: props.row.original.id,
+              cid: props.row.original.paymentId,
+              new_card_primary:
+                props.row.original.priority === 'primary'
+                  ? props.next_card_primary
+                  : undefined,
+            }),
+          })
+            .then(() => {
+              props.handleDeleteCard &&
+                props.handleDeleteCard(
+                  props.row.index,
+                  props.row.original.priority === 'primary'
+                    ? props.next_card_primary_index
+                    : undefined,
+                );
+              toast.success('Cartão deletado!');
             })
-              .then(() => toast.success('Cartão deletado!'))
-              .catch(() =>
-                toast.error('Ocorreu um erro ao deletar seu cartão. Tente novamente!'),
-              );
-          }}
-        >
-          Excluir <Trash className="w-4 h-4 ml-4" />
-        </Button>
-      );
-    },
+            .catch(() =>
+              toast.error('Ocorreu um erro ao deletar seu cartão. Tente novamente!'),
+            );
+        }}
+      >
+        Excluir <Trash className="w-4 h-4 ml-4" />
+      </Button>
+    ),
   },
 ];
 
-export const Table = ({ data }: { data: any }) => {
+export const Table = ({
+  data,
+  handleDeleteCard,
+}: {
+  data: Card[];
+  handleDeleteCard: (i: number, i2?: number) => void;
+}) => {
+  const primaryCardIndex = data.findIndex(({ priority }) => priority === 'primary');
   const table = useReactTable({
     data,
     columns,
@@ -128,6 +149,9 @@ export const Table = ({ data }: { data: any }) => {
                     {flexRender(cell.column.columnDef.cell, {
                       ...cell.getContext(),
                       length: table.getRowModel().rows.length,
+                      next_card_primary: data[primaryCardIndex === 0 ? 1 : 0]?.id,
+                      next_card_primary_index: primaryCardIndex === 0 ? 1 : 0,
+                      handleDeleteCard,
                     })}
                   </TableCell>
                 ))}

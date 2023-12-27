@@ -16,7 +16,7 @@ import { AuthError } from '@supabase/supabase-js';
 
 export const UserAuthForm = () => {
   const router = useRouter();
-  const { user, supabase } = useAuth();
+  const { supabase } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

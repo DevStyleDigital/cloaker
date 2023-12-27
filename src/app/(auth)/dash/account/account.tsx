@@ -7,7 +7,7 @@ import { Security } from './(security)';
 import { Subscription } from './(subscription)';
 import { useAuth } from 'context/auth';
 
-const Account = ({ prices, cards }: { prices: any; cards: any }) => {
+const Account = () => {
   const { user } = useAuth();
 
   return (
@@ -33,8 +33,8 @@ const Account = ({ prices, cards }: { prices: any; cards: any }) => {
       </TabsList>
       <AccountInfo />
       <Payments />
-      <Subscription prices={prices} />
-      <Cards cards={cards} />
+      <Subscription />
+      <Cards />
       <Security />
     </Tabs>
   );

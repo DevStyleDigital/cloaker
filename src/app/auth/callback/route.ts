@@ -1,6 +1,6 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { createSupabaseServer } from 'services/supabase';
 import Stripe from 'stripe';
 
 export async function GET(request: NextRequest) {
@@ -9,13 +9,16 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const { supabase } = createSupabaseServer();
     const {
       data: { session },
     } = await supabase.auth.exchangeCodeForSession(code);
 
     if (session) {
-      cookieStore.getAll().map(({ name }) => cookieStore.delete(name));
+      cookieStore.delete('resend-try-tomorrow');
+      cookieStore.delete('resend-counter');
+      cookieStore.delete('confirm-email');
+      cookieStore.delete('resend-time');
 
       const stripe = new Stripe(process.env.PAYMENT_KEY!);
       const sCostumer = await stripe.customers.create({
@@ -25,7 +28,7 @@ export async function GET(request: NextRequest) {
       });
 
       await supabase.auth.updateUser({ data: { paymentId: sCostumer.id } });
-      supabase.auth.refreshSession();
+      await supabase.auth.refreshSession();
 
       return NextResponse.redirect(`${requestUrl.origin}/dash/account`);
     }

@@ -11,21 +11,16 @@ import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useAuth } from 'context/auth';
 
 const URL_REGEX = /^(https?|http):\/\/.*/gm;
 
 export const Step11 = ({
   handleNextStep,
-  step,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
-  step: number;
-  userId: string;
-  supabase: SupabaseClient<any, 'public', any>;
 }) => {
-  const supabase = createClientComponentClient();
+  const { supabase } = useAuth();
   const { useCustomDomain: useCustomDomainDefault, customDomain, id } = useCampaignData();
   const [campaignId] = useState(id || uuid());
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);

@@ -1,10 +1,9 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import regionsCountries from '../../assets/regions-countries.json';
-import { cookies } from 'next/headers';
 import { type NextRequest, userAgent } from 'next/server';
 import { Campaign } from 'types/campaign';
 import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
+import { createSupabaseServer } from 'services/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,8 +28,7 @@ export async function GET(
   request: NextRequest,
   context: { params: { urls_redirect: string } },
 ) {
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const { supabase } = createSupabaseServer();
   const [id, url_id] = context.params.urls_redirect.split('.');
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);

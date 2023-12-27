@@ -1,10 +1,10 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { jwt } from 'services/jwt';
+import { createSupabaseServer } from 'services/supabase';
+import { cors } from 'utils/cors';
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  const { supabase, response } = createSupabaseServer(req);
   const {
     data: { session },
     error,
@@ -12,29 +12,41 @@ export async function middleware(req: NextRequest) {
 
   if (
     req.nextUrl.pathname.startsWith('/dash') &&
-    !req.nextUrl.pathname.startsWith('/dash/account')
+    !req.nextUrl.pathname.startsWith('/dash/account') &&
+    !error &&
+    session
   ) {
-    const tokens = session?.user.user_metadata.subscription;
+    const tokens = session.user.user_metadata.subscription;
 
     const subscription = await jwt
-      .verify(tokens.token, tokens.secret)
+      .verify(tokens?.token || '', tokens?.secret || '')
       .then((r) => r)
       .catch(() => null);
 
-    if (!subscription?.subscription)
-      return NextResponse.redirect(new URL('/dash/account', req.url));
+    if (!subscription?.subscription) {
+      req.nextUrl.pathname = '/dash/account';
+      return NextResponse.redirect(req.nextUrl, { headers: response.headers });
+    }
   }
 
-  if (req.nextUrl.pathname.startsWith('/dash') && (error || !session))
-    return NextResponse.redirect(new URL('/login', req.url));
+  if (req.nextUrl.pathname.startsWith('/dash') && (error || !session)) {
+    req.nextUrl.pathname = '/login';
+    return NextResponse.redirect(req.nextUrl, { headers: response.headers });
+  }
 
   if (
     (req.nextUrl.pathname.startsWith('/login') ||
       req.nextUrl.pathname.startsWith('/signup')) &&
     !error &&
     session
-  )
-    return NextResponse.redirect(new URL('/dash', req.url));
+  ) {
+    req.nextUrl.pathname = '/dash';
+    return NextResponse.redirect(req.nextUrl, { headers: response.headers });
+  }
 
-  return res;
+  return response;
 }
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+};

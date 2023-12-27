@@ -1,35 +1,31 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from 'next/server';
+import { jwt } from 'services/jwt';
+import { createSupabaseServer } from 'services/supabase';
 import { cors } from 'utils/cors';
 import { getUser } from 'utils/get-user';
 
 export async function POST(req: NextRequest) {
-  const cookiesStore = cookies();
-  const supabase = createRouteHandlerClient(
-    {
-      cookies: () => cookiesStore,
-    },
-    {
-      supabaseKey: process.env.SUPABASE_SECRET,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    },
-  );
-
+  const { supabase } = createSupabaseServer(undefined, process.env.SUPABASE_SECRET!);
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession();
 
+  let subscription;
   if (
-    !session ||
-    error ||
-    session.user.user_metadata.subscription !== process.env.NEXT_PUBLIC_ADMIN_ROLE
+    typeof session?.user?.user_metadata?.subscription?.token === 'string' &&
+    typeof session?.user?.user_metadata?.subscription?.secret === 'string'
   )
-    throw new Response('unauthorized', {
-      status: 401,
-      ...cors(),
-    });
+    subscription = await jwt
+      .verify(
+        session?.user?.user_metadata.subscription.token,
+        session?.user?.user_metadata.subscription.secret,
+      )
+      .then((r) => r.subscription)
+      .catch(() => null);
+
+  if (!session || subscription !== process.env.NEXT_PUBLIC_ADMIN_ROLE)
+    return new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const data = await req.json();
 

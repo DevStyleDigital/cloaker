@@ -56,7 +56,8 @@ const services = [
   },
 ];
 
-export const Subscription = ({ prices }: { prices: any }) => {
+export const Subscription = () => {
+  const [prices, setPrices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -65,6 +66,13 @@ export const Subscription = ({ prices }: { prices: any }) => {
     user?.subscription,
     services.findIndex(({ id }) => id === user?.subscription),
   ];
+
+  useEffect(() => {
+    fetch('/api/billing-prices')
+      .then((res) => res.json())
+      .then(setPrices)
+      .catch(() => []);
+  }, []);
 
   useEffect(() => {
     if (searchParams?.get('e'))
@@ -156,8 +164,8 @@ export const Subscription = ({ prices }: { prices: any }) => {
                   Contact us for additional services
                 </div> */}
                   <form onSubmit={onSubmit} className="w-full">
-                    <input type="hidden" name="price_id" value={price.id} />
-                    <input type="hidden" name="subscription" value={price.nickname} />
+                    <input type="hidden" name="price_id" value={price!.id} />
+                    <input type="hidden" name="subscription" value={price!.nickname} />
                     <Button
                       size="lg"
                       type="submit"

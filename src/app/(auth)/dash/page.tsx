@@ -3,7 +3,6 @@ import { TrafficGraphic } from './traffic-chart';
 import { PieChart } from './pie-chart';
 import { Docs } from './docs';
 import { DeviceChart } from './device-chart';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { CampaignRequest } from 'types/campaign';
 import { formatNumber } from 'utils/format-number';
@@ -14,6 +13,7 @@ import { Instragram } from 'assets/svgs/logos/instagram';
 import { Facebook } from 'assets/svgs/logos/facebook';
 import { Google } from 'assets/svgs/logos/google';
 import { getRandomColor } from 'utils/get-random-color';
+import { createSupabaseServer } from 'services/supabase';
 
 function getAverageOfRequests(req: CampaignRequest[]) {
   const campaignCounts = req.reduce(
@@ -40,8 +40,7 @@ function howMuchIncreases(v1: number, v2: number) {
 }
 
 const Dash = async () => {
-  const cookiesStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookiesStore });
+  const { supabase } = createSupabaseServer();
 
   const { data: monthly_details } = await supabase.rpc('get_monthly_details');
 

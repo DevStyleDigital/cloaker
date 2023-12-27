@@ -1,13 +1,11 @@
 'use client';
-import {
-  SupabaseClient,
-  createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getUser } from 'utils/get-user';
 import { EmailConfirmDialog } from './email-confirm-dialog';
 import cookies from 'js-cookie';
+import { createSupabaseClient } from 'services/supabase-client';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export type AuthUser = {
   id: string;
@@ -17,6 +15,7 @@ export type AuthUser = {
   email: string;
   block_providers: string[];
   subscription: string | null;
+  paymentId?: string;
 };
 
 type AuthContextType = {
@@ -41,7 +40,7 @@ export const AuthProvider = ({
   email?: string;
 }) => {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createSupabaseClient();
   const [emailDialogOpen, setEmailDialogOpen] = useState(!!emailDefault || false);
   const [user, setUser] = useState<AuthContextType['user']>(userDefault || null);
 

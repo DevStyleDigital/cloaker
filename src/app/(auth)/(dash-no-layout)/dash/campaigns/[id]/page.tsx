@@ -1,13 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { CampaignForm } from './campaign-form';
 import { notFound } from 'next/navigation';
-import { cookies } from 'next/headers';
+import { createSupabaseServer } from 'services/supabase';
 
 export const dynamic = 'force-dynamic';
 
 const Campaign = async ({ params }: { params: { id: string } }) => {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { supabase } = createSupabaseServer();
 
   if (params.id === 'create')
     return (

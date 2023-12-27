@@ -1,119 +1,104 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cors } from 'utils/cors';
-import { v4 as uuid } from 'uuid';
 
 import Stripe from 'stripe';
+import { formatBrand } from 'utils/credit-card-type';
+import { createSupabaseServer } from 'services/supabase';
 
 export async function POST(req: NextRequest) {
-  const cookiesStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
-  const stripe = new Stripe(process.env.PAYMENT_KEY!);
-  const data = await req.json();
+  const { supabase } = createSupabaseServer();
   const {
-    error,
     data: { session },
   } = await supabase.auth.getSession();
+  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
 
-  if (error || !session)
-    throw new Response('Not Authorized', {
-      status: 401,
-      ...cors(),
-    });
+  const stripe = new Stripe(process.env.PAYMENT_KEY!);
+  const data = await req.json();
 
   try {
-    const card = await stripe.customers.createSource(
-      session.user.user_metadata.paymentId,
-      {
-        source: {
-          exp_month: data.month,
-          exp_year: data.year,
-          number: data.number,
-          cvc: data.cvc,
-          object: 'card',
-          currency: 'BRL',
-          name: data.name,
-        } as any,
-        validate: true,
-      },
-    );
+    if (data.old_card_primary)
+      await stripe.customers.updateSource(data.cid, data.old_card_primary, {
+        metadata: { priority: 'secondary' },
+      });
+
+    const card = await stripe.customers.createSource(data.cid, {
+      // source: {
+      //   exp_month: data.month,
+      //   exp_year: data.year,
+      //   number: data.number,
+      //   cvc: data.cvc,
+      //   object: 'card',
+      //   currency: 'BRL',
+      //   name: data.name,
+      // } as any,
+      metadata: { priority: data.priority },
+      source: data.brand === 'visa' ? 'tok_visa' : 'tok_mastercard',
+      validate: true,
+    });
 
     return Response.json(
       {
         id: card.id,
-        last_four_numbers: data.number.slice(-3),
-        priority: 'secondary',
+        last_four_digits: data.number.slice(-4),
+        priority: data.priority,
+        company: data.brand,
       },
       { status: 201, ...cors() },
     );
   } catch (err) {
-    console.log(err);
-
-    throw new Response('Error fetching prices', { status: 500, ...cors() });
+    throw new Response('Error creating card', { status: 500, ...cors() });
   }
 }
 
 export async function DELETE(req: NextRequest) {
-  const cookiesStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
+  const { supabase } = createSupabaseServer();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const data = await req.json();
 
-  const {
-    error,
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (error || !session)
-    throw new Response('Not Authorized', {
-      status: 401,
-      ...cors(),
-    });
-
   try {
-    await stripe.customers.deleteSource(data.id, session.user.user_metadata.paymentId);
-
+    await stripe.customers.deleteSource(data.cid, data.id);
+    if (data.new_card_primary)
+      await stripe.customers.updateSource(data.cid, data.new_card_primary, {
+        metadata: { priority: 'primary' },
+      });
     return new Response('success', { status: 200, ...cors() });
   } catch (err) {
-    // DOO
-    throw new Response('Error fetching prices', { status: 500, ...cors() });
+    throw new Response('Error deleting card', { status: 500, ...cors() });
   }
 }
 
 export async function GET(req: NextRequest) {
-  const cookiesStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
-  const stripe = new Stripe(process.env.PAYMENT_KEY!);
-  const data = await req.json();
-
+  const { supabase } = createSupabaseServer();
   const {
-    error,
     data: { session },
   } = await supabase.auth.getSession();
+  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
 
-  if (error || !session)
-    throw new Response('Not Authorized', {
-      status: 401,
-      ...cors(),
-    });
+  const stripe = new Stripe(process.env.PAYMENT_KEY!);
+  const cid = req.nextUrl.searchParams.get('cid');
 
   try {
-    const cards = await stripe.customers.listSources(
-      session.user.user_metadata.paymentId,
-      { object: 'card' },
-    );
+    if (!cid) throw '';
+    const cards = await stripe.customers.listSources(cid, {
+      object: 'card',
+    });
 
     return Response.json(
       cards.data.map((card: any) => ({
         id: card.id,
         last_four_digits: card.last4,
-        priority: 'secondary',
-        company: card.brand,
+        priority: card.metadata.priority,
+        company: formatBrand((card.brand as string).toLowerCase()) || 'visa',
+        paymentId: cid,
       })),
       { status: 200, ...cors() },
     );
   } catch (err) {
-    throw new Response('Error fetching prices', { status: 500, ...cors() });
+    throw new Response('Error fetching cards', { status: 500, ...cors() });
   }
 }

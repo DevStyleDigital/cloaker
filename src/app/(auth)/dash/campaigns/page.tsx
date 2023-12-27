@@ -1,17 +1,14 @@
 import { Card } from 'components/card';
 import { CardCampaign } from './card-campaign';
-import { Album, FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
+import { FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { Button } from 'components/ui/button';
 import { BlockProvider } from './block-providers';
+import { createSupabaseServer } from 'services/supabase';
 
 export const dynamic = 'force-dynamic';
 
 const Campaigns = async () => {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { supabase } = createSupabaseServer();
 
   const {
     data: { session },

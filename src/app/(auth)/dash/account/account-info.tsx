@@ -2,13 +2,22 @@
 import { UploadImageInput } from 'components/upload-image-input';
 import { Tel } from 'components/tel';
 import { Button } from 'components/ui/button';
-import { Input, InputMask } from 'components/ui/input';
+import { Input } from 'components/ui/input';
 import { TabsContent } from 'components/ui/tabs';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from 'context/auth';
-import { Select, SelectContent, SelectItem, SelectTrigger } from 'components/ui/select';
-import countries from 'assets/countries.json';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from 'components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
 
 const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
@@ -18,7 +27,6 @@ export const AccountInfo = () => {
   const { user, supabase } = useAuth();
   const [loading, setLoading] = useState(false);
   const [avatar_url, setAvatarUrl] = useState<File | null>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   async function uploadAvatar() {
     const file = avatar_url! as File;
@@ -108,12 +116,60 @@ export const AccountInfo = () => {
                 <Tel error={false} defaultValue={user?.phone} loading={loading} />
               </div>
               <Input placeholder="Email" defaultValue={user?.email} disabled />
-              <Button disabled={loading} className="w-fit" ref={buttonRef}>
+              <Button disabled={loading} className="w-fit">
                 Atualizar
               </Button>
             </div>
           </div>
         </form>
+        <hr className="border-none bg-destructive h-px" />
+        <div className="flex flex-col">
+          <h2 className="uppercase text-destructive font-bold">Area Senssível</h2>
+          <p className="italic text-muted-foreground">
+            Se você deletar sua conta todas as suas campanhas serão excluidas e pararão de
+            funcionar!
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger className="w-fit">
+              <Button disabled={loading} variant="destructive" className="w-fit mt-4">
+                Deletar minha conta!
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação não pode ser desfeita. Você perderá todo os seus dados dentro
+                  da plataforma!
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="items-center">
+                <AlertDialogCancel className="h-fit">Cancelar</AlertDialogCancel>
+                <Button
+                  disabled={loading}
+                  variant="destructive"
+                  className="w-fit"
+                  onClick={() => {
+                    setLoading(true);
+                    fetch(`/api/admin/users/${user?.id}`, { method: 'DELETE' })
+                      .then(() => {
+                        toast.success('Conta deletada com sucesso!');
+                        router.push('/login');
+                      })
+                      .catch(() =>
+                        toast.error(
+                          'Não foi possivel deletar sua conta. Tente novamente mais tarde!',
+                        ),
+                      )
+                      .finally(() => setLoading(false));
+                  }}
+                >
+                  Delatar minha conta!
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </section>
     </TabsContent>
   );

@@ -1,17 +1,17 @@
 import { cors } from 'utils/cors';
-
+import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createSupabaseServer } from 'services/supabase';
 
-export async function GET() {
-  const cookiesStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookiesStore });
+export async function GET(req: NextRequest) {
+  const { supabase } = createSupabaseServer();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
-
-  const { error } = await supabase.auth.getSession();
-
-  if (error) throw new Response('Not Authorized', { status: 401, ...cors() });
 
   try {
     const prices = await stripe.prices.list({
@@ -19,7 +19,7 @@ export async function GET() {
     });
 
     return Response.json(prices.data, { status: 200, ...cors() });
-  } catch {
+  } catch (err) {
     throw new Response('Error fetching prices', { status: 500, ...cors() });
   }
 }

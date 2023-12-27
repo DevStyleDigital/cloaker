@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { AuthProvider } from 'context/auth';
 import { cookies } from 'next/headers';
+import { createSupabaseServer } from 'services/supabase';
 import { getUser } from 'utils/get-user';
 
 const AuthLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   const cookiesStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookiesStore });
+  const { supabase } = createSupabaseServer();
 
   const {
     data: { session },
