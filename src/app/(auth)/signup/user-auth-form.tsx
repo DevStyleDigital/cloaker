@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import cookies from 'js-cookie';
 
 import { Button } from 'components/ui/button';
@@ -15,9 +15,12 @@ import { Password } from 'components/password';
 import { Tel } from 'components/tel';
 import { useAuth } from 'context/auth';
 import { AuthError } from '@supabase/supabase-js';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 export const UserAuthForm = () => {
   const { supabase, setEmailDialogOpen } = useAuth();
+  const captcha = useRef<HCaptcha>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
@@ -28,6 +31,7 @@ export const UserAuthForm = () => {
   async function onSubmit(ev: React.SyntheticEvent) {
     ev.preventDefault();
     if (passwordInvalid) return;
+    if (!captchaToken) return toast.warn('Faça primeiro o captcha antes de prosseguir!');
 
     setLoading(true);
 
@@ -50,6 +54,7 @@ export const UserAuthForm = () => {
             subscription: null,
             avatar_url: null,
           },
+          captchaToken,
         },
       })
       .then(async (res) => {
@@ -59,14 +64,20 @@ export const UserAuthForm = () => {
         return res;
       })
       .catch((err: AuthError | null) => {
-        if (err?.status === 429)
+        if (err?.status === 429) {
+          setEmailDialogOpen(true);
           return toast.warn(
             'Foram feitas muitas requisições, tente novamente mais tarde.',
           );
+        }
         toast.error('Ocorreu um erro ao criar na sua conta, tente novamente mais tarde.');
         return err;
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setCaptchaToken(undefined);
+        captcha.current?.resetCaptcha();
+      });
   }
 
   return (
@@ -112,6 +123,14 @@ export const UserAuthForm = () => {
             error={!!error}
             loading={loading}
             handleInvalidState={(invalid) => setPasswordInvalid(invalid)}
+          />
+
+          <HCaptcha
+            ref={captcha}
+            sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY!}
+            onVerify={(token) => {
+              setCaptchaToken(token);
+            }}
           />
 
           <Button loading={loading} size="lg">

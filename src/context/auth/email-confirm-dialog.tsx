@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react';
 export const EmailConfirmDialog = ({
   open,
   email,
-  supabase, // onClose,
+  supabase,
+  onClose,
 }: {
   open: boolean;
   email: string;
   supabase: SupabaseClient<any, 'public', any>;
-  // onClose: () => void;
+  onClose: () => void;
 }) => {
   const [time, setTime] = useState<number>(1);
   const [counter, setCounter] = useState<number | null>(null);
@@ -107,6 +108,21 @@ export const EmailConfirmDialog = ({
                         : `${counter} segundo(s)`
                   } `
                 : 'Reenviar email'}
+          </Button>
+          <Button
+            variant="link"
+            className="text-muted-foreground"
+            onClick={() => {
+              cookies.remove('resend-counter', { expires: new Date() });
+              cookies.remove('resend-time', { expires: new Date() });
+              // cookies.remove('confirm-email', { expires: new Date() });
+              cookies.remove('resend-try-tomorrow', {
+                expires: new Date(),
+              });
+              onClose();
+            }}
+          >
+            O email está errado? Clique aqui.
           </Button>
         </div>
       </DialogContent>

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServer } from 'services/supabase';
-import { authMiddleware } from 'utils/auth-middleware';
 import { cors } from 'utils/cors';
 
 export async function POST(req: NextRequest) {
@@ -10,7 +9,6 @@ export async function POST(req: NextRequest) {
   } = await supabase.auth.getSession();
   if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
 
-  const { supabase } = createSupabaseServer();
   const data = await req.json();
 
   const errorCampaign = await supabase

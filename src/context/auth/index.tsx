@@ -74,7 +74,7 @@ export const AuthProvider = ({
         <EmailConfirmDialog
           supabase={supabase}
           open={emailDialogOpen}
-          // onClose={() => setEmailDialogOpen(false)}
+          onClose={() => setEmailDialogOpen(false)}
           email={emailDefault || cookies.get('confirm-email')!}
         />
       )}

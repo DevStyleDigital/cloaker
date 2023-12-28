@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from 'components/ui/button';
@@ -13,10 +13,13 @@ import Link from 'next/link';
 import { ThirdPatty } from '../ThirdPatty';
 import { useAuth } from 'context/auth';
 import { AuthError } from '@supabase/supabase-js';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 export const UserAuthForm = () => {
   const router = useRouter();
   const { supabase } = useAuth();
+  const captcha = useRef<HCaptcha>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,8 +36,10 @@ export const UserAuthForm = () => {
     } = ev.currentTarget as EventTarget &
       Element & { [key in 'email' | 'password']: { value: string } };
 
+    if (!captchaToken) return toast.warn('Faça primeiro o captcha antes de prosseguir!');
+
     supabase.auth
-      .signInWithPassword({ email, password })
+      .signInWithPassword({ email, password, options: { captchaToken } })
       .then((res) => {
         if (res.error) throw res.error;
         handleSignIn();
@@ -51,7 +56,10 @@ export const UserAuthForm = () => {
         );
         return err;
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        captcha.current?.resetCaptcha();
+      });
   }
 
   return (
@@ -99,6 +107,14 @@ export const UserAuthForm = () => {
           >
             Esqueceu sua senha?
           </Link>
+
+          <HCaptcha
+            ref={captcha}
+            sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY!}
+            onVerify={(token) => {
+              setCaptchaToken(token);
+            }}
+          />
 
           <Button loading={loading} size="lg">
             Entrar <LogIn className="inline h-6 w-6 ml-4" />

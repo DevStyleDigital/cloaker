@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cors } from 'utils/cors';
 
 import Stripe from 'stripe';
-import { authMiddleware } from 'utils/auth-middleware';
 import { createSupabaseServer } from 'services/supabase';
 
 export async function POST(req: NextRequest) {
