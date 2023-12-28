@@ -13,7 +13,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
   } = await supabase.auth.getSession();
 
   if (!session || session?.user.id !== params?.id)
-    return new NextResponse('Unauthorized', { status: 401, ...cors() });
+    throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const { data, error } = await supabase.auth.admin.deleteUser(params.id);
   if (error) throw new Response('Error on delete user', { status: 500 });

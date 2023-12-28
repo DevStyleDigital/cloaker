@@ -22,8 +22,17 @@ export async function getUser(
     typeof data?.subscription?.token === 'string' &&
     typeof data?.subscription?.secret === 'string'
   )
-    subscription = await jwt
-      .verify(data.subscription.token, data.subscription.secret)
+    subscription = await fetch(
+      `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/api/subscription`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          token: data.subscription.token,
+          secret: data.subscription.secret,
+        }),
+      },
+    )
+      .then((r) => r.json())
       .then((r) => r.subscription)
       .catch(() => null);
 

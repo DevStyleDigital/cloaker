@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       .catch(() => null);
 
   if (!session || subscription !== process.env.NEXT_PUBLIC_ADMIN_ROLE)
-    return new NextResponse('Unauthorized', { status: 401, ...cors() });
+    throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const data = await req.json();
 

@@ -45,9 +45,9 @@ export const AuthProvider = ({
   const [user, setUser] = useState<AuthContextType['user']>(userDefault || null);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (_, session) => {
+    supabase.auth.onAuthStateChange(async (ev, session) => {
       if (!session) return;
-      if ((session.user as any).session_id === sessionId) return;
+      if (ev === 'INITIAL_SESSION') return;
       const user = await getUser(session.user, supabase);
       setUser(user as any);
     });

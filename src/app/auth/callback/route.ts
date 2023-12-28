@@ -28,7 +28,6 @@ export async function GET(request: NextRequest) {
       });
 
       await supabase.auth.updateUser({ data: { paymentId: sCostumer.id } });
-      await supabase.auth.refreshSession();
 
       return NextResponse.redirect(`${requestUrl.origin}/dash/account`);
     }

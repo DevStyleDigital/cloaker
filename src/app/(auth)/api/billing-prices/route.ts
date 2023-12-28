@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
 

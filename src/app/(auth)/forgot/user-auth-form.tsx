@@ -37,6 +37,7 @@ export const UserAuthForm = () => {
         body: JSON.stringify({ password: password.value }),
         method: 'POST',
       })
+        .then((r) => r.json())
         .then(() => {
           toast.success('Senha alterada com sucesso!');
           router.push('/login');

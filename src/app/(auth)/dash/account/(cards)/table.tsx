@@ -82,6 +82,7 @@ export const columns: ColumnDef<Card>[] = [
                   : undefined,
             }),
           })
+            .then((r) => r.json())
             .then(() => {
               props.handleDeleteCard &&
                 props.handleDeleteCard(

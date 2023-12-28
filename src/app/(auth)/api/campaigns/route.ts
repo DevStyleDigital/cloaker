@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const data = await req.json();
 
@@ -19,8 +19,11 @@ export async function POST(req: NextRequest) {
       return false;
     });
 
-  return new Response(errorCampaign ? 'error' : 'success', {
-    status: errorCampaign ? 400 : 200,
-    ...cors(),
-  });
+  return Response.json(
+    { message: errorCampaign ? 'error' : 'success' },
+    {
+      status: errorCampaign ? 400 : 200,
+      ...cors(),
+    },
+  );
 }

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const data = await req.json();
@@ -55,7 +55,7 @@ export async function DELETE(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const data = await req.json();
@@ -66,7 +66,7 @@ export async function DELETE(req: NextRequest) {
       await stripe.customers.updateSource(data.cid, data.new_card_primary, {
         metadata: { priority: 'primary' },
       });
-    return new Response('success', { status: 200, ...cors() });
+    return Response.json({ message: 'success' }, { status: 200, ...cors() });
   } catch (err) {
     throw new Response('Error deleting card', { status: 500, ...cors() });
   }
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) return new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const cid = req.nextUrl.searchParams.get('cid');

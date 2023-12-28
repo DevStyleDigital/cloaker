@@ -152,6 +152,7 @@ export const AccountInfo = () => {
                   onClick={() => {
                     setLoading(true);
                     fetch(`/api/admin/users/${user?.id}`, { method: 'DELETE' })
+                      .then((r) => r.json())
                       .then(() => {
                         toast.success('Conta deletada com sucesso!');
                         router.push('/login');
