@@ -9,7 +9,8 @@ export async function GET(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session)
+    throw NextResponse.json({ message: 'Unauthorized' }, { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
 
@@ -18,8 +19,11 @@ export async function GET(req: NextRequest) {
       limit: 3,
     });
 
-    return Response.json(prices.data, { status: 200, ...cors() });
+    return NextResponse.json(prices.data, { status: 200, ...cors() });
   } catch (err) {
-    throw new Response('Error fetching prices', { status: 500, ...cors() });
+    throw NextResponse.json(
+      { message: 'Error fetching prices' },
+      { status: 500, ...cors() },
+    );
   }
 }

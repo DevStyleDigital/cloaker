@@ -1,5 +1,5 @@
 import regionsCountries from '../../assets/regions-countries.json';
-import { type NextRequest, userAgent } from 'next/server';
+import { type NextRequest, userAgent, NextResponse } from 'next/server';
 import { Campaign } from 'types/campaign';
 import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
@@ -36,10 +36,9 @@ export async function GET(
   const campaignRes = await supabase.from('campaigns').select('*').eq('id', id).single();
 
   if (!campaignRes.data || campaignRes.error)
-    return Response.redirect(
-      request.nextUrl.searchParams.get('origin') ||
-        'https://www.youtube.com/watch?v=BjNFw2foHOI', // CHANGE TO TROLL
-      302,
+    return NextResponse.redirect(
+      request.nextUrl.searchParams.get('origin') || 'https://google.com',
+      { headers: { blocked: 'true' } },
     );
   const campaign = campaignRes.data as Campaign;
 
@@ -93,24 +92,24 @@ export async function GET(
   }
 
   // if (error || data.plan === 'disabled')
-  //   return Response.redirect(
+  //   return NextResponse.redirect(
   //     request.nextUrl.searchParams.get('origin') || 'https://www.google.com/', // CHANGE TO URL
   //     302,
   //   );
 
   if (campaign.status === 'inactive')
-    return Response.json({ error: 'Campaign is inactive' });
+    return NextResponse.json({ error: 'Campaign is inactive' });
 
   // NOT BOT AND CRAWL
   if (campaign.noBots && isBot) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    return NextResponse.redirect(campaign.blockRedirectUrl, 302);
   }
 
   // NO EXT
   if (campaign.noExt && geoIp.country_code !== 'BR') {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    return NextResponse.redirect(campaign.blockRedirectUrl, 302);
   }
 
   // BLOCK NO PERMITTED PROVIDERS
@@ -121,19 +120,19 @@ export async function GET(
       .search(new RegExp(campaign.blockProviders.join('|').toLowerCase(), 'gi')) !== -1
   ) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    return NextResponse.redirect(campaign.blockRedirectUrl, 302);
   }
 
   // BLOCK NO PERMITTED DEVICES
   if (!campaign.devices.includes(device)) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    return NextResponse.redirect(campaign.blockRedirectUrl, 302);
   }
 
   // BLOCK NO PERMITTED OS
   if (!campaign.systems.includes(formatOsName(os.name || 'other'))) {
     await insertRequest(false, campaign.blockRedirectUrl);
-    return Response.redirect(campaign.blockRedirectUrl, 302);
+    return NextResponse.redirect(campaign.blockRedirectUrl, 302);
   }
 
   const paramsArr = Object.entries(
@@ -193,9 +192,9 @@ export async function GET(
 
   if (urlSuccess) {
     await insertRequest(true, urlSuccess);
-    return Response.redirect(urlSuccess, 302);
+    return NextResponse.redirect(urlSuccess, 302);
   }
 
   await insertRequest(false, campaign.blockRedirectUrl);
-  return Response.redirect(campaign.blockRedirectUrl, 302);
+  return NextResponse.redirect(campaign.blockRedirectUrl, 302);
 }

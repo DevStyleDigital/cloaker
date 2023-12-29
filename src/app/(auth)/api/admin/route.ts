@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       .catch(() => null);
 
   if (!session || subscription !== process.env.NEXT_PUBLIC_ADMIN_ROLE)
-    throw new NextResponse('Unauthorized', { status: 401, ...cors() });
+    throw NextResponse.json({ message: 'Unauthorized' }, { status: 401, ...cors() });
 
   const data = await req.json();
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     })
     .catch(() => []);
 
-  return Response.json(users, {
+  return NextResponse.json(users, {
     status: 200,
     ...cors(),
   });

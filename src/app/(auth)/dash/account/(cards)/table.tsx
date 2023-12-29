@@ -69,7 +69,6 @@ export const columns: ColumnDef<Card>[] = [
     ) => (
       <Button
         variant="destructive"
-        disabled={(props.length || 0) < 2}
         onClick={() => {
           fetch('/api/cards', {
             method: 'DELETE',
@@ -107,7 +106,9 @@ export const columns: ColumnDef<Card>[] = [
 export const Table = ({
   data,
   handleDeleteCard,
+  loading,
 }: {
+  loading: boolean;
   data: Card[];
   handleDeleteCard: (i: number, i2?: number) => void;
 }) => {
@@ -161,7 +162,7 @@ export const Table = ({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Nenhum Cartão adicionado
+                {loading ? 'Procurando por cartões...' : 'Nenhum Cartão adicionado'}
               </TableCell>
             </TableRow>
           )}

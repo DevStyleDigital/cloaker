@@ -12,7 +12,8 @@ export async function POST(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session)
+    throw NextResponse.json({ message: 'Unauthorized' }, { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const data = await req.json();
@@ -50,24 +51,15 @@ export async function POST(req: NextRequest) {
     await supabase.auth.updateUser({ data: { subscription: tokens } });
 
     if (data.priority)
-      await fetch('/api/cards', {
+      await fetch(`${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/api/cards`, {
         method: 'POST',
-        body: JSON.stringify({
-          brand: data.cardType,
-          name: data.name,
-          year: data.year,
-          month: data.month,
-          cvc: data.cvc,
-          number: data.number,
-          cid: data.cid,
-          priority: data.priority,
-          old_card_primary: data.old_card_primary,
-        }),
+        body: JSON.stringify(data),
+        headers: req.headers,
       });
 
-    return Response.json({ message: 'success' }, { status: 200, ...cors() });
+    return NextResponse.json({ message: 'success' }, { status: 200, ...cors() });
   } catch (err) {
     console.log(err);
-    throw new Response('error', { status: 500, ...cors() });
+    throw NextResponse.json({ message: 'error' }, { status: 500, ...cors() });
   }
 }

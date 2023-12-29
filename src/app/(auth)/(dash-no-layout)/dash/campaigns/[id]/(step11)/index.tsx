@@ -2,7 +2,7 @@
 import { Button } from 'components/ui/button';
 import { Switch } from 'components/ui/switch';
 import { ArrowRight, CloudCog, Globe, Link2 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { CardButton } from '../card-button';
 import { Dialog, DialogContent, DialogTrigger } from 'components/ui/dialog';
 import { Input } from 'components/ui/input';
@@ -11,16 +11,14 @@ import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
-import { useAuth } from 'context/auth';
 
-const URL_REGEX = /^(https?|http):\/\/.*/gm;
+const URL_REGEX = /^(https|http)(:\/\/).*(:|\.).{2,}/gm;
 
 export const Step11 = ({
   handleNextStep,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
 }) => {
-  const { supabase } = useAuth();
   const { useCustomDomain: useCustomDomainDefault, customDomain, id } = useCampaignData();
   const [campaignId] = useState(id || uuid());
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
@@ -28,40 +26,9 @@ export const Step11 = ({
   const [url, setUrl] = useState(customDomain || '');
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>();
-  const [token, setToken] = useState(uuid());
   const [success, setSuccess] = useState<boolean | undefined>(
     !!customDomain ? true : undefined,
   );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    const connections = supabase
-      .channel('public:connections')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'connections',
-          filter: `id=eq.${token}`,
-        },
-        (payload) => {
-          clearTimeout(timeoutId);
-          setIsLoading(false);
-          setSuccess((payload.new as any).ready);
-          setTimeout(() => {
-            supabase.from('connections').delete().eq('id', token);
-          }, 5 * 1000);
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(connections);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supabase]);
 
   async function testDomain() {
     setSuccess(undefined);
@@ -71,38 +38,43 @@ export const Step11 = ({
       return urlRef.current?.focus();
     }
 
-    if (!URL_REGEX.test(url)) {
+    const isInvalidUrl = !url.match(URL_REGEX)?.length;
+
+    if (isInvalidUrl) {
       setUrlError(true);
       toast.warn('Insira uma URL válida');
       return urlRef.current?.focus();
     }
     setIsLoading(true);
 
-    await fetch('/api/connection', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: token,
-        ready: false,
-      }),
-    });
+    const newUrl = new URL(url);
+    newUrl.searchParams.set('connect', campaignId);
 
-    window.open(`${url}?c=${token}`, `window-${token}`, 'popup');
-    setTimeoutId(
-      setTimeout(() => {
-        setIsLoading(false);
-        setSuccess((prev) => (!prev ? false : prev));
-        if (!success) {
-          supabase
-            .from('connections')
-            .delete()
-            .eq('id', token)
-            .then(() => {
-              setToken(uuid());
-              setUrl('');
-            });
-        }
-      }, 10 * 1000),
+    const page = await fetch(newUrl)
+      .then((r) => r.text())
+      .then((html) => html)
+      .catch(() => null);
+    if (!page) return;
+
+    const range = document.createRange();
+    const fragment = range.createContextualFragment(page);
+
+    const campaigns = fragment.querySelectorAll(
+      `script[src="${window.location.origin}/cdn/r.min.js"]`,
     );
+    if (
+      campaigns &&
+      (campaigns?.length > 1 ||
+        campaigns?.length === 0 ||
+        campaigns?.[0].getAttribute('data-campaign') !== campaignId)
+    ) {
+      // setUrl('');
+      // urlRef.current!.value = '';
+      setSuccess(false);
+    } else {
+      setSuccess(true);
+    }
+    setIsLoading(false);
   }
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {

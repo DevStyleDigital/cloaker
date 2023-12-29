@@ -12,20 +12,24 @@ const Account = () => {
   const { user } = useAuth();
   const [cards, setCards] = useState([]);
   const [prices, setPrices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/cards?cid=${user?.paymentId}`)
-      .then((res) => res.json())
-      .then(setCards)
-      .catch(() => []);
-  }, [user]);
+    const controller = new AbortController();
 
-  useEffect(() => {
-    fetch('/api/billing-prices')
-      .then((res) => res.json())
-      .then(setPrices)
-      .catch(() => []);
-  }, []);
+    Promise.all([
+      fetch(`/api/cards?cid=${user?.paymentId}`, { signal: controller.signal })
+        .then((res) => res.json())
+        .then(setCards)
+        .catch(() => []),
+      fetch('/api/billing-prices', { signal: controller.signal })
+        .then((res) => res.json())
+        .then(setPrices)
+        .catch(() => []),
+    ]).finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, [user?.paymentId]);
 
   return (
     <Tabs
@@ -51,7 +55,7 @@ const Account = () => {
       <AccountInfo />
       <Payments />
       <Subscription cards={cards} prices={prices} />
-      <Cards cards={cards} />
+      <Cards cards={cards} loading={loading} />
       <Security />
     </Tabs>
   );

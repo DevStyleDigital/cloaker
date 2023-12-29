@@ -13,7 +13,7 @@ export const User = forwardRef<HTMLDivElement, UserProps>(
     return (
       <div ref={ref} className="flex items-center space-x-2">
         <Avatar>
-          <AvatarImage src={user?.avatar_url} />
+          <AvatarImage src={user?.avatar_url ? user.avatar_url : undefined} />
           <AvatarFallback
             className="text-xl font-bold"
             style={{ backgroundColor: getRandomColor() }}

@@ -1,5 +1,4 @@
 import { SupabaseClient, User } from '@supabase/supabase-js';
-import { jwt } from 'services/jwt';
 
 export async function getUser(
   user: User | null,
@@ -7,15 +6,6 @@ export async function getUser(
 ) {
   if (!user) return null;
   const data = user.user_metadata;
-
-  let url;
-  if (data.avatar_url) {
-    const { data: blob } = await supabase.storage
-      .from('avatars')
-      .download(data.avatar_url);
-
-    url = blob ? URL.createObjectURL(blob) : undefined;
-  }
 
   let subscription;
   if (
@@ -36,11 +26,19 @@ export async function getUser(
       .then((r) => r.subscription)
       .catch(() => null);
 
+  let avatar_url;
+  if (data.avatar_url) {
+    const { data: image } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(data.avatar_url);
+    avatar_url = image ? image.publicUrl : undefined;
+  }
+
   return {
     ...data,
     subscription,
+    avatar_url,
     id: user.id,
-    avatar_url: url,
     email: user.email!,
   };
 }

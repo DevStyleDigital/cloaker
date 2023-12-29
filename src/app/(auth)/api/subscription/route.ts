@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { jwt } from 'services/jwt';
 import { cors } from 'utils/cors';
 
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     .then((r) => r.subscription)
     .catch(() => null);
 
-  return Response.json(
+  return NextResponse.json(
     { subscription },
     {
       status: !subscription ? 400 : 200,

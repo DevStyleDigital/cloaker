@@ -10,7 +10,8 @@ export async function POST(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session)
+    throw NextResponse.json({ message: 'Unauthorized' }, { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const data = await req.json();
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
       validate: true,
     });
 
-    return Response.json(
+    return NextResponse.json(
       {
         id: card.id,
         last_four_digits: data.number.slice(-4),
@@ -46,7 +47,10 @@ export async function POST(req: NextRequest) {
       { status: 201, ...cors() },
     );
   } catch (err) {
-    throw new Response('Error creating card', { status: 500, ...cors() });
+    throw NextResponse.json(
+      { message: 'Error creating card' },
+      { status: 500, ...cors() },
+    );
   }
 }
 
@@ -55,7 +59,8 @@ export async function DELETE(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session)
+    throw NextResponse.json({ message: 'Unauthorized' }, { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const data = await req.json();
@@ -66,9 +71,12 @@ export async function DELETE(req: NextRequest) {
       await stripe.customers.updateSource(data.cid, data.new_card_primary, {
         metadata: { priority: 'primary' },
       });
-    return Response.json({ message: 'success' }, { status: 200, ...cors() });
+    return NextResponse.json({ message: 'success' }, { status: 200, ...cors() });
   } catch (err) {
-    throw new Response('Error deleting card', { status: 500, ...cors() });
+    throw NextResponse.json(
+      { message: 'Error deleting card' },
+      { status: 500, ...cors() },
+    );
   }
 }
 
@@ -77,7 +85,8 @@ export async function GET(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) throw new NextResponse('Unauthorized', { status: 401, ...cors() });
+  if (!session)
+    throw NextResponse.json({ message: 'Unauthorized' }, { status: 401, ...cors() });
 
   const stripe = new Stripe(process.env.PAYMENT_KEY!);
   const cid = req.nextUrl.searchParams.get('cid');
@@ -88,7 +97,7 @@ export async function GET(req: NextRequest) {
       object: 'card',
     });
 
-    return Response.json(
+    return NextResponse.json(
       cards.data.map((card: any) => ({
         id: card.id,
         last_four_digits: card.last4,
@@ -99,6 +108,9 @@ export async function GET(req: NextRequest) {
       { status: 200, ...cors() },
     );
   } catch (err) {
-    throw new Response('Error fetching cards', { status: 500, ...cors() });
+    throw NextResponse.json(
+      { message: 'Error fetching cards' },
+      { status: 500, ...cors() },
+    );
   }
 }

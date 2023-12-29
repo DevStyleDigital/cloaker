@@ -21,11 +21,7 @@ const AuthLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   }
 
   return (
-    <AuthProvider
-      sessionId={(session?.user as any)?.session_id}
-      user={userDefault as any}
-      email={email}
-    >
+    <AuthProvider user={userDefault as any} email={email}>
       {children}
     </AuthProvider>
   );

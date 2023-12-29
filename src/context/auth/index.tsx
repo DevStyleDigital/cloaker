@@ -32,11 +32,9 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({
   children,
   user: userDefault,
-  sessionId,
   email: emailDefault,
 }: BTypes.FCChildren & {
   user?: AuthContextType['user'];
-  sessionId?: string;
   email?: string;
 }) => {
   const router = useRouter();

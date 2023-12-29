@@ -61,23 +61,24 @@ export const AccountInfo = () => {
       return;
     }
 
-    await supabase.auth
-      .updateUser({
-        data: {
-          name: name.value,
-          phone: tel.value,
-          avatar_url: path,
-        },
-      })
-      .then((res) => {
-        if (res.error)
-          return toast.error(
-            'Ocorreu um erro ao atualizar na sua conta, tente novamente mais tarde.',
-          );
+    await fetch(`/api/admin/users/${user?.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: name.value,
+        phone: tel.value,
+        avatar_url: path,
+      }),
+    })
+      .then(() => {
         supabase.auth.refreshSession();
         toast.success('Atualização feita com sucesso!', { pauseOnHover: false });
         router.refresh();
-      });
+      })
+      .catch(() =>
+        toast.error(
+          'Ocorreu um erro ao atualizar na sua conta, tente novamente mais tarde.',
+        ),
+      );
     setLoading(false);
   }
 
@@ -95,7 +96,7 @@ export const AccountInfo = () => {
             <div>
               <p className="italic text-muted-foreground mb-3">Foto de perfil:</p>
               <UploadImageInput
-                file={avatar_url || user?.avatar_url!}
+                file={avatar_url || (user?.avatar_url ? user.avatar_url : null)}
                 className="relative border-border border-dashed text-sm text-muted-foreground aspect-square gap-4 w-52 flex rounded-lg items-center justify-center bg-accent hover:border-primary border cursor-pointer transition-all"
                 handleFile={setAvatarUrl}
                 id="profile-avatar_url"

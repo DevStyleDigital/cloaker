@@ -7,7 +7,7 @@ const withNextra = require('nextra')({
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['hdkhzjrandokfvezogao.supabase.co'],
+    remotePatterns: [{ hostname: 'llsmxhiaasnohnabqohn.supabase.co' }],
   },
 };
 

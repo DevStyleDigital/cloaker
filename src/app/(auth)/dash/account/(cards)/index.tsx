@@ -16,7 +16,13 @@ import { useAuth } from 'context/auth';
 import { CardLogo } from 'components/card-logo';
 import { CardForm } from '../card-form';
 
-export const Cards = ({ cards: cardsProps }: { cards: any[] }) => {
+export const Cards = ({
+  cards: cardsProps,
+  loading: fetchingCards,
+}: {
+  cards: any[];
+  loading: boolean;
+}) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -33,6 +39,9 @@ export const Cards = ({ cards: cardsProps }: { cards: any[] }) => {
           Number(year) <= new Date().getFullYear(),
       );
   }, [month, year]);
+  useEffect(() => {
+    setCards(cardsProps);
+  }, [cardsProps]);
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -73,7 +82,19 @@ export const Cards = ({ cards: cardsProps }: { cards: any[] }) => {
         setOpen(false);
         setCardType(undefined);
         toast.success('Cartão adicionado!');
-        setCards([...cards, { ...data, company: cardType }]);
+        setCards((prev) => {
+          const newPrev = [...prev];
+
+          if (data.priority === 'primary') {
+            const oldPrimaryIndex = newPrev.findIndex(
+              ({ priority }) => priority === 'primary',
+            );
+
+            newPrev[oldPrimaryIndex].priority = 'secondary';
+          }
+
+          return [...newPrev, { ...data, company: cardType }];
+        });
       })
       .catch(() => toast.error('Ocorreu um erro ao criar seu cartão. Tente novamente!'));
     setLoading(false);
@@ -111,10 +132,11 @@ export const Cards = ({ cards: cardsProps }: { cards: any[] }) => {
       </Dialog>
       <Table
         data={cards}
+        loading={fetchingCards}
         handleDeleteCard={(i, i2) => {
           setCards((prev: any) => {
             const newPrev = [...prev];
-            if (i2) newPrev[i2].priority = 'primary';
+            if (typeof i2 === 'number' && newPrev[i2]) newPrev[i2].priority = 'primary';
             newPrev.splice(i, 1);
             return newPrev;
           });

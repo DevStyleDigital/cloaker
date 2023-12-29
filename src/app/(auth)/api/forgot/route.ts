@@ -1,4 +1,4 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServer } from 'services/supabase';
 import { cors } from 'utils/cors';
 
@@ -14,17 +14,11 @@ export async function POST(request: NextRequest) {
   });
 
   if (updateError)
-    throw Response.json(
-      { success: false },
-      {
-        status: 400,
-        ...cors(),
-      },
-    );
+    throw NextResponse.json({ success: false }, { status: 400, ...cors() });
 
   await supabase.auth.signOut();
 
-  return Response.json(
+  return NextResponse.json(
     { success: true },
     {
       status: 200,
