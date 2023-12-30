@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 import { cors } from 'utils/cors';
 
 export async function POST(req: NextRequest) {

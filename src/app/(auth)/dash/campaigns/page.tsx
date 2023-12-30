@@ -3,7 +3,7 @@ import { CardCampaign } from './card-campaign';
 import { FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { BlockProvider } from './block-providers';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 
 export const dynamic = 'force-dynamic';
 

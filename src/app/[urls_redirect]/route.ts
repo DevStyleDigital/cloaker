@@ -3,7 +3,7 @@ import { type NextRequest, userAgent, NextResponse } from 'next/server';
 import { Campaign } from 'types/campaign';
 import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwt } from 'services/jwt';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 import { cors } from 'utils/cors';
 
 export async function middleware(req: NextRequest) {

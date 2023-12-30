@@ -50,12 +50,12 @@ export const Header = () => {
       </span>
 
       <div className="flex gap-4">
-        <Button variant="ghost" onClick={() => router.refresh()} className="p-0 px-2">
+        <Button variant="ghost" onClick={() => router.refresh()} className="p-2">
           <RefreshCw className="w-6 h-6" />
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="p-0 px-2">
+            <Button variant="ghost" className="p-2">
               <Bell className="w-6 h-6" />
             </Button>
           </PopoverTrigger>

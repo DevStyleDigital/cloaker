@@ -95,7 +95,7 @@ export const Subscription = ({ prices, cards }: { prices: any[]; cards: any[] })
       <div className="mx-8 py-16 space-y-12 flex flex-col items-center px-4 bg-white rounded-xl">
         <div className="self-stretch flex-col justify-center items-center gap-2 flex">
           <h1 className="text-center text-5xl font-bold">Nossos Planos</h1>
-          <p className="!opacity-60 text-center">
+          <p className="!opacity-60 text-center max-w-7xl">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
             molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
             numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium

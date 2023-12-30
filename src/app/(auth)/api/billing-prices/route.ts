@@ -1,7 +1,7 @@
 import { cors } from 'utils/cors';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 
 export async function GET(req: NextRequest) {
   const { supabase } = createSupabaseServer();

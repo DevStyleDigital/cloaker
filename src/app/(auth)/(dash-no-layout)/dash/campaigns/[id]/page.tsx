@@ -1,6 +1,6 @@
 import { CampaignForm } from './campaign-form';
 import { notFound } from 'next/navigation';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 
 export const dynamic = 'force-dynamic';
 

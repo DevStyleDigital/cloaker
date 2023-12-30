@@ -1,6 +1,6 @@
 import { AuthProvider } from 'context/auth';
 import { cookies } from 'next/headers';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 import { getUser } from 'utils/get-user';
 
 const AuthLayout: BTypes.NLPage<{}, true> = async ({ children }) => {

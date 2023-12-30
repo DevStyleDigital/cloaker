@@ -13,7 +13,7 @@ import { Instragram } from 'assets/svgs/logos/instagram';
 import { Facebook } from 'assets/svgs/logos/facebook';
 import { Google } from 'assets/svgs/logos/google';
 import { getRandomColor } from 'utils/get-random-color';
-import { createSupabaseServer } from 'services/supabase';
+import { createSupabaseServer } from 'app/actions/supabase';
 
 function getAverageOfRequests(req: CampaignRequest[]) {
   const campaignCounts = req.reduce(
