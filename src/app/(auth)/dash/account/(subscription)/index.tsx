@@ -92,7 +92,7 @@ export const Subscription = ({ prices, cards }: { prices: any[]; cards: any[] })
           subscription={subscription}
         />
       )}
-      <div className="mx-8 py-16 space-y-12 flex flex-col items-center px-4 bg-white rounded-xl">
+      <section className="mx-8 border-b py-16 space-y-12 flex flex-col items-center px-4 bg-background rounded-xl">
         <div className="self-stretch flex-col justify-center items-center gap-2 flex">
           <h1 className="text-center text-5xl font-bold">Nossos Planos</h1>
           <p className="!opacity-60 text-center max-w-7xl">
@@ -148,7 +148,7 @@ export const Subscription = ({ prices, cards }: { prices: any[]; cards: any[] })
                 );
               })}
         </ul>
-      </div>
+      </section>
     </TabsContent>
   );
 };

@@ -54,7 +54,7 @@ const Campaigns = async () => {
           Criar campanha
         </Link>
       </div>
-      <section className="w-full grid xl:grid-cols-3 max-[880px]:grid-cols-2 gap-2 xl:gap-6 divide-x bg-background rounded-xl py-8">
+      <section className="w-full grid xl:grid-cols-3 max-[880px]:grid-cols-2 gap-2 xl:gap-6 bg-background rounded-xl py-8">
         {campaignsDetails.map((item, i) => (
           <Card key={item.id} index={i} {...item} />
         ))}

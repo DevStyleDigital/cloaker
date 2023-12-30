@@ -64,7 +64,7 @@ export const DataTableDemo = ({
 
   return (
     <div className="w-full">
-      <div className="rounded-sm border bg-background">
+      <div className="bg-background">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

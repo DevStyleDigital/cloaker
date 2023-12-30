@@ -19,8 +19,7 @@ export const SidebarLink: BTypes.FC<{ href: string; disabled?: boolean }> = ({
         className,
         'relative flex items-center px-8 py-2 opacity-80 !no-underline rounded-lg transition colors hover:opacity-95 focus:opacity-95',
         {
-          'bg-muted opacity-100 hover:bg-zinc-200 focus:bg-zinc-200':
-            pathname === props.href,
+          'bg-muted opacity-100 hover:bg-acent focus:bg-acent': pathname === props.href,
 
           'opacity-50 pointer-events-none': disabled,
         },

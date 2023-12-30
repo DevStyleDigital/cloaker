@@ -120,7 +120,7 @@ export const Table = ({
   });
 
   return (
-    <div className="rounded-md border px-2">
+    <div>
       <TableRoot>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

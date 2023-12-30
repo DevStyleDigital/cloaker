@@ -4,12 +4,14 @@ import { ArrowRight, Boxes, Diamond } from 'lucide-react';
 import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
 import { useState } from 'react';
+import { useAuth } from 'context/auth';
 
 export const Step13 = ({
   handleNextStep,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
 }) => {
+  const { user } = useAuth();
   const { redirectType: redirectTypeDefault } = useCampaignData();
   const [redirectType, setRedirectType] = useState(redirectTypeDefault || 'simple');
 
@@ -38,9 +40,17 @@ export const Step13 = ({
             <Diamond />
             <span className="bold">Simples</span>
           </CardSelectItem>
-          <CardSelectItem value="complex">
+          <CardSelectItem
+            value="complex"
+            disabled={['basic' || 'premium'].includes(user?.subscription || 'basic')}
+          >
             <Boxes />
             <span className="bold">Complexos</span>
+            {['basic' || 'premium'].includes(user?.subscription || 'basic') && (
+              <span className="text-xs italic">
+                assine o GHOST e crie campanhas avançadas!
+              </span>
+            )}
           </CardSelectItem>
         </CardSelect>
       </div>

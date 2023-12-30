@@ -124,7 +124,7 @@ const Dash = async () => {
 
   return (
     <div className="px-8 py-10 h-full">
-      <section className="w-full grid 2xl:grid-cols-4 max-[880px]:grid-cols-2 gap-2 xl:gap-6 divide-x bg-background rounded-xl py-8">
+      <section className="w-full grid 2xl:grid-cols-4 max-[880px]:grid-cols-2 gap-2 xl:gap-6 bg-background rounded-xl py-8">
         {(monthlyDetails as any).map((item: any, i: number) => (
           <Card key={item.id} index={i} {...item} />
         ))}

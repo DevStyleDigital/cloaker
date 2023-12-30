@@ -11,6 +11,7 @@ import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
+import { useAuth } from 'context/auth';
 
 const URL_REGEX = /^(https|http)(:\/\/).*(:|\.).{2,}/gm;
 
@@ -19,6 +20,7 @@ export const Step11 = ({
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
 }) => {
+  const { user } = useAuth();
   const { useCustomDomain: useCustomDomainDefault, customDomain, id } = useCampaignData();
   const [campaignId] = useState(id || uuid());
   const [useCustomDomain, setUseCustomDomain] = useState(useCustomDomainDefault || false);
@@ -97,13 +99,24 @@ export const Step11 = ({
         {`"${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}"`}
       </p>
 
-      <div className="mt-4 w-fit flex self-center space-x-4 mb-8">
+      <div className="mt-4 w-fit flex self-center space-x-4">
         <span className="italic text-muted-foreground text-center">
           {process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}
         </span>
-        <Switch checked={useCustomDomain} onCheckedChange={setUseCustomDomain} />
+        <Switch
+          checked={useCustomDomain}
+          disabled={['basic'].includes(user?.subscription || 'basic')}
+          onCheckedChange={setUseCustomDomain}
+        />
         <span className="italic text-muted-foreground text-center">Domínio prórpio</span>
       </div>
+      {['basic'].includes(user?.subscription || 'basic') && (
+        <span className="text-xs opacity-50 italic">
+          faça o upgrade para o plano PRO e utilize seu próprio domínio
+        </span>
+      )}
+
+      <span className="mb-8" />
 
       {useCustomDomain && (
         <Dialog>

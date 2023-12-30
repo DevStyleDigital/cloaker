@@ -9,6 +9,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeProvider } from 'context/theme';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,8 +30,15 @@ const RootLayout: BTypes.NLPage = ({ children }) => {
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </head>
       <body className="min-h-screen flex flex-col">
-        <Toast />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Toast />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

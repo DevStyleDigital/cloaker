@@ -27,7 +27,7 @@ export const AvatarPopover = ({ showName = true }: { showName?: boolean }) => {
             </p>
           </div>
         )}
-        <hr className="bg-border/20 border-none h-px" />
+        <hr className="bg-foreground/20 border-none h-px" />
         <div className="w-full flex flex-col">
           <Button
             variant="ghost"
@@ -55,7 +55,7 @@ export const AvatarPopover = ({ showName = true }: { showName?: boolean }) => {
           </Button>
         </div>
 
-        <hr className="bg-border/20 border-none h-px" />
+        <hr className="bg-foreground/20 border-none h-px" />
         <Button
           variant="ghost"
           type="button"

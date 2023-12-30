@@ -1,5 +1,4 @@
 'use client';
-import { useEffect, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -10,7 +9,12 @@ import {
   Cell,
   Tooltip,
 } from 'recharts';
+import { fromTheme } from 'tailwind-merge';
 import { getRandomColor } from 'utils/get-random-color';
+import resolveConfig from 'tailwindcss/resolveConfig';
+import tailwindConfig from '@root/tailwind.config.js';
+
+const fullConfig = resolveConfig(tailwindConfig);
 
 const MAP = {
   'apple-os': 'iOS & macOS',
@@ -49,14 +53,19 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
             <XAxis
               dataKey="name"
               scale="point"
-              stroke="#2b2b2b"
+              stroke={fullConfig.theme.colors['muted-foreground' as 'zinc'] as any}
               fontSize={12}
               axisLine={false}
               allowDataOverflow
               allowReorder="yes"
               padding={{ left: 40, right: 40 }}
             />
-            <YAxis stroke="#2b2b2b" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis
+              stroke={fullConfig.theme.colors['muted-foreground' as 'zinc'] as any}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
             <CartesianGrid strokeDasharray="11" />
             <Bar
               dataKey="value"
@@ -67,7 +76,7 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
               {Object.entries(data).map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  className="[&_tspan]:!fill-muted-foreground"
+                  className="[&_tspan]:!fill-muted-foreground dark:[&_tspan]:!fill-white"
                   fill={getRandomColor()}
                 />
               ))}

@@ -8,6 +8,7 @@ import { cn } from 'utils/cn';
 import { notifications } from 'mocks/notifications';
 import { useAuth } from 'context/auth';
 import { AvatarPopover } from 'components/sidebar/avatar';
+import { ThemeToggle } from 'components/theme-toggle';
 
 const ROUTES = {
   '/dash': 'Início',
@@ -88,6 +89,7 @@ export const Header = () => {
             ))}
           </PopoverContent>
         </Popover>
+        <ThemeToggle />
         <AvatarPopover showName={false} />
       </div>
     </header>

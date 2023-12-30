@@ -9,9 +9,10 @@ import {
 } from 'components/ui/tooltip';
 import { Link2, Trash2 } from 'lucide-react';
 import { ParamForm } from './param-form';
-import { atomOneLight } from 'react-code-blocks';
+import { atomOneLight, dracula } from 'react-code-blocks';
 import { genNewUrlObject } from '.';
 import { useCampaignData } from '../campaign-form';
+import { useTheme } from 'next-themes';
 
 export const FormUrl = ({
   handleDelete,
@@ -25,6 +26,7 @@ export const FormUrl = ({
   handleDelete: () => void;
   campaignId: string;
 } & ReturnType<typeof genNewUrlObject>) => {
+  const { theme } = useTheme();
   const { redirectType, useCustomDomain, customDomain } = useCampaignData();
 
   return (
@@ -38,10 +40,10 @@ export const FormUrl = ({
                 : `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/${campaignId}.${url.id}`
             }
             language="bash"
-            className="[&_span]:!text-ring/80"
+            className="[&_span]:!text-ring/80 dark:[&_span]:!text-muted-foreground"
             customStyle={{ padding: '1rem' }}
             showLineNumbers={false}
-            theme={atomOneLight}
+            theme={theme === 'light' ? atomOneLight : dracula}
           />
           {redirectType === 'complex' && (
             <DialogTrigger asChild>

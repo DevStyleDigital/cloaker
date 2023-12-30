@@ -16,7 +16,8 @@ export const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-background border-r border-input px-4 py-8 space-y-6 h-screen fixed top-0 left-0">
-      <AvatarPopover />
+      {/* <AvatarPopover /> */}
+      <div className="h-10">LOGO</div>
 
       <section>
         <h2 className="text-base text-muted-foreground px-4 py-2">Dashboards</h2>

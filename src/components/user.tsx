@@ -6,7 +6,7 @@ import { forwardRef } from 'react';
 type UserProps = {
   user: AuthUser | null;
   enableCopyEmail?: boolean;
-  showName: boolean;
+  showName?: boolean;
 };
 
 export const User = forwardRef<HTMLDivElement, UserProps>(

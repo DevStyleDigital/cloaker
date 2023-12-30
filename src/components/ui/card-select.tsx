@@ -26,7 +26,7 @@ export const CardSelect: BTypes.FC<{
     </CardSelectContext.Provider>
   );
 };
-export const CardSelectItem: BTypes.FC<{ value: string }> = ({
+export const CardSelectItem: BTypes.FC<{ value: string; disabled?: boolean }> = ({
   value,
   className,
   ...props
@@ -38,7 +38,7 @@ export const CardSelectItem: BTypes.FC<{ value: string }> = ({
       type="button"
       className={cn(
         className,
-        'flex flex-col rounded-lg px-8 py-8 items-center justify-center w-full space-y-4 bg-accent opacity-80',
+        'flex flex-col rounded-lg px-8 py-8 items-center justify-center w-full space-y-4 bg-accent opacity-80 disabled:opacity-60 disabled:cursor-not-allowed',
         {
           'ring-4 ring-ring/20 border border-ring opacity-100':
             selectedValues.includes(value),

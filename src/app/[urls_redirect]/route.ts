@@ -48,6 +48,9 @@ export async function GET(
   const campaign = campaignRes.data as Campaign;
   const count = campaign.requests[0].count;
 
+  if (!(campaign.useCustomDomain && !!request.nextUrl.searchParams.get('origin')))
+    blockAccess();
+
   const subscription = await fetch(
     `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/api/admin/users/${campaign.user_id}`,
   )
@@ -58,7 +61,8 @@ export async function GET(
   if (
     (subscription.subscription === 'basic' && count >= 10000) ||
     (subscription.subscription === 'premium' && count >= 25000) ||
-    (subscription.subscription === 'gold' && count >= 50000)
+    (subscription.subscription === 'gold' && count >= 50000) ||
+    (campaign.useCustomDomain && subscription.subscription === 'basic')
   )
     return blockAccess();
 

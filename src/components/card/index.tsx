@@ -10,7 +10,7 @@ export const Card = (card: {
   icon?: React.FC<{ className?: string }>;
 }) => {
   return (
-    <div className="flex flex-col px-8 gap-4 w-full">
+    <div className="flex flex-col px-8 gap-4 w-full border-l border-foreground/20">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold">{card.title}</h3>
         {card.icon && <card.icon className="w-6 h-6" />}
