@@ -14,7 +14,7 @@ export const TrafficGraphic = ({
 }) => {
   return (
     <div className="w-full h-full flex flex-col gap-6 p-7 bg-background rounded-xl">
-      <h1 className="font-bold text-lg">Trafico por site</h1>
+      <h1 className="font-bold text-lg">Trafego por site</h1>
       {!Object.entries(data).length && (
         <span className="text-muted-foreground italic my-auto text-center">
           Aguardando dados...

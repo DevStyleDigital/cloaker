@@ -42,7 +42,7 @@ const Status = ({ status }: { status: string }) => (
 export const CardCampaign = (
   campaign: Pick<
     Campaign,
-    'id' | 'name' | 'status' | 'cat' | 'requestsAmount' | 'publishLocale'
+    'id' | 'name' | 'status' | 'cat' | 'requests' | 'publishLocale'
   >,
 ) => {
   const router = useRouter();
@@ -106,10 +106,10 @@ export const CardCampaign = (
       <div className="flex justify-between items-center">
         <span className="text-sm text-muted-foreground">Total de Requisições:</span>
         <span className="text-2xl font-semibold">
-          {campaign.requestsAmount === 0 ? (
+          {campaign.requests[0].count === 0 ? (
             <span className="text-lg">nenhuma ainda</span>
           ) : (
-            campaign.requestsAmount
+            campaign.requests[0].count
           )}
         </span>
       </div>

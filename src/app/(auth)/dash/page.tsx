@@ -124,7 +124,7 @@ const Dash = async () => {
 
   return (
     <div className="px-8 py-10 h-full">
-      <section className="w-full grid 2xl:grid-cols-4 max-[880px]:grid-cols-2 gap-2 xl:gap-6">
+      <section className="w-full grid 2xl:grid-cols-4 max-[880px]:grid-cols-2 gap-2 xl:gap-6 divide-x bg-background rounded-xl py-8">
         {(monthlyDetails as any).map((item: any, i: number) => (
           <Card key={item.id} index={i} {...item} />
         ))}
@@ -173,7 +173,6 @@ const Dash = async () => {
           />
         </div>
         <div className="flex flex-col h-full w-full gap-6">
-          <Docs />
           <div className="w-full h-full flex flex-col items-center gap-6 p-7 bg-background rounded-xl">
             <h1 className="text-lg w-full font-bold">Campanhas mais vistas</h1>
             <ul className="flex flex-col w-full h-full">
@@ -213,6 +212,7 @@ const Dash = async () => {
               ))}
             </ul>
           </div>
+          <Docs />
         </div>
       </div>
     </div>

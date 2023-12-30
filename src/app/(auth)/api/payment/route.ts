@@ -3,7 +3,6 @@ import { cors } from 'utils/cors';
 
 import Stripe from 'stripe';
 import { createSupabaseServer } from 'app/actions/supabase';
-import { loadStripe } from '@stripe/stripe-js';
 import { jwt } from 'services/jwt';
 
 export async function POST(req: NextRequest) {

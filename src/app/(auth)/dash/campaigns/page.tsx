@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { BlockProvider } from './block-providers';
 import { createSupabaseServer } from 'app/actions/supabase';
 
-export const dynamic = 'force-dynamic';
-
 const Campaigns = async () => {
   const { supabase } = createSupabaseServer();
 
@@ -18,7 +16,7 @@ const Campaigns = async () => {
 
   const { data: campaigns } = await supabase
     .from('campaigns')
-    .select('id, name, status, cat, requestsAmount, publishLocale')
+    .select('id, name, status, cat, requests(count), publishLocale')
     .eq('user_id', session?.user.id);
 
   const campaignsDetails = [
@@ -40,7 +38,7 @@ const Campaigns = async () => {
       id: '3',
       title: 'Média de Requisições por Campanha',
       label: (
-        (campaigns?.reduce((acc, { requestsAmount }) => acc + requestsAmount, 0) || 0) /
+        (campaigns?.reduce((acc, { requests }) => acc + requests[0].count, 0) || 0) /
         (campaigns?.length || 1)
       ).toString(),
       icon: Rocket,
@@ -56,13 +54,13 @@ const Campaigns = async () => {
           Criar campanha
         </Link>
       </div>
-      <section className="w-full grid grid-cols-3 gap-2 xl:gap-6">
+      <section className="w-full grid xl:grid-cols-3 max-[880px]:grid-cols-2 gap-2 xl:gap-6 divide-x bg-background rounded-xl py-8">
         {campaignsDetails.map((item, i) => (
           <Card key={item.id} index={i} {...item} />
         ))}
       </section>
       <div className="w-full flex gap-6 max-xl:gap-2 max-md:flex-wrap">
-        {campaigns?.map((item) => <CardCampaign key={item.id} {...item} />)}
+        {campaigns?.map((item) => <CardCampaign key={item.id} {...(item as any)} />)}
       </div>
     </div>
   );

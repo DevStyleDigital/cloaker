@@ -52,7 +52,8 @@ const Requests = () => {
     return { from, to };
   }
 
-  const getDataFiltered = async (pageP: number) => {
+  const getDataFiltered = async (pageP: number, signal?: AbortSignal) => {
+    const signalAC = signal || new AbortController().signal;
     const { from, to } = getFromAndTo(pageP);
     if (!user?.id) return [];
 
@@ -73,20 +74,26 @@ const Requests = () => {
       .from('requests')
       .select('*')
       .eq('user_id', user.id)
-      .order('created_at')
       .ilike('search', search_text)
       .ilikeAnyOf('search', devices)
       .ilikeAnyOf('search', countries)
       .ilikeAnyOf('search', campaign)
       .gte('created_at', filters.dateFrom.toISOString())
       .lte('created_at', filters.dateTo.toISOString())
-      .range(from, to);
+      .order('created_at', { ascending: false })
+      .range(from, to)
+      .abortSignal(signalAC);
 
     return data || [];
   };
 
   useEffect(() => {
-    getDataFiltered(0).then((d) => setData(d));
+    const ac = new AbortController();
+    getDataFiltered(0, ac.signal).then((d) => setData(d));
+
+    return () => {
+      ac.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, user]);
 

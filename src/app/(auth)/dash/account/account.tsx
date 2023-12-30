@@ -7,12 +7,19 @@ import { Security } from './(security)';
 import { Subscription } from './(subscription)';
 import { useAuth } from 'context/auth';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 const Account = () => {
+  const searchParam = useSearchParams();
   const { user } = useAuth();
   const [cards, setCards] = useState([]);
   const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [screen, setScreen] = useState(searchParam?.get('screen') || 'account');
+
+  useEffect(() => {
+    setScreen(searchParam?.get('screen') || 'account');
+  }, [searchParam]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -33,8 +40,8 @@ const Account = () => {
 
   return (
     <Tabs
-      defaultValue="account"
-      value={!user?.subscription ? 'subscription' : undefined}
+      value={!user?.subscription ? 'subscription' : screen}
+      onValueChange={(s) => setScreen(s)}
       className="space-y-4 h-full"
     >
       <TabsList className="m-8 mb-0">

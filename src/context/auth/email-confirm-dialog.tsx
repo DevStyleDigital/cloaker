@@ -115,7 +115,7 @@ export const EmailConfirmDialog = ({
             onClick={() => {
               cookies.remove('resend-counter', { expires: new Date() });
               cookies.remove('resend-time', { expires: new Date() });
-              // cookies.remove('confirm-email', { expires: new Date() });
+              cookies.remove('confirm-email', { expires: new Date() });
               cookies.remove('resend-try-tomorrow', {
                 expires: new Date(),
               });

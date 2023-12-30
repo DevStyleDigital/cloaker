@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from 'components/ui/popover';
 import { cn } from 'utils/cn';
 import { notifications } from 'mocks/notifications';
 import { useAuth } from 'context/auth';
+import { AvatarPopover } from 'components/sidebar/avatar';
 
 const ROUTES = {
   '/dash': 'Início',
@@ -38,7 +39,7 @@ export const Header = () => {
         <span>{ROUTES[pathname as keyof typeof ROUTES]}</span>
       </div>
 
-      <span className="flex items-center space-x-2 cursor-default select-none">
+      {/* <span className="flex items-center space-x-2 cursor-default select-none">
         <span className="text-muted-foreground text-sm mt-px">Plano atual:</span>
         <span
           className={`inline-block px-4 rounded-full text-sm font-bold uppercase ${
@@ -47,19 +48,19 @@ export const Header = () => {
         >
           {user?.subscription}
         </span>
-      </span>
+      </span> */}
 
       <div className="flex gap-4">
         <Button variant="ghost" onClick={() => router.refresh()} className="p-2">
-          <RefreshCw className="w-6 h-6" />
+          <RefreshCw className="w-5 h-5" />
         </Button>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" className="p-2">
-              <Bell className="w-6 h-6" />
+              <Bell className="w-5 h-5" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="mr-2 w-96">
+          <PopoverContent className="mr-2 w-96" align="end">
             {notifications.map((notify) => (
               <div className="flex gap-2 mt-2 items-center" key={notify.id}>
                 {notify.stats !== 'none' && (
@@ -71,7 +72,7 @@ export const Header = () => {
                     })}
                   >
                     {notify.stats === 'receipt' ? (
-                      <Receipt className="w-6 h-6" />
+                      <Receipt className="w-3 h-6" />
                     ) : notify.stats === 'error' ? (
                       <XCircle className="w-6 h-6" />
                     ) : (
@@ -87,6 +88,7 @@ export const Header = () => {
             ))}
           </PopoverContent>
         </Popover>
+        <AvatarPopover showName={false} />
       </div>
     </header>
   );

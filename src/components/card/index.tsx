@@ -10,19 +10,19 @@ export const Card = (card: {
   icon?: React.FC<{ className?: string }>;
 }) => {
   return (
-    <div
-      className={cn('flex flex-col p-8 gap-4 rounded-lg w-full', {
-        'bg-blue-100': card.index % 2 === 0,
-        'bg-purple-200': card.index % 2 !== 0,
-      })}
-    >
+    <div className="flex flex-col px-8 gap-4 w-full">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold">{card.title}</h3>
+        <h3 className="text-lg font-bold">{card.title}</h3>
         {card.icon && <card.icon className="w-6 h-6" />}
       </div>
-      <div className="flex items-center justify-between">
-        <p className="text-4xl font-bold">{card.label.replace('+', '')}</p>{' '}
-        <div className="flex items-center gap-2">
+      <div className="flex items-center">
+        <p className="text-4xl font-bold mr-4">{card.label.replace('+', '')}</p>{' '}
+        <div
+          className={cn('flex items-center gap-2', {
+            'text-lime-500': !!card.progress_percent,
+            'text-destructive': !card.progress_percent,
+          })}
+        >
           {card.progress_percent && card.progress_percent !== '+0' ? (
             <>
               <span className="text-sm">{card.progress_percent}%</span>
@@ -32,9 +32,7 @@ export const Card = (card: {
                 <TrendingDown className="w-4 h-4" />
               )}
             </>
-          ) : (
-            <span className="font-black">o</span>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

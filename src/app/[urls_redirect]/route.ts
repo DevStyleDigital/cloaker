@@ -5,8 +5,6 @@ import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
 import { createSupabaseServer } from 'app/actions/supabase';
 
-export const dynamic = 'force-dynamic';
-
 function formatOsName(os: string) {
   if (/Windows/i.test(os)) return 'windows';
   if (/macOS|iOS/i.test(os)) return 'apple-os';
@@ -33,14 +31,36 @@ export async function GET(
   const { isBot, ua, os } = userAgent(request);
   const device = getDeviceType(ua);
 
-  const campaignRes = await supabase.from('campaigns').select('*').eq('id', id).single();
+  const campaignRes = await supabase
+    .from('campaigns')
+    .select('*, requests(count)')
+    .eq('id', id)
+    .single();
 
-  if (!campaignRes.data || campaignRes.error)
+  function blockAccess() {
     return NextResponse.redirect(
       request.nextUrl.searchParams.get('origin') || 'https://google.com',
-      { headers: { blocked: 'true' } },
+      { headers: { 'Set-Cookie': 'block=true; Max-Age=3600; Path=/; SameSite=Strict' } },
     );
+  }
+
+  if (!campaignRes.data || campaignRes.error) return blockAccess();
   const campaign = campaignRes.data as Campaign;
+  const count = campaign.requests[0].count;
+
+  const subscription = await fetch(
+    `${process.env.NEXT_PUBLIC_DOMAIN_ORIGIN}/api/admin/users/${campaign.user_id}`,
+  )
+    .then((r) => r.json())
+    .then((r) => r)
+    .catch(() => null);
+
+  if (
+    (subscription.subscription === 'basic' && count >= 10000) ||
+    (subscription.subscription === 'premium' && count >= 25000) ||
+    (subscription.subscription === 'gold' && count >= 50000)
+  )
+    return blockAccess();
 
   const geoIp = (await fetch(
     `http://ip-api.com/json/${request.ip || '127.0.0.1'}?fields=isp,org,as`,
@@ -83,19 +103,7 @@ export async function GET(
         newReq.ip.org
       }&${newReq.ip.isp}`,
     });
-    await supabase
-      .from('campaigns')
-      .update({
-        requestsAmount: campaign.requestsAmount + 1,
-      })
-      .eq('id', campaign.id);
   }
-
-  // if (error || data.plan === 'disabled')
-  //   return NextResponse.redirect(
-  //     request.nextUrl.searchParams.get('origin') || 'https://www.google.com/', // CHANGE TO URL
-  //     302,
-  //   );
 
   if (campaign.status === 'inactive')
     return NextResponse.json({ error: 'Campaign is inactive' });
@@ -169,7 +177,7 @@ export async function GET(
     );
 
     if (campaign.redirectType === 'simple') return redirectRule.redirectUrl;
-    // if (!permitLocale) return undefined;
+    if (!permitLocale) return undefined;
 
     const paramsRules = redirectRule.rules || [];
     if (!paramsRules.length) return redirectRule.redirectUrl;

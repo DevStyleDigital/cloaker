@@ -22,7 +22,7 @@ export type CampaignData = {
 
 export type Campaign = CampaignData & {
   status: string;
-  requestsAmount: number;
+  requests: [{ count: number }];
   cat: string;
   user_id: string;
 };

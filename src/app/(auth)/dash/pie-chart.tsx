@@ -14,7 +14,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
 
   return (
     <div className="w-full h-full flex flex-col items-center p-7 bg-background rounded-xl">
-      <h1 className="font-bold w-full text-lg">Trafico por Região</h1>
+      <h1 className="font-bold w-full text-lg">Trafego por Região</h1>
       <div className="w-full h-full flex flex-col justify-center items-center mt-4">
         {!data.length && (
           <span className="text-muted-foreground italic text-center">
