@@ -83,7 +83,7 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
             </Bar>
             <Tooltip
               separator=""
-              wrapperClassName="[&_.recharts-tooltip-item-name]:hidden"
+              wrapperClassName="[&_.recharts-tooltip-item-name]:hidden [&_.recharts-tooltip-label]:text-black"
               formatter={(label) => <>{label} requisições</>}
             />
           </BarChart>

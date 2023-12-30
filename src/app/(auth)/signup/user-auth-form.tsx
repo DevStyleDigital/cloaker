@@ -16,8 +16,10 @@ import { Tel } from 'components/tel';
 import { useAuth } from 'context/auth';
 import { AuthError } from '@supabase/supabase-js';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { useTheme } from 'next-themes';
 
 export const UserAuthForm = () => {
+  const { resolvedTheme } = useTheme();
   const { supabase, setEmailDialogOpen } = useAuth();
   const captcha = useRef<HCaptcha>(null);
   const [captchaToken, setCaptchaToken] = useState<string | undefined>();
@@ -127,6 +129,7 @@ export const UserAuthForm = () => {
 
           <HCaptcha
             ref={captcha}
+            theme={resolvedTheme as 'light'}
             sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY!}
             onVerify={(token) => {
               setCaptchaToken(token);

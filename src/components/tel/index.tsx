@@ -33,7 +33,7 @@ export const Tel = ({
           required
           defaultCountry="BR"
           className={cn(
-            'peer w-full [&_fieldset]:input-border [&_.Mui-focused_fieldset]:!ring-4 [&_.Mui-focused_fieldset]:!ring-ring/20 [&_.Mui-focused_fieldset]:!border [&_.Mui-focused_fieldset]:!border-ring',
+            'peer w-full [&_fieldset]:input-border [&_fieldset]:!border-input [&_input]:text-foreground [&_.Mui-focused_fieldset]:!ring-4 [&_.Mui-focused_fieldset]:!ring-ring/20 [&_.Mui-focused_fieldset]:!border [&_.Mui-focused_fieldset]:!border-ring',
             { 'opacity-60': loading },
           )}
           error={!!error || telInvalid}

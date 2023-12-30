@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwt } from 'services/jwt';
 import { createSupabaseServer } from 'app/actions/supabase';
-import { cors } from 'utils/cors';
 
 export async function middleware(req: NextRequest) {
   const { supabase, response } = createSupabaseServer(req);
@@ -48,5 +47,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 };

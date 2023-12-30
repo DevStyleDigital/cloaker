@@ -23,7 +23,7 @@ export const Card = ({
       key={subscription.id}
       className={cn(
         'lg:w-[360px] w-full p-8 bg-background rounded-[10px] border-primary border shadow-lg flex-col justify-start items-start inline-flex',
-        { 'bg-primary text-foreground': i % 2 !== 0 },
+        { 'bg-primary text-white': i % 2 !== 0 },
       )}
     >
       <span className="text-lg font-bold">{subscription.t}</span>

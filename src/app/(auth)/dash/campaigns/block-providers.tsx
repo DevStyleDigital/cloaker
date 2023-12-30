@@ -16,7 +16,7 @@ export const BlockProvider = ({
   blockProvidersDefault: string[];
 }) => {
   const router = useRouter();
-  const { user, supabase } = useAuth();
+  const { supabase } = useAuth();
   const ispRef = useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -26,7 +26,7 @@ export const FormUrl = ({
   handleDelete: () => void;
   campaignId: string;
 } & ReturnType<typeof genNewUrlObject>) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { redirectType, useCustomDomain, customDomain } = useCampaignData();
 
   return (
@@ -43,7 +43,7 @@ export const FormUrl = ({
             className="[&_span]:!text-ring/80 dark:[&_span]:!text-muted-foreground"
             customStyle={{ padding: '1rem' }}
             showLineNumbers={false}
-            theme={theme === 'light' ? atomOneLight : dracula}
+            theme={resolvedTheme === 'light' ? atomOneLight : dracula}
           />
           {redirectType === 'complex' && (
             <DialogTrigger asChild>

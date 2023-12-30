@@ -173,7 +173,7 @@ export const DataTableDemo = ({
 
   return (
     <div className="w-full">
-      <div className="bg-background">
+      <div className="bg-background rounded-sm">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

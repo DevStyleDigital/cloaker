@@ -90,7 +90,7 @@ export const Cards = ({
               ({ priority }) => priority === 'primary',
             );
 
-            newPrev[oldPrimaryIndex].priority = 'secondary';
+            if (newPrev[oldPrimaryIndex]) newPrev[oldPrimaryIndex].priority = 'secondary';
           }
 
           return [...newPrev, { ...data, company: cardType }];
