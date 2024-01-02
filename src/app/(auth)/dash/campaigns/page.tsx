@@ -16,7 +16,9 @@ const Campaigns = async () => {
 
   const { data: campaigns } = await supabase
     .from('campaigns')
-    .select('id, name, status, cat, requests(count), publishLocale')
+    .select(
+      'id, name, status, cat, requests(count), publishLocale, useCustomDomain, customDomain, redirectType, urls',
+    )
     .eq('user_id', session?.user.id);
 
   const campaignsDetails = [

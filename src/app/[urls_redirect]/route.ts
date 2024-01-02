@@ -48,7 +48,10 @@ export async function GET(
   const campaign = campaignRes.data as Campaign;
   const count = campaign.requests[0].count;
 
-  if (!(campaign.useCustomDomain && !!request.nextUrl.searchParams.get('origin')))
+  if (
+    !(campaign.useCustomDomain && !!request.nextUrl.searchParams.get('origin')) ||
+    campaign.status === 'inactive'
+  )
     blockAccess();
 
   const subscription = await fetch(

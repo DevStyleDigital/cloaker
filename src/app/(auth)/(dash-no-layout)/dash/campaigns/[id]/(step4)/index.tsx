@@ -1,5 +1,5 @@
 import { Button } from 'components/ui/button';
-import { ArrowRight, Album, Plus, ShieldBan, X } from 'lucide-react';
+import { ArrowRight, Album, Plus, ShieldBan, X, Ghost } from 'lucide-react';
 import { CardSwitch } from '../card-switch';
 import { CardButton } from '../card-button';
 import { Dialog, DialogContent, DialogTrigger } from 'components/ui/dialog';
@@ -44,9 +44,17 @@ export const Step4 = ({
       <div className="mt-4 w-full flex gap-4 justify-center">
         <CardSwitch
           id="ready"
+          icon={Ghost}
+          title="Inteligência Ghost"
+          desc="Utilizar provedores já cadastrados"
+          name="use_ready_providers_list"
+          defaultChecked={useReadyProvidersList}
+        />
+        <CardSwitch
+          id="ready"
           icon={Album}
           title="Lista pronta"
-          desc="Utilizar provedores já cadastrados"
+          desc="Utilizar seus provedores já cadastrados"
           name="use_ready_providers_list"
           defaultChecked={useReadyProvidersList}
         />
