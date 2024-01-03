@@ -7,14 +7,19 @@ import { Input } from 'components/ui/input';
 import { useRef, useState } from 'react';
 import { CampaignData } from 'types/campaign';
 import { useCampaignData } from '../campaign-form';
+import { useAuth } from 'context/auth';
 
 export const Step4 = ({
   handleNextStep,
 }: {
   handleNextStep: (d: Partial<CampaignData>) => void;
 }) => {
-  const { blockProviders: blockProvidersDefault, useReadyProvidersList } =
-    useCampaignData();
+  const { user } = useAuth();
+  const {
+    blockProviders: blockProvidersDefault,
+    userBlockProviders,
+    useGhostProvidersList,
+  } = useCampaignData();
 
   const ispRef = useRef<HTMLInputElement | null>(null);
   const [blockProviders, setBlockProviders] = useState<string[]>(
@@ -23,11 +28,20 @@ export const Step4 = ({
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
+
+    const {
+      use_ready_providers_list: { checked: use_ready_providers_list },
+      use_ghost_providers_list: { checked: use_ghost_providers_list },
+    } = ev.target as unknown as {
+      [key in 'use_ready_providers_list' | 'use_ghost_providers_list']: HTMLInputElement;
+    };
+
     handleNextStep({
-      blockProviders,
-      useReadyProvidersList: (
-        ev.target as unknown as { use_ready_providers_list: HTMLInputElement }
-      ).use_ready_providers_list.checked,
+      blockProviders: blockProviders,
+      userBlockProviders: use_ready_providers_list
+        ? (user?.block_providers as string[]) || []
+        : [],
+      useGhostProvidersList: use_ghost_providers_list,
     });
   }
 
@@ -46,17 +60,22 @@ export const Step4 = ({
           id="ready"
           icon={Ghost}
           title="Inteligência Ghost"
-          desc="Utilizar provedores já cadastrados"
-          name="use_ready_providers_list"
-          defaultChecked={useReadyProvidersList}
+          desc="Utilizar nossa lista de provedores"
+          name="use_ghost_providers_list"
+          defaultChecked={useGhostProvidersList}
         />
         <CardSwitch
           id="ready"
           icon={Album}
           title="Lista pronta"
-          desc="Utilizar seus provedores já cadastrados"
+          disabled={!userBlockProviders?.length}
+          desc={
+            userBlockProviders?.length
+              ? 'Utilizar seus provedores já cadastrados'
+              : 'Crie sua própria lista de provedores antes de utiliza-la'
+          }
           name="use_ready_providers_list"
-          defaultChecked={useReadyProvidersList}
+          defaultChecked={!!userBlockProviders?.length}
         />
         <Dialog>
           <DialogTrigger asChild>

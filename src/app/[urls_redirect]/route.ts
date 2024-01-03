@@ -3,7 +3,7 @@ import { type NextRequest, userAgent, NextResponse } from 'next/server';
 import { Campaign } from 'types/campaign';
 import { getDeviceType } from 'utils/get-device-type';
 import { arraysEqual } from 'utils/arrays-equal';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 
 function formatOsName(os: string) {
   if (/Windows/i.test(os)) return 'windows';
@@ -12,6 +12,9 @@ function formatOsName(os: string) {
   if (/Linux/i.test(os)) return 'linux';
   return 'other';
 }
+
+const GHOST_PROVIDERS =
+  'facebook|google|yandex|amazon|azure|digitalocean|microsoft|TIKTOK PTE. LTD|AS-CHOOPA|BYTEDANCE|Latitude.sh LTDA';
 
 function formatRule(rule: string) {
   const orRules = rule
@@ -129,7 +132,8 @@ export async function GET(
 
   // BLOCK NO PERMITTED PROVIDERS
   if (
-    campaign.blockProviders.join('|').length &&
+    [...campaign.blockProviders, campaign.userBlockProviders, GHOST_PROVIDERS].join('|')
+      .length &&
     `${geoIp.as}${geoIp.isp}${geoIp.org}`
       .toLowerCase()
       .search(new RegExp(campaign.blockProviders.join('|').toLowerCase(), 'gi')) !== -1

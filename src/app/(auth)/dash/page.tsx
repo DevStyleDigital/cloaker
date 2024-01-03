@@ -13,7 +13,7 @@ import { Instragram } from 'assets/svgs/logos/instagram';
 import { Facebook } from 'assets/svgs/logos/facebook';
 import { Google } from 'assets/svgs/logos/google';
 import { getRandomColor } from 'utils/get-random-color';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 
 function getAverageOfRequests(req: CampaignRequest[]) {
   const campaignCounts = req.reduce(
@@ -40,7 +40,7 @@ function howMuchIncreases(v1: number, v2: number) {
 }
 
 const Dash = async () => {
-  const { supabase } = createSupabaseServer();
+  const { supabase } = createSupabaseServer(undefined, undefined, { running: 'page' });
 
   const { data: monthly_details } = await supabase.rpc('get_monthly_details');
 

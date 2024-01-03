@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 import Stripe from 'stripe';
 
 export async function GET(request: NextRequest) {

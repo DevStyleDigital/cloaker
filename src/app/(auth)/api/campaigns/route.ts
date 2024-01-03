@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 import { cors } from 'utils/cors';
 import { jwt } from 'services/jwt';
 

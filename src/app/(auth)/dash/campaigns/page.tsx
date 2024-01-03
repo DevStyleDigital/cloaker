@@ -3,10 +3,10 @@ import { CardCampaign } from './card-campaign';
 import { FolderOpen, Plus, Rocket, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { BlockProvider } from './block-providers';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 
 const Campaigns = async () => {
-  const { supabase } = createSupabaseServer();
+  const { supabase } = createSupabaseServer(undefined, undefined, { running: 'page' });
 
   const {
     data: { session },

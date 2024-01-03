@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwt } from 'services/jwt';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 
 export async function middleware(req: NextRequest) {
   const { supabase, response } = createSupabaseServer(req);

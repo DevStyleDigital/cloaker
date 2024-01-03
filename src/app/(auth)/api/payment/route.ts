@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cors } from 'utils/cors';
 
 import Stripe from 'stripe';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 import { jwt } from 'services/jwt';
 
 export async function POST(req: NextRequest) {

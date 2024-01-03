@@ -1,11 +1,11 @@
 import { AuthProvider } from 'context/auth';
 import { cookies } from 'next/headers';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 import { getUser } from 'utils/get-user';
 
 const AuthLayout: BTypes.NLPage<{}, true> = async ({ children }) => {
   const cookiesStore = cookies();
-  const { supabase } = createSupabaseServer();
+  const { supabase } = createSupabaseServer(undefined, undefined, { running: 'page' });
 
   const {
     data: { session },

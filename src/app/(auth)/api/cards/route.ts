@@ -3,7 +3,7 @@ import { cors } from 'utils/cors';
 
 import Stripe from 'stripe';
 import { formatBrand } from 'utils/credit-card-type';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 
 export async function POST(req: NextRequest) {
   const { supabase } = createSupabaseServer();

@@ -1,11 +1,11 @@
 import { CampaignForm } from './campaign-form';
 import { notFound } from 'next/navigation';
-import { createSupabaseServer } from 'app/actions/supabase';
+import { createSupabaseServer } from 'services/supabase';
 
 export const dynamic = 'force-dynamic';
 
 const Campaign = async ({ params }: { params: { id: string } }) => {
-  const { supabase } = createSupabaseServer();
+  const { supabase } = createSupabaseServer(undefined, undefined, { running: 'page' });
 
   if (params.id === 'create')
     return (

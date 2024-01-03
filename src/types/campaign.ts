@@ -7,7 +7,8 @@ export type CampaignData = {
   noBots: boolean;
   noExt: boolean;
   blockProviders: string[];
-  useReadyProvidersList: boolean;
+  userBlockProviders: string[];
+  useGhostProvidersList: boolean;
   devices: string[];
   systems: string[];
   params: string[];

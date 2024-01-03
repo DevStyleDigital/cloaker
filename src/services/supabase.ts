@@ -9,6 +9,9 @@ import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 export const createSupabaseServer = <T extends NextRequest | undefined>(
   request?: T,
   secret?: string,
+  opts?: {
+    running?: 'server' | 'page';
+  },
 ): {
   supabase: SupabaseClient<any, 'public', any>;
   cookies: ReadonlyRequestCookies | RequestCookies;
@@ -31,6 +34,7 @@ export const createSupabaseServer = <T extends NextRequest | undefined>(
           return cookieStore.get(name)?.value;
         },
         set(name, value, options) {
+          if (opts?.running === 'page') return;
           cookieStore.set({ name, value, ...options });
           if (!request) return;
           response = NextResponse.next({
@@ -46,6 +50,7 @@ export const createSupabaseServer = <T extends NextRequest | undefined>(
         },
         remove(name, options) {
           if (!request) {
+            if (opts?.running === 'page') return;
             cookieStore.delete({ name, ...options });
             return;
           }

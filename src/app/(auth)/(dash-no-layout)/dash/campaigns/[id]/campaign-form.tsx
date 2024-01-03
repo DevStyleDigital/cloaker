@@ -41,7 +41,7 @@ export const CampaignForm = ({
   campaignDefault?: CampaignData | null;
 }) => {
   const router = useRouter();
-  const { user, supabase } = useAuth();
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -52,16 +52,13 @@ export const CampaignForm = ({
     campaignDefault || ({} as CampaignData),
   );
 
-  async function handleCreateCampaign({ useReadyProvidersList, ...data }: CampaignData) {
+  async function handleCreateCampaign(data: CampaignData) {
     setLoading(true);
     setHasError(false);
     setReturnTimes(returnTimes + 1);
-    const blockProviders = useReadyProvidersList
-      ? ((user?.block_providers as string[]) || []).concat(data.blockProviders || [])
-      : data.blockProviders || [];
 
     await fetch('/api/campaigns', {
-      body: JSON.stringify({ ...data, blockProviders, user_id: user?.id }),
+      body: JSON.stringify({ ...data, user_id: user?.id }),
       method: 'POST',
       cache: 'no-cache',
       headers: {
