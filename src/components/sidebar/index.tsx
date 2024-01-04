@@ -7,17 +7,19 @@ import {
   ShieldHalf,
   UserSquare,
 } from 'lucide-react';
-import { AvatarPopover } from './avatar';
 import { SidebarLink } from './sidebar-link';
 import { useAuth } from 'context/auth';
+import { GhostLogo } from 'assets/svgs/logos/ghost';
 
 export const Sidebar = () => {
   const { user } = useAuth();
 
   return (
-    <aside className="w-64 bg-background border-r border-input px-4 py-8 space-y-6 h-screen fixed top-0 left-0">
-      {/* <AvatarPopover /> */}
-      <div className="h-10">LOGO</div>
+    <aside className="w-64 bg-background border-r border-input px-4 py-8 space-y-4 h-screen fixed top-0 left-0">
+      <div className="flex items-end gap-2">
+        <GhostLogo className="w-24 h-auto" />
+        <span className="sr-only">Ghost</span>
+      </div>
 
       <section>
         <h2 className="text-base text-muted-foreground px-4 py-2">Dashboards</h2>
