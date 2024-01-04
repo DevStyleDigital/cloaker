@@ -90,7 +90,7 @@ export const columns: ColumnDef<CampaignRequest>[] = [
         <div className="flex flex-col">
           {row.original.ip.IPv4}
           <span
-            className="text-xs text-black/40 truncate max-w-[10rem]"
+            className="text-xs text-muted-foreground truncate max-w-[10rem]"
             title={row.original.ip.org}
           >
             {row.original.ip.org}
@@ -106,7 +106,7 @@ export const columns: ColumnDef<CampaignRequest>[] = [
       return (
         <div className="flex flex-col">
           {row.original.device}
-          <span className="text-xs text-black/40">{row.original.system}</span>
+          <span className="text-xs text-muted-foreground">{row.original.system}</span>
         </div>
       );
     },
