@@ -52,7 +52,7 @@ export const Header = () => {
       </span> */}
 
       <div className="flex gap-4">
-        <Button variant="ghost" onClick={() => router.refresh()} className="p-2">
+        <Button variant="ghost" onClick={() => window.location.reload()} className="p-2">
           <RefreshCw className="w-5 h-5" />
         </Button>
         <Popover>
