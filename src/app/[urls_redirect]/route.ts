@@ -25,6 +25,8 @@ function formatRule(rule: string) {
   return andRules;
 }
 
+export const runtime = 'edge';
+
 export async function GET(
   request: NextRequest,
   context: { params: { urls_redirect: string } },

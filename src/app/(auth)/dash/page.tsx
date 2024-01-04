@@ -184,7 +184,7 @@ const Dash = async () => {
               {campaignsMoreVisit.map((item) => (
                 <li key={item.id} className="w-full">
                   <Link
-                    href={`/dash/campaigns/${item.id}`}
+                    href={'/dash/campaigns/'}
                     className="flex items-center w-full hover:bg-black/10 p-4 rounded-lg transition-all hover:no-underline group"
                   >
                     {item.locale === 'tiktok' ? (

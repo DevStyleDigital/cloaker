@@ -74,6 +74,7 @@ export const CardCampaign = (
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const { supabase } = useAuth();
 
   return (
@@ -143,31 +144,53 @@ export const CardCampaign = (
               <Pencil />
             </Link>
           </Button>
-          <Button
-            variant="destructive"
-            className="w-fit p-2"
-            onClick={() => {
-              supabase
-                .from('campaigns')
-                .delete()
-                .eq('id', campaign.id)
-                .then((res) => {
-                  if (res.error)
-                    return toast.error(
-                      'Ocorreu um erro ao deletar sua campanha. Tente novamente mais tarde!',
-                    );
-                  toast.success('Sua campanha foi deletada!');
-                  router.refresh();
-                });
-            }}
-          >
-            <Trash />
-          </Button>
+          <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
+            <AlertDialogTrigger className="w-fit">
+              <Button variant="destructive" className="w-fit p-2">
+                <Trash />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação não pode ser desfeita. Todos as requisições feitas para essa
+                  camapnha serão deletadas
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="items-center">
+                <AlertDialogCancel className="h-fit">Cancelar</AlertDialogCancel>
+                <Button
+                  disabled={loading}
+                  variant="destructive"
+                  className="w-fit"
+                  onClick={() => {
+                    setLoading(true);
+                    supabase
+                      .from('campaigns')
+                      .delete()
+                      .eq('id', campaign.id)
+                      .then((res) => {
+                        if (res.error)
+                          return toast.error(
+                            'Ocorreu um erro ao deletar sua campanha. Tente novamente mais tarde!',
+                          );
+                        toast.success('Sua campanha foi deletada!');
+                        router.refresh();
+                        setOpenDelete(false);
+                      });
+                  }}
+                >
+                  Delatar campanha!
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
-          <span className="font-bold text-lg">{campaign.name}</span>
+          <span className="font-bold text-lg truncate max-w-64">{campaign.name}</span>
           <span className="text-sm text-muted-foreground">
             Data criação: {format(new Date(campaign.cat), 'dd/MM/yyyy')}
           </span>
@@ -245,7 +268,7 @@ export const CardCampaign = (
         <span className="text-sm text-muted-foreground">Total de Requisições:</span>
         <span className="text-2xl font-semibold">
           {campaign.requests[0].count === 0 ? (
-            <span className="text-lg">nenhuma ainda</span>
+            <span className="text-lg">0</span>
           ) : (
             campaign.requests[0].count
           )}

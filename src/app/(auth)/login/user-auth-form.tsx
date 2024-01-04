@@ -30,6 +30,8 @@ export const UserAuthForm = () => {
 
   async function onSubmit(ev: React.SyntheticEvent) {
     ev.preventDefault();
+
+    if (!captchaToken) return toast.warn('Faça primeiro o captcha antes de prosseguir!');
     setLoading(true);
 
     const {
@@ -37,8 +39,6 @@ export const UserAuthForm = () => {
       password: { value: password },
     } = ev.currentTarget as EventTarget &
       Element & { [key in 'email' | 'password']: { value: string } };
-
-    if (!captchaToken) return toast.warn('Faça primeiro o captcha antes de prosseguir!');
 
     supabase.auth
       .signInWithPassword({ email, password, options: { captchaToken } })
