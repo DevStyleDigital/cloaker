@@ -17,7 +17,7 @@ export const TrafficGraphic = ({
       <h1 className="font-bold text-lg">Trafego por site</h1>
       {!Object.entries(data).length && (
         <span className="text-muted-foreground italic my-auto text-center">
-          Aguardando dados...
+          Nenhum dado ainda...
         </span>
       )}
       {Object.entries(data).map((item, index) => {

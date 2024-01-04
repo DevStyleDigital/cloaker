@@ -18,7 +18,7 @@ export const PieChart = ({ data }: { data: any[] }) => {
       <div className="w-full h-full flex flex-col justify-center items-center mt-4">
         {!data.length && (
           <span className="text-muted-foreground italic text-center">
-            Aguardando dados...
+            Nenhum dado ainda...
           </span>
         )}
         {client

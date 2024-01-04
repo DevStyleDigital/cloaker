@@ -178,7 +178,7 @@ const Dash = async () => {
             <ul className="flex flex-col w-full h-full">
               {!campaignsMoreVisit.length && (
                 <span className="text-muted-foreground flex w-full h-full justify-center items-center italic text-center">
-                  Aguardando dados...
+                  Nenhum dado ainda...
                 </span>
               )}
               {campaignsMoreVisit.map((item) => (

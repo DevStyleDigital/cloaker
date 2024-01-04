@@ -212,7 +212,7 @@ export const DataTableDemo = ({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Aguardando dados...
+                  Nenhum dado ainda...
                 </TableCell>
               </TableRow>
             )}

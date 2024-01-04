@@ -30,7 +30,7 @@ export const DeviceChart = ({ data }: { data: Record<string, number> }) => {
       <h1 className="font-bold w-full text-lg max-sm:ml-8">Trafego por dispositivo</h1>
       {!Object.entries(data).length && (
         <span className="text-muted-foreground flex items-center h-full italic text-center">
-          Aguardando dados...
+          Nenhum dado ainda...
         </span>
       )}
       {!!Object.entries(data).length && (
