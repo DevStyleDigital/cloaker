@@ -53,8 +53,14 @@ export async function GET(
   const campaign = campaignRes.data as Campaign;
   const count = campaign.requests[0].count;
 
+  console.log(
+    campaign.useCustomDomain,
+    request.nextUrl.searchParams.get('origin'),
+    campaign.status === 'inactive',
+  );
+
   if (
-    !(campaign.useCustomDomain && !!request.nextUrl.searchParams.get('origin')) ||
+    (campaign.useCustomDomain && !request.nextUrl.searchParams.get('origin')) ||
     campaign.status === 'inactive'
   )
     blockAccess();
