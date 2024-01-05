@@ -1,6 +1,6 @@
 'use client';
 import { Tabs, TabsList, TabsTrigger } from 'components/ui/tabs';
-import { AccountInfo } from './account-info';
+import { AccountInfo } from './(account-info)';
 import { Cards } from './(cards)';
 import { Payments } from './(payments)';
 import { Security } from './(security)';

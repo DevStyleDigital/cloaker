@@ -2,10 +2,53 @@ import { Google } from 'assets/svgs/logos/google';
 import { Apple } from 'assets/svgs/logos/apple';
 import { Button } from 'components/ui/button';
 import { cn } from 'utils/cn';
+import { useTheme } from 'next-themes';
+import { useAuth } from 'context/auth';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { AuthError } from '@supabase/supabase-js';
 
 const pulseAnimation = 'animate-pulse pointer-events-none opacity-80';
 
-export const ThirdPatty = ({ loading }: { loading: boolean }) => {
+export const ThirdPatty = ({
+  loading,
+  setLoading,
+}: {
+  loading: boolean;
+  setLoading: (v: boolean) => void;
+}) => {
+  const { resolvedTheme } = useTheme();
+  const { supabase, setEmailDialogOpen } = useAuth();
+
+  async function onSubmit(provider: 'google') {
+    setLoading(true);
+
+    supabase.auth
+      .signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${location.origin}/auth/callback`,
+        },
+      })
+      .then(async (res) => {
+        if (!res.data || res.error) throw res.error;
+        return res;
+      })
+      .catch((err: AuthError | null) => {
+        if (err?.status === 429) {
+          setEmailDialogOpen(true);
+          return toast.warn(
+            'Foram feitas muitas requisições, tente novamente mais tarde.',
+          );
+        }
+        toast.error('Ocorreu um erro ao criar na sua conta, tente novamente mais tarde.');
+        return err;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
   return (
     <div className="w-full">
       <div className="relative w-full mt-10 mb-8">
@@ -19,6 +62,9 @@ export const ThirdPatty = ({ loading }: { loading: boolean }) => {
           variant="secondary"
           className={cn('w-full', { [pulseAnimation]: loading })}
           aria-disabled={loading}
+          onClick={() => {
+            onSubmit('google');
+          }}
         >
           <Google className="w-6 h-6 mr-4" />
           Google

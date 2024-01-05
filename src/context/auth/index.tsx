@@ -16,6 +16,14 @@ export type AuthUser = {
   block_providers: string[];
   subscription: string | null;
   paymentId?: string;
+  addr: null | {
+    city: string;
+    state: string;
+    country: string;
+    neighborhood: string;
+    complement: string;
+    cep: string;
+  };
 };
 
 type AuthContextType = {

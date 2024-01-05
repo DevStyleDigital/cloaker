@@ -2,17 +2,22 @@
 import { UploadImageInput } from 'components/upload-image-input';
 import { Tel } from 'components/tel';
 import { Button } from 'components/ui/button';
-import { Input } from 'components/ui/input';
+import { Input, InputMask } from 'components/ui/input';
 import { TabsContent } from 'components/ui/tabs';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from 'context/auth';
 import { useRouter } from 'next/navigation';
+import { useGeolocation } from './useGeolocation';
+import { Select, SelectContent, SelectItem, SelectTrigger } from 'components/ui/select';
+
+import countries from 'assets/countries.json';
 
 const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
 
 export const AccountInfo = () => {
   const router = useRouter();
+  const { data, search } = useGeolocation();
   const { user, supabase } = useAuth();
   const [loading, setLoading] = useState(false);
   const [avatar_url, setAvatarUrl] = useState<File | null>(null);
@@ -37,7 +42,7 @@ export const AccountInfo = () => {
     ev.preventDefault();
     setLoading(true);
 
-    const { name, tel } = ev.target as unknown as {
+    const { name, tel, cep, city, neighborhood, complement } = ev.target as unknown as {
       [k: string]: HTMLInputElement;
     };
 
@@ -56,6 +61,14 @@ export const AccountInfo = () => {
         name: name.value,
         phone: tel.value,
         avatar_url: path,
+        addr: {
+          cep: cep.value,
+          city: city.value,
+          neighborhood: neighborhood.value,
+          complement: complement.value,
+          state: data!.state,
+          country: 'BR',
+        },
       }),
     })
       .then(() => {
@@ -126,6 +139,66 @@ export const AccountInfo = () => {
                 <Tel error={false} defaultValue={user?.phone} loading={loading} />
               </div>
               <Input placeholder="Email" defaultValue={user?.email} disabled />
+              <p>Endereço:</p>
+              <div className="flex space-x-4">
+                <Select name="country" defaultValue="BR" disabled required>
+                  <SelectTrigger className="w-full" placeholder="País*" />
+                  <SelectContent>
+                    <SelectItem value="BR">Brasil</SelectItem>
+                  </SelectContent>
+                </Select>
+                <InputMask
+                  mask={
+                    countries[29].zip_code?.split('').map((v) => (v === 'N' ? /\d/ : v))!
+                  }
+                  showMask={false}
+                  name="cep"
+                  placeholder="CEP*"
+                  required
+                  disabled={loading}
+                  defaultValue={user?.addr?.cep}
+                  onChange={(e) => search(e.target.value)}
+                />
+                <Select
+                  name="state"
+                  value={data?.state}
+                  disabled
+                  required
+                  defaultValue={user?.addr?.city}
+                >
+                  <SelectTrigger className="w-full" placeholder="Estado*" />
+                  <SelectContent>
+                    {countries[29].states!.map(([k, v]) => (
+                      <SelectItem key={k} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  name="city"
+                  placeholder="Cidade*"
+                  value={data?.city}
+                  required
+                  disabled
+                  defaultValue={user?.addr?.city}
+                />
+              </div>
+              <div className="flex space-x-4">
+                <Input
+                  name="neighborhood"
+                  placeholder="Bairro*"
+                  value={data?.neighborhood || undefined}
+                  required
+                  defaultValue={user?.addr?.neighborhood}
+                />
+                <Input
+                  name="complement"
+                  placeholder="Complemento*"
+                  defaultValue={user?.addr?.complement}
+                  required
+                />
+              </div>
               <Button disabled={loading} className="w-fit px-8 mx-auto">
                 Salvar
               </Button>

@@ -124,7 +124,7 @@ export const UserAuthForm = () => {
           </Button>
         </div>
       </form>
-      <ThirdPatty loading={loading} />
+      <ThirdPatty loading={loading} setLoading={setLoading} />
     </div>
   );
 };
