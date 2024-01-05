@@ -7,17 +7,6 @@ import { TabsContent } from 'components/ui/tabs';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from 'context/auth';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from 'components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
 
 const ACCEPTED_IMAGE_FORMATS = 'image/png,image/jpg,image/jpeg,image/webp';
@@ -82,30 +71,50 @@ export const AccountInfo = () => {
     setLoading(false);
   }
 
+  const subscriptionColors: Record<string, string> = {
+    basic: 'bg-gray-500/10 border border-gray-500 text-gray-500',
+    premium: 'bg-blue-500/10 border border-blue-500 text-blue-500',
+    gold: 'bg-yellow-500/10 border border-yellow-500 text-yellow-500',
+  };
+
+  const tagColor = user?.subscription && subscriptionColors[user.subscription];
+
   return (
     <TabsContent value="account" className="space-y-4">
-      <section className="w-full flex flex-col gap-8 p-8 max-sm:p-4 border-b max-w-7xl ml-8 bg-background rounded-lg">
+      <section className="w-full flex flex-col gap-8 p-8 pb-16 max-sm:p-4 border-b max-w-7xl ml-8 bg-background rounded-lg">
         <div className="flex flex-col">
           <h2 className="uppercase font-bold">Informações Pessoais</h2>
           <p className="italic text-muted-foreground">
             Atualize suas informações de perfil
           </p>
         </div>
-        <form className="flex flex-col space-y-4" onSubmit={onSubmitInfo}>
-          <div className="flex space-x-16 items-end">
+        <form className="flex flex-col space-y-4 mt-16" onSubmit={onSubmitInfo}>
+          <div className="flex flex-col justify-center items-center">
             <div>
-              <p className="italic text-muted-foreground mb-3">Foto de perfil:</p>
-              <UploadImageInput
-                file={avatar_url || (user?.avatar_url ? user.avatar_url : null)}
-                className="relative border-border border-dashed text-sm text-muted-foreground aspect-square gap-4 w-52 flex rounded-lg items-center justify-center bg-accent hover:border-primary border cursor-pointer transition-all"
-                handleFile={setAvatarUrl}
-                id="profile-avatar_url"
-                accept={ACCEPTED_IMAGE_FORMATS}
-                disabled={loading}
-              />
+              <div className="relative">
+                <UploadImageInput
+                  file={avatar_url || (user?.avatar_url ? user.avatar_url : null)}
+                  className="relative border-border border-dashed text-sm text-muted-foreground aspect-square gap-4 w-52 flex rounded-full items-center justify-center bg-accent hover:border-primary border cursor-pointer transition-all"
+                  handleFile={setAvatarUrl}
+                  id="profile-avatar_url"
+                  accept={ACCEPTED_IMAGE_FORMATS}
+                  disabled={loading}
+                />
+                <span className="flex absolute bottom-6 left-1/2 -translate-x-1/2 items-center w-fit space-x-2 cursor-default select-none">
+                  <span
+                    className={`inline-block px-4 py-px rounded-full text-sm font-bold uppercase ${
+                      tagColor || ''
+                    }`}
+                  >
+                    {user?.subscription}
+                  </span>
+                </span>
+              </div>
+              <p className="text-muted-foreground mt-3 text-center truncate max-w-52">
+                {user?.name}
+              </p>
             </div>
-            <div className="w-full space-y-6">
-              <p className="italic text-muted-foreground">Usuário:</p>
+            <div className="space-y-6 w-full mt-16 flex-col flex">
               <div className="flex space-x-4">
                 <Input
                   name="name"
@@ -117,61 +126,12 @@ export const AccountInfo = () => {
                 <Tel error={false} defaultValue={user?.phone} loading={loading} />
               </div>
               <Input placeholder="Email" defaultValue={user?.email} disabled />
-              <Button disabled={loading} className="w-fit">
-                Atualizar
+              <Button disabled={loading} className="w-fit px-8 mx-auto">
+                Salvar
               </Button>
             </div>
           </div>
         </form>
-        <hr className="border-none bg-destructive h-px" />
-        <div className="flex flex-col">
-          <h2 className="uppercase text-destructive font-bold">Area Senssível</h2>
-          <p className="italic text-muted-foreground">
-            Se você deletar sua conta todas as suas campanhas serão excluidas e pararão de
-            funcionar!
-          </p>
-          <AlertDialog>
-            <AlertDialogTrigger className="w-fit">
-              <Button disabled={loading} variant="destructive" className="w-fit mt-4">
-                Deletar minha conta!
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Essa ação não pode ser desfeita. Você perderá todo os seus dados dentro
-                  da plataforma!
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter className="items-center">
-                <AlertDialogCancel className="h-fit">Cancelar</AlertDialogCancel>
-                <Button
-                  disabled={loading}
-                  variant="destructive"
-                  className="w-fit"
-                  onClick={() => {
-                    setLoading(true);
-                    fetch(`/api/admin/users/${user?.id}`, { method: 'DELETE' })
-                      .then((r) => r.json())
-                      .then(() => {
-                        toast.success('Conta deletada com sucesso!');
-                        router.push('/login');
-                      })
-                      .catch(() =>
-                        toast.error(
-                          'Não foi possivel deletar sua conta. Tente novamente mais tarde!',
-                        ),
-                      )
-                      .finally(() => setLoading(false));
-                  }}
-                >
-                  Delatar minha conta!
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
       </section>
     </TabsContent>
   );

@@ -8,6 +8,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from 'components/ui/alert-dialog';
 
 export const Security = () => {
   const router = useRouter();
@@ -79,6 +90,55 @@ export const Security = () => {
             Atualizar
           </Button>
         </form>
+        <hr className="border-none bg-destructive h-px my-8" />
+        <div className="flex flex-col">
+          <h2 className="uppercase text-destructive font-bold">Area Senssível</h2>
+          <p className="italic text-muted-foreground">
+            Se você deletar sua conta todas as suas campanhas serão excluidas e pararão de
+            funcionar!
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger className="w-fit">
+              <Button disabled={loading} variant="destructive" className="w-fit mt-4">
+                Deletar minha conta!
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação não pode ser desfeita. Você perderá todo os seus dados dentro
+                  da plataforma!
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="items-center">
+                <AlertDialogCancel className="h-fit">Cancelar</AlertDialogCancel>
+                <Button
+                  disabled={loading}
+                  variant="destructive"
+                  className="w-fit"
+                  onClick={() => {
+                    setLoading(true);
+                    fetch(`/api/admin/users/${user?.id}`, { method: 'DELETE' })
+                      .then((r) => r.json())
+                      .then(() => {
+                        toast.success('Conta deletada com sucesso!');
+                        router.push('/login');
+                      })
+                      .catch(() =>
+                        toast.error(
+                          'Não foi possivel deletar sua conta. Tente novamente mais tarde!',
+                        ),
+                      )
+                      .finally(() => setLoading(false));
+                  }}
+                >
+                  Delatar minha conta!
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </section>
     </TabsContent>
   );

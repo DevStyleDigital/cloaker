@@ -2,7 +2,7 @@ export const GhostLogo: BTypes.FCIcon = ({ ...props }) => (
   <svg
     width="158"
     height="60"
-    viewBox="0 0 6366 2386"
+    viewBox="0 0 6366 2069"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
@@ -14,21 +14,21 @@ export const GhostLogo: BTypes.FCIcon = ({ ...props }) => (
     <path
       d="M600.792 769.688H1406.04"
       className="stroke-primary-foreground"
-      strokeWidth="149.998"
+      strokeWidth="150"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M1259.38 856.566H1259.29"
       className="stroke-primary-foreground"
-      strokeWidth="239.997"
+      strokeWidth="240"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M827.38 856.186H827.292"
       className="stroke-primary-foreground"
-      strokeWidth="239.997"
+      strokeWidth="240"
       strokeLinecap="round"
       strokeLinejoin="round"
     />

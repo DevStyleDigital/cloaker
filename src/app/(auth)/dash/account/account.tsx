@@ -8,6 +8,7 @@ import { Subscription } from './(subscription)';
 import { useAuth } from 'context/auth';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { CreditCard, DollarSign, Gem, LockKeyhole, UserRound } from 'lucide-react';
 
 const Account = () => {
   const searchParam = useSearchParams();
@@ -44,19 +45,22 @@ const Account = () => {
       onValueChange={(s) => setScreen(s)}
       className="space-y-4 h-full"
     >
-      <TabsList className="m-8 mb-0">
+      <TabsList className="m-8 mb-0 rounded-t-md bg-background overflow-hidden">
         <TabsTrigger disabled={!user?.subscription} value="account">
+          <UserRound className="w-4 h-4 mr-4" />
           Informações da Conta
         </TabsTrigger>
         <TabsTrigger disabled={!user?.subscription} value="security">
-          Segurança
+          <LockKeyhole className="w-4 h-4 mr-4" /> Segurança
         </TabsTrigger>
-        <TabsTrigger value="subscription">Assinaturas</TabsTrigger>
+        <TabsTrigger value="subscription">
+          <Gem className="w-4 h-4 mr-4" /> Assinaturas
+        </TabsTrigger>
         <TabsTrigger disabled={!user?.subscription} value="payments">
-          Pagamentos
+          <DollarSign className="w-4 h-4 mr-4" /> Pagamentos
         </TabsTrigger>
         <TabsTrigger disabled={!user?.subscription} value="cards">
-          Cartões
+          <CreditCard className="w-4 h-4 mr-4" /> Cartões
         </TabsTrigger>
       </TabsList>
       <AccountInfo />

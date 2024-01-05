@@ -3,7 +3,7 @@
 import { GhostLogo } from './src/assets/svgs/logos/ghost';
 
 export default {
-  logo: <GhostLogo className="w-32 h-auto" />,
+  logo: <GhostLogo className="w-24 h-auto" />,
   toc: { backToTop: true },
   feedback: { content: null },
   footer: {

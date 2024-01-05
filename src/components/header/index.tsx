@@ -6,7 +6,6 @@ import { AlertTriangle, Bell, Receipt, RefreshCw, XCircle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from 'components/ui/popover';
 import { cn } from 'utils/cn';
 import { notifications } from 'mocks/notifications';
-import { useAuth } from 'context/auth';
 import { AvatarPopover } from 'components/sidebar/avatar';
 import { ThemeToggle } from 'components/theme-toggle';
 
@@ -19,18 +18,7 @@ const ROUTES = {
 } as Record<string, string>;
 
 export const Header = () => {
-  const router = useRouter();
   const pathname = usePathname();
-
-  const { user } = useAuth();
-
-  const subscriptionColors: Record<string, string> = {
-    basic: 'bg-gray-50 border border-gray-500 text-gray-500',
-    premium: 'bg-blue-50 border border-blue-500 text-blue-500',
-    gold: 'bg-yellow-50 border border-yellow-500 text-yellow-500',
-  };
-
-  const tagColor = user?.subscription && subscriptionColors[user.subscription];
 
   return (
     <header className="flex items-center px-7 bg-background py-5 justify-between border-b border-input fixed left-64 top-0 w-[calc(100%-16rem)] z-10">
@@ -39,17 +27,6 @@ export const Header = () => {
         <span className="text-muted-foreground">/</span>
         <span>{ROUTES[pathname as keyof typeof ROUTES]}</span>
       </div>
-
-      {/* <span className="flex items-center space-x-2 cursor-default select-none">
-        <span className="text-muted-foreground text-sm mt-px">Plano atual:</span>
-        <span
-          className={`inline-block px-4 rounded-full text-sm font-bold uppercase ${
-            tagColor || ''
-          }`}
-        >
-          {user?.subscription}
-        </span>
-      </span> */}
 
       <div className="flex gap-4">
         <Button variant="ghost" onClick={() => window.location.reload()} className="p-2">

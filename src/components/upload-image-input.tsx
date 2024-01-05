@@ -51,7 +51,7 @@ export const UploadImageInput = ({
           <Image
             src={previewURL}
             alt=""
-            className="pointer-events-none absolute h-[95%] w-[95%] rounded-md object-center object-cover"
+            className="pointer-events-none absolute h-[95%] w-[95%] rounded-full object-center object-cover"
             width={2000}
             height={2000}
           />
